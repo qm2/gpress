@@ -1,4 +1,4 @@
-# gtf_compressor
+# GFF compression scheme
 This is the baseline compressor for gtf files. It simply compresses the file without support for random access.
 
 # Usage:
