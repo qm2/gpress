@@ -14,10 +14,11 @@ make
 
 ### Run
 To run the GFF compression scheme, the general command is:
+```
 ./compressor (options)  [inputfile]
+```
 
-
-####Operating Mode:
+#### Operating Mode:
 
 -c:           Compress the GFF files without random access
 
@@ -29,17 +30,23 @@ To run the GFF compression scheme, the general command is:
 
 -e            Compress the expression matrix files and link relavent information with compressed GFF files 
 
-####Compression Parameters:
+#### Compression Parameters:
 
 block:        number of blocks used for random access (only available for -r and -e mode)
 
 ## Input
 
-The testing gtf files are download from Genecode. We used the gencode.v30.annotation.gtf and gencode.vM21.annotation.gtf.
+ Here, we provide a small test file in the folder data. More sample files can be download from the GENCODE database: https://www.gencodegenes.org/
 
 ## Output
-The compressed file for compression is called compressed.txt.* in the toplevel folder
+The compressed GFF files are called results_*.txt in the results folder
 
-The output decompression file is called result.gtf in toplevel folder
+The output decompression GFF files are called decompressed_*.txt in compressed folder
+
+The hastables are compressed and stored in the folder index_tables
+
+The compressed expression matrix files are called matrix_results_*.txt in matrix_results folder
+
+The output decompressed expression matrix files are called matrix_decompressed_*.txt in compressed folder
 
 
