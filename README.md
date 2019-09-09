@@ -1,31 +1,43 @@
 # GFF compression scheme
-This is the baseline compressor for gtf files. It simply compresses the file without support for random access.
+This is the GFF compression scheme, a compression platform for GFF3, GTF and expression matrix files.
 
-# Usage:
-This program is used from the command line. After building with make, the general format is:
+## Requirement
+- GCC compiler
 
+## How to Use the Software:
+
+### Install
+This program is used from the command line. After download the GFF compression from https://github.com/qm2/gtf_compressor, you can compile with
+```
+make
+```
+
+### Run
+To run the GFF compression scheme, the general command is:
 ./compressor (options)  [inputfile]
 
 
-Operating Mode:
+####Operating Mode:
 
--c:           Compress the gtf file
+-c:           Compress the GFF files without random access
 
--uc:          Uncompress the files 
+-uc:          Uncompress the GFF files without random access
 
-Compression Parameters:
+-r:           Compress the GFF files with support of random access
 
--gzip:        Use gzip to compress all columns
+-q:           Link the compressed GFF files and hashtables and then do searches
 
--bzip2:       Use bzip2 to compress all columns
+-e            Compress the expression matrix files and link relavent information with compressed GFF files 
 
--xz:          Use xz to compress all columns
+####Compression Parameters:
 
-#Input
+block:        number of blocks used for random access (only available for -r and -e mode)
+
+## Input
 
 The testing gtf files are download from Genecode. We used the gencode.v30.annotation.gtf and gencode.vM21.annotation.gtf.
 
-# Output
+## Output
 The compressed file for compression is called compressed.txt.* in the toplevel folder
 
 The output decompression file is called result.gtf in toplevel folder
