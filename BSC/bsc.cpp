@@ -186,7 +186,7 @@ void Compression(char * argv[])
         exit(1);
     }
 
-    double startTime = BSC_CLOCK();
+    // double startTime = BSC_CLOCK();
 
 #ifdef LIBBSC_OPENMP
 
@@ -234,9 +234,9 @@ void Compression(char * argv[])
                     #pragma omp master
 #endif
                     {
-                        double progress = (100.0 * (double)BSC_FTELL(fInput)) / fileSize;
-                        fprintf(stdout, "\rCompressing %.55s(%02d%%)", argv[2], (int)progress);
-                        fflush(stdout);
+                        // double progress = (100.0 * (double)BSC_FTELL(fInput)) / fileSize;
+                        // fprintf(stdout, "\rCompressing %.55s(%02d%%)", argv[2], (int)progress);
+                        // fflush(stdout);
                     }
 
                     blockOffset = BSC_FTELL(fInput);
@@ -427,7 +427,7 @@ void Compression(char * argv[])
         bsc_free(buffer);
     }
 
-    fprintf(stdout, "\r%.55s compressed %.0f into %.0f in %.3f seconds.\n", argv[2], (double)fileSize, (double)BSC_FTELL(fOutput), BSC_CLOCK() - startTime);
+    // fprintf(stdout, "\r%.55s compressed %.0f into %.0f in %.3f seconds.\n", argv[2], (double)fileSize, (double)BSC_FTELL(fOutput), BSC_CLOCK() - startTime);
 
     fclose(fInput); fclose(fOutput);
 }
@@ -488,7 +488,7 @@ void Decompression(char * argv[])
         exit(1);
     }
 
-    double startTime = BSC_CLOCK();
+    // double startTime = BSC_CLOCK();
 
 #ifdef LIBBSC_OPENMP
 
@@ -524,9 +524,9 @@ void Decompression(char * argv[])
                     #pragma omp master
 #endif
                     {
-                        double progress = (100.0 * (double)BSC_FTELL(fInput)) / fileSize;
-                        fprintf(stdout, "\rDecompressing %.55s(%02d%%)", argv[2], (int)progress);
-                        fflush(stdout);
+                        // double progress = (100.0 * (double)BSC_FTELL(fInput)) / fileSize;
+                        // fprintf(stdout, "\rDecompressing %.55s(%02d%%)", argv[2], (int)progress);
+                        // fflush(stdout);
                     }
 
                     BSC_BLOCK_HEADER header = {0, 0, 0};
@@ -571,7 +571,11 @@ void Decompression(char * argv[])
                         if (blockSize > bufferSize) bufferSize = blockSize;
                         if (dataSize  > bufferSize) bufferSize = dataSize;
 
-                        if (buffer != NULL) bsc_free(buffer); buffer = (unsigned char *)bsc_malloc(bufferSize);
+                        if (buffer != NULL){
+                            bsc_free(buffer); 
+                            buffer = (unsigned char *)bsc_malloc(bufferSize);                           
+                        } 
+                            bsc_free(buffer); buffer = (unsigned char *)bsc_malloc(bufferSize);
                     }
 
                     if (buffer == NULL)
@@ -674,7 +678,7 @@ void Decompression(char * argv[])
         exit(1);
     }
 
-    fprintf(stdout, "\r%.55s decompressed %.0f into %.0f in %.3f seconds.\n", argv[2], (double)fileSize, (double)BSC_FTELL(fOutput), BSC_CLOCK() - startTime);
+    // fprintf(stdout, "\r%.55s decompressed %.0f into %.0f in %.3f seconds.\n", argv[2], (double)fileSize, (double)BSC_FTELL(fOutput), BSC_CLOCK() - startTime);
 
     fclose(fInput); fclose(fOutput);
 }
@@ -850,8 +854,8 @@ void ProcessCommandline(int argc, char * argv[])
 
 int main(int argc, char * argv[])
 {
-    fprintf(stdout, "This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.\n");
-    fprintf(stdout, "Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.\n\n");
+    // fprintf(stdout, "This is bsc, Block Sorting Compressor. Version 3.1.0. 8 July 2012.\n");
+    // fprintf(stdout, "Copyright (c) 2009-2012 Ilya Grebnov <Ilya.Grebnov@gmail.com>.\n\n");
 
 #if defined(_OPENMP) && defined(__INTEL_COMPILER)
 
