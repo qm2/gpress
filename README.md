@@ -71,19 +71,19 @@ Here, we will use the test files to provide an example of how to use GPress.
 ```
 ./gpress -cw data/test_gtf.gtf
 ```
-The compressed file is stored in compressed foler as GTF_compressed_without.tar
+The compressed file is stored named GTF_compressed_without.tar in folder compressed.
 
 2. To decompress the GTF without random access, run 
 ```
 ./gpress -dc 
 ```
-The decompressed GTF is stored in the current folder as decompressed_gtf.gtf
+The decompressed GTF is stored named decompressed_gtf.gtf in the current folder.
 
 3. To compress the GTF with random access (500 genes per block), run 
 ```
 ./gpress -c data/test_gtf.gtf 500
 ```
-The compressed GTF file is stored in foler compressed as GTF_compressed.tar.
+The compressed GTF file is stored named  GTF_compressed.tar in foler compressed.
 The associated index tables are also stored in folder compressed.
 
 4. To do queries on compressed GTF file, 
@@ -98,19 +98,19 @@ range search on chromosome 1 with range from 10000 to 100000:
 ```
 ./gpress -q -range 10000 100000 1
 ```
-The retrieved information is stored in current folder as range.gtf.
+The retrieved information is stored named range.gtf in current folder.
 
 5. To compress and link the expression file, 
 ```
 ./gpress -e data/test_expression.tsv 500
 ```
-The compressed file is stored in folder compressed as expression_compressed.tar.
+The compressed file is stored named expression_compressed.tar in folder compressed.
 
 6. To do queries on compressed expression file,
 ```
 ./gpress -qe ENST00000009530.11
 ```
-The retrieved information is stored in current folder as expression_search.txt.
+The retrieved information is stored named expression_search.txt in current folder .
 GPress will also print the extra information in command window if it exists in GFF file. For example, 
 ```
 ./gpress -qe ENST00000531822.1
