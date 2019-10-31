@@ -20,7 +20,7 @@ int main(int argc , char **argv){
         FILE *fp, *fp_chromosome;
         int count_lines = 0;
         char chr;
-        fp = fopen(argv[3], "r");
+        fp = fopen(argv[2], "r");
         //count number of lines in the file
         chr = getc(fp);
         while (chr != EOF)
@@ -35,84 +35,17 @@ int main(int argc , char **argv){
         }
         fclose(fp);
         count_lines -=5;
-        fp = fopen(argv[3], "r");
+        fp = fopen(argv[2], "r");
         //run the compressor
-        gtf_compressor(fp, count_lines, chr_table, atoi(argv[4]));
+        gtf_compressor(fp, count_lines, chr_table, atoi(argv[3]));
         fp_chromosome= fopen("index_tables/data_chr.txt", "w+");
         fwrite(chr_table , sizeof(int) , sizeof(chr_table) , fp_chromosome);
         fclose(fp_chromosome);
-        // if(strcmp("-gzip", argv[2]) == 0){
-        //     //start to compress all the files using gzip
-        //     system("tar -cvzf compressed.tar.gz compressed");           
-        // }
-        // else if(strcmp("-bzip2", argv[2]) == 0){
-        //     //start to compress all the files using bzip2
-        //     system("tar -cjvf compressed.tar.bz2 compressed");          
-        // }
-        // else if(strcmp("-xz", argv[2]) == 0){
-        //     //start to compress all the files using xz
-        //     system("tar -cJvf compressed.tar.xz compressed");         
-        // }
-        // strcpy(temp, "ENSE00001544473.2");
-        // printf("%s\n", (char*)ht_get(ht, temp));
 
-
-        system("tar -cvf results.tar results");
+        system("tar -cvf GTF_compressed.tar GTF_compressed");
 
         system("tar -cvf index_tables.tar index_tables");   
-        system("/mnt/e/bsc/bsc e index_tables.tar index_tables_compressed.txt");     
-        // printf("Press enter to continue\n");
-        // char enter = 0;
-        // while (1) { 
-        //  enter = getchar();
-        //  if(enter == 'i'){
-        //      char* retval;
-        //         char* hashval;
-        //         char* s;
-        //         int block;
-        //         int block_id;
-        //         hashval= (char*)malloc(sizeof(char)*100);
-        //         hashval= (char*)ht_get(ht, "ENSDARE00000150968");
-        //         printf("%s\n", hashval);
-        //         s= (char*)malloc(sizeof(char)*50);
-        //         s= strtok(hashval, " ");
-        //         block= atoi(s);
-        //         s= strtok(NULL, " ");
-        //         block_id= atoi(s);
-        //         retval = item_search(block, block_id);
-        //         printf("%s\n", retval);
-
-        //  } 
-
-        //  else if(enter == 's'){
-        //      rangeSearch(27098889, 27099889, 1,  position, chr_table);
-        //  }
-        //  else if(enter == 'm'){
-        //      rangeSearch(2709889, 2809889, 1,  position, chr_table);
-        //  }
-        //  else if(enter == 'l'){
-        //      rangeSearch(2709889, 12709889, 1,  position, chr_table);
-        //  }
-        //  printf("random access succeed\n");
-        //}
-
-
-
-
-
-
-
-
-        // printf("Listing keys\n");
-        // char* str[ht->e_num];
-        // unsigned int i;
-        // ht_list_keys(ht, str, ht->e_num);
-        //for(i = 0; i < ht->e_num; i++)
-        //    printf("%s\n", str[i]);
-       // printf("Listing values\n");
-       // ht_list_values(ht, (void**)str, ht->e_num);
-       // for(i = 0; i < ht->e_num; i++)
-       //     printf("%s\n", str[i]);
+        system("BSC/bsc e index_tables.tar index_tables_compressed.txt");     
         
         fclose(fp);
     }
