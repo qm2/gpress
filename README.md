@@ -13,7 +13,7 @@ This program is used from the command line. After download GPress from https://g
 ```
 make
 ```
-in the parent folder.
+in the root folder.
 
 You also need to compile the BSC compressor by runing 
 ```
@@ -25,7 +25,7 @@ To run the GPress, the general command is:
 ```
 ./gpress (options)  [inputfile]
 ```
-
+in the root folder
 #### Operating Mode:
 1. To compress the GTF file without random access, run
 ```
@@ -79,7 +79,7 @@ The compressed file is stored named GTF_compressed_without.tar in folder compres
 ```
 ./gpress -dc 
 ```
-The decompressed GTF is stored named decompressed_gtf.gtf in the current folder.
+The decompressed GTF is stored named decompressed_gtf.gtf in the root folder.
 
 3. To compress the GTF with random access (500 genes per block), run 
 ```
@@ -100,7 +100,7 @@ range search on chromosome 1 with range from 10000 to 100000:
 ```
 ./gpress -q -range 10000 100000 1
 ```
-The retrieved information is stored named range.gtf in current folder.
+The retrieved information is stored named range.gtf in root folder.
 
 5. To compress and link the expression file, 
 ```
@@ -112,7 +112,7 @@ The compressed file is stored named expression_compressed.tar in folder compress
 ```
 ./gpress -qe ENST00000009530.11
 ```
-The retrieved information is stored named expression_search.txt in current folder .
+The retrieved information is stored named expression_search.txt in root folder .
 GPress will also print the extra information in command window if it exists in GFF file. For example, 
 ```
 ./gpress -qe ENST00000531822.1
