@@ -115,6 +115,8 @@ int main(int argc , char **argv){
         gtf_decompressor(fp, count_lines);        
         printf("The compression of GTF file without random access succeeds!\n");
         printf("The decompressed GTF file is included in the decompressed_gtf.gtf!\n"); 
+        system("rm GTF_parsed2/*");
+        system("rm GTF_compressed2/*");  
         fclose(fp);
     }
     else if(strcmp("-q", argv[1]) == 0){
