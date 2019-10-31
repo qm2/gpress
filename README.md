@@ -29,6 +29,47 @@ To run the GPress, the general command is:
 ```
 ./gpress -cw [inputfile]
 ```
+
+2. To decompress the GTF without random access, run 
+```
+./gpress -dc 
+```
+
+3. To compress the GTF with random access, run 
+```
+./gpress -c [inputfile] <block_size> (e.g. ./gpress -c test_gtf.gtf 500)
+```
+
+4. To do queries on compressed GTF file, 
+id search:
+```
+./gpress -q -id <id>
+```
+range search:
+```
+./gpress -q -range <start> <end> <chromosome>
+```
+
+5. To compress and link the expression file, 
+```
+./gpress -e [inutfile] <block_size>
+```
+
+6. To do queries on compressed expression file,
+```
+./gpress -qe <id>
+```
+
+## Input
+
+Here, we provide a small GTF file(test_gtf.gtf) and a small expression file(test_expression.tsv)in the folder data. More sample files can be download from the GENCODE database or other sources.
+
+## Example
+Here, we will use the test files to provide an example of how to use GPress.
+1. To compress the GTF file without random access, run
+```
+./gpress -cw data/test_gtf.gtf
+```
 The compressed file is stored in compressed foler as GTF_compressed_without.tar
 
 2. To decompress the GTF without random access, run 
@@ -37,42 +78,41 @@ The compressed file is stored in compressed foler as GTF_compressed_without.tar
 ```
 The decompressed GTF is stored in the current folder as decompressed_gtf.gtf
 
-3. To compress the GTF with random access, run 
+3. To compress the GTF with random access(500 genes per block), run 
 ```
-./gpress -c [inputfile] <block_size> (e.g. ./gpress -c test_gtf.gtf 500)
+./gpress -c test_gtf.gtf 500
 ```
 The compressed GTF file is stored in foler compressed as GTF_compressed.tar.
 The associated index tables are also stored in folder compressed.
 
 4. To do queries on compressed GTF file, 
-id search:
+id search for exon id "ENSE00003486434.1":
 ```
-./gpress -q -id <id>
+./gpress -q -id ENSE00003486434.1
 ```
 The retrieved information is printed in command window.
-range search:
+range search on chromosome 1 with range from 10000 to 100000:
 ```
-./gpress -q -range <start> <end> <chromosome>
+./gpress -q -range 10000 100000 1
 ```
 The retrieved information is stored in current folder as range.gtf.
 
 5. To compress and link the expression file, 
 ```
-./gpress -e [inutfile] <block_size>
+./gpress -e test_expression.tsv 500
 ```
 The compressed file is stored in folder compressed as expression_compressed.tar.
 
 6. To do queries on compressed expression file,
 ```
-./gpress -qe <id>
+./gpress -qe ENST00000009530.11
 ```
-The retrieved information is stored in current folder as expression_search.txt. GPress will also print the extra information in command window if it exists in GFF file.
-
-## Input
-
-Here, we provide a small GTF file(test_gtf.gtf) and a small expression file(test_expression.tsv)in the folder data. More sample files can be download from the GENCODE database or other sources.
-
-## Example
+The retrieved information is stored in current folder as expression_search.txt.
+GPress will also print the extra information in command window if it exists in GFF file. For example, 
+```
+./gpress -qe ENST00000531822.1
+```
+will give information from both GTF and expression files.
 
 
 
