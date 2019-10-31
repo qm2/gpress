@@ -186,7 +186,7 @@ void Compression(char * argv[])
         exit(1);
     }
 
-    // double startTime = BSC_CLOCK();
+    double startTime = BSC_CLOCK();
 
 #ifdef LIBBSC_OPENMP
 
@@ -234,9 +234,9 @@ void Compression(char * argv[])
                     #pragma omp master
 #endif
                     {
-                        // double progress = (100.0 * (double)BSC_FTELL(fInput)) / fileSize;
+                        double progress = (100.0 * (double)BSC_FTELL(fInput)) / fileSize;
                         // fprintf(stdout, "\rCompressing %.55s(%02d%%)", argv[2], (int)progress);
-                        // fflush(stdout);
+                        fflush(stdout);
                     }
 
                     blockOffset = BSC_FTELL(fInput);
@@ -488,7 +488,7 @@ void Decompression(char * argv[])
         exit(1);
     }
 
-    // double startTime = BSC_CLOCK();
+    double startTime = BSC_CLOCK();
 
 #ifdef LIBBSC_OPENMP
 
@@ -524,9 +524,9 @@ void Decompression(char * argv[])
                     #pragma omp master
 #endif
                     {
-                        // double progress = (100.0 * (double)BSC_FTELL(fInput)) / fileSize;
+                        double progress = (100.0 * (double)BSC_FTELL(fInput)) / fileSize;
                         // fprintf(stdout, "\rDecompressing %.55s(%02d%%)", argv[2], (int)progress);
-                        // fflush(stdout);
+                        fflush(stdout);
                     }
 
                     BSC_BLOCK_HEADER header = {0, 0, 0};
@@ -571,11 +571,7 @@ void Decompression(char * argv[])
                         if (blockSize > bufferSize) bufferSize = blockSize;
                         if (dataSize  > bufferSize) bufferSize = dataSize;
 
-                        if (buffer != NULL){
-                            bsc_free(buffer); 
-                            buffer = (unsigned char *)bsc_malloc(bufferSize);                           
-                        } 
-                            bsc_free(buffer); buffer = (unsigned char *)bsc_malloc(bufferSize);
+                        if (buffer != NULL) bsc_free(buffer); buffer = (unsigned char *)bsc_malloc(bufferSize);
                     }
 
                     if (buffer == NULL)

@@ -1,1 +1,0 @@
-This folder is used to store all streams extract from GTF file.

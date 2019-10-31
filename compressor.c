@@ -58,29 +58,29 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int block_size){
     char frame_start_name[100]; 
     char frame_stop_name[100];
     char compress_cmd[100];
-    char* sq_name_prefix= "compressed/gtf_seqname_" ;
-    char* src_name_prefix= "compressed/gtf_source_";
-    char* fea_name_prefix= "compressed/gtf_feature_";
-    char* start_name_prefix= "compressed/gtf_start_";       
-    char* delta_name_prefix= "compressed/gtf_delta_";
-    char* score_name_prefix= "compressed/gtf_score_";
-    char* strand_name_prefix= "compressed/gtf_strand_";
-    char* att_name_prefix= "compressed/gtf_attribute_";
-    char* frame_cds_name_prefix= "compressed/gtf_frame_cds_";
-    char* frame_start_name_prefix= "compressed/gtf_frame_start_";
-    char* frame_stop_name_prefix= "compressed/gtf_frame_stop_";
-    char* compress_cmd_prefix= "/mnt/e/bsc/bsc e ";
-    char* cmd_suffix_sq= " results/compressed_seqname_";
-    char* cmd_suffix_src=" results/compressed_source_";    
-    char* cmd_suffix_fea=" results/compressed_feature_";
-    char* cmd_suffix_start=" results/compressed_start_";
-    char* cmd_suffix_delta=" results/compressed_delta_";
-    char* cmd_suffix_score=" results/compressed_score_";
-    char* cmd_suffix_strand=" results/compressed_strand_";
-    char* cmd_suffix_att=" results/compressed_attribure_";
-    char* cmd_suffix_frame_cds=" results/compressed_frame_cds_";
-    char* cmd_suffix_frame_start=" results/compressed_frame_start_";
-    char* cmd_suffix_frame_stop=" results/compressed_frame_stop_";
+    char* sq_name_prefix= "GTF_parsed/gtf_seqname_" ;
+    char* src_name_prefix= "GTF_parsed/gtf_source_";
+    char* fea_name_prefix= "GTF_parsed/gtf_feature_";
+    char* start_name_prefix= "GTF_parsed/gtf_start_";       
+    char* delta_name_prefix= "GTF_parsed/gtf_delta_";
+    char* score_name_prefix= "GTF_parsed/gtf_score_";
+    char* strand_name_prefix= "GTF_parsed/gtf_strand_";
+    char* att_name_prefix= "GTF_parsed/gtf_attribute_";
+    char* frame_cds_name_prefix= "GTF_parsed/gtf_frame_cds_";
+    char* frame_start_name_prefix= "GTF_parsed/gtf_frame_start_";
+    char* frame_stop_name_prefix= "GTF_parsed/gtf_frame_stop_";
+    char* compress_cmd_prefix= "BSC/bsc e ";
+    char* cmd_suffix_sq= " GTF_compressed/compressed_seqname_";
+    char* cmd_suffix_src=" GTF_compressed/compressed_source_";    
+    char* cmd_suffix_fea=" GTF_compressed/compressed_feature_";
+    char* cmd_suffix_start=" GTF_compressed/compressed_start_";
+    char* cmd_suffix_delta=" GTF_compressed/compressed_delta_";
+    char* cmd_suffix_score=" GTF_compressed/compressed_score_";
+    char* cmd_suffix_strand=" GTF_compressed/compressed_strand_";
+    char* cmd_suffix_att=" GTF_compressed/compressed_attribure_";
+    char* cmd_suffix_frame_cds=" GTF_compressed/compressed_frame_cds_";
+    char* cmd_suffix_frame_start=" GTF_compressed/compressed_frame_start_";
+    char* cmd_suffix_frame_stop=" GTF_compressed/compressed_frame_stop_";
 
 
     char block_number[100];
@@ -537,27 +537,27 @@ int gtf_decompressor(FILE* fp, int length){
     FILE *fp_sq, *fp_src, *fp_fea, *fp_start, *fp_delta, *fp_att, *fp_comments;
     FILE *fp_score, *fp_strand, *fp_frame_cds, *fp_frame_start, *fp_frame_stop; 
     //open all the files
-    fp_sq = fopen("compressed/gtf_seqname.txt", "r");
+    fp_sq = fopen("GTF_parsed/gtf_seqname.txt", "r");
     //open the source file
-    fp_src = fopen("compressed/gtf_source.txt", "r");
+    fp_src = fopen("GTF_parsed/gtf_source.txt", "r");
     //open the feature file
-    fp_fea = fopen("compressed/gtf_feature.txt", "r");
+    fp_fea = fopen("GTF_parsed/gtf_feature.txt", "r");
     //open the start file
-    fp_start = fopen("compressed/gtf_start.txt", "r");
+    fp_start = fopen("GTF_parsed/gtf_start.txt", "r");
     //open the difference of start and stop file
-    fp_delta = fopen("compressed/gtf_delta.txt", "r");
+    fp_delta = fopen("GTF_parsed/gtf_delta.txt", "r");
     //open the score file
-    fp_score = fopen("compressed/gtf_score.txt", "r");
+    fp_score = fopen("GTF_parsed/gtf_score.txt", "r");
     //open the strand file
-    fp_strand = fopen("compressed/gtf_strand.txt", "r");
+    fp_strand = fopen("GTF_parsed/gtf_strand.txt", "r");
     //open the attribute file
-    fp_att = fopen("compressed/gtf_attribute.txt", "r");
+    fp_att = fopen("GTF_parsed/gtf_attribute.txt", "r");
     //open the frames of CDS file
-    fp_frame_cds = fopen("compressed/gtf_frame_cds.txt", "r");
+    fp_frame_cds = fopen("GTF_parsed/gtf_frame_cds.txt", "r");
     //open the frames of start file
-    fp_frame_start = fopen("compressed/gtf_frame_start.txt", "r");
+    fp_frame_start = fopen("GTF_parsed/gtf_frame_start.txt", "r");
     //open the frames of stop file
-    fp_frame_stop = fopen("compressed/gtf_frame_stop.txt", "r");
+    fp_frame_stop = fopen("GTF_parsed/gtf_frame_stop.txt", "r");
 
     //write the comments to the gtf file
     for(int i=0; i< 5; i++){
@@ -687,7 +687,7 @@ int matrix_compressor(FILE* fp, int length, int block_size){
     char* eff_len_name_prefix= "matrix_compressed/matrix_eff_len_";
     char* len_name_prefix= "matrix_compressed/matrix_len_";       
 
-    char* compress_cmd_prefix= "/mnt/e/bsc/bsc e ";
+    char* compress_cmd_prefix= "BSC/bsc/bsc e ";
     char* cmd_suffix_sample= " matrix_results/matrix_compressed_sample_";
     char* cmd_suffix_ets_counts=" matrix_results/matrix_compressed_ets_counts_";    
     char* cmd_suffix_tpm=" matrix_results/matrix_compressed_tpm_";

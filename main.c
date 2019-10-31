@@ -42,34 +42,28 @@ int main(int argc , char **argv){
         fwrite(chr_table , sizeof(int) , sizeof(chr_table) , fp_chromosome);
         fclose(fp_chromosome);
 
-        system("tar -cvf GTF_compressed.tar GTF_compressed");
-
-        system("tar -cvf index_tables.tar index_tables");   
-        system("BSC/bsc e index_tables.tar index_tables_compressed.txt");     
+        system("rm GTF_parsed/*");
+        system("tar -cvf compressed/GTF_compressed.tar GTF_compressed");
+        system("rm GTF_compressed/*"); 
+        system("BSC/bsc e index_tables/data_key.txt compressed/data_key_compressed");
+        system("BSC/bsc e index_tables/data_value.txt compressed/data_value_compressed");
+        system("BSC/bsc e index_tables/data_chr.txt compressed/data_chr_compressed");             
+        // system("rm index_tables/*");    
         
         fclose(fp);
     }
     else if(strcmp("-uc", argv[1]) == 0){
-        clock_t start, end;
-        double cpu_time_used;   
-        start = clock();
 
         char hash_key[500]; 
         char* hash_val;
-
         char temp[100];
-     //    int *chr_table= (int*)malloc(sizeof(int)*100);
 
-
-
-
-     //    //recover all the data structures 
-        system("/mnt/e/bsc/bsc d index_tables_compressed.txt index_tables.rar");
-        system("tar -xvf index_tables.rar");
+        //recover all the data structures 
+        system("BSC/bsc d compressed/data_key_compressed index_tables/data_key.txt");
+        system("BSC/bsc d compressed/data_value_compressed index_tables/data_value.txt");
+        system("BSC/bsc d compressed/data_chr_compressed index_tables/data_chr.txt");  
         FILE *fp_hash_key= fopen("index_tables/data_key.txt", "r");
         FILE *fp_hash_val= fopen("index_tables/data_value.txt", "r");
-
-
         hashtable_t *ht = ht_create(3000000);
 
         while(fscanf(fp_hash_key, "%s", hash_key)!=EOF){
@@ -83,49 +77,40 @@ int main(int argc , char **argv){
         FILE *fp_chromosome = fopen("index_tables/data_chr.txt", "rb"); 
         fread(chr_table, sizeof(int), sizeof(chr_table), fp_chromosome);
 
-        end = clock();
-        cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-        printf("the link time is: %lf(s)\n", cpu_time_used);
-
         //close the files
         fclose(fp_hash_key);
         fclose(fp_hash_val);
         fclose(fp_chromosome);
-        // system("tar -cvf results.tar results");
-        printf("Press enter to continue\n");
-        char enter = 0;
-        while (1) { 
-             enter = getchar();
-             if(enter == 'i'){
-                    char* retval;
-                    char* hashval;
-                    char* s;
-                    int block;
-                    int block_id;
-                    hashval= (char*)malloc(sizeof(char)*100);
-                    hashval= (char*)ht_get(ht, "ENSMUSE00000808726.1");
-                    printf("%s\n", hashval);
-                    s= (char*)malloc(sizeof(char)*50);
-                    s= strtok(hashval, " ");
-                    block= atoi(s);
-                    s= strtok(NULL, " ");
-                    block_id= atoi(s);
-                    retval = item_search(block, block_id);
-                    printf("%s\n", retval);
+        system("tar -xvf compressed/GTF_compressed.tar GTF_compressed");
 
-             } 
+        if(strcmp("-id", argv[2]) == 0){
+               char* retval;
+               char* hashval;
+               char* s;
+               int block;
+               int block_id;
+               hashval= (char*)malloc(sizeof(char)*100);
+               hashval= (char*)ht_get(ht, argv[3]);
+               s= (char*)malloc(sizeof(char)*50);
+               s= strtok(hashval, " ");
+               block= atoi(s);
+               s= strtok(NULL, " ");
+               block_id= atoi(s);
+               retval = item_search(block, block_id);
+               printf("The item with id %s is:\n",argv[3]);
+               printf("%s", retval);
+               printf("id search succeeds!\n");
+               system("rm GTF_compressed/*");
+               system("rm GTF_parsed/*");
+        }
+        else if(strcmp("-range", argv[2]) == 0){
+            rangeSearch(atoi(argv[3]), atoi(argv[4]), atoi(argv[5])-1,  chr_table);
+            printf("All items on chromosome %s from %s to %s are outputed in the range.gtf file\n",argv[5], argv[3], argv[4]);
+            printf("range search succeeds!\n");
+            system("rm GTF_compressed/*");
+            system("rm GTF_parsed/*");
+        }
 
-             else if(enter == 's'){
-                 rangeSearch(5298887, 5565649, 1,  chr_table);
-             }
-             else if(enter == 'm'){
-                 rangeSearch(5298887, 72384131, 1,  chr_table);
-             }
-             else if(enter == 'l'){
-                 rangeSearch(5298887, 127780063, 1,  chr_table);
-             }
-             printf("random access succeed\n");
-            }
 
     }
     else if(strcmp("-a", argv[1]) == 0){
