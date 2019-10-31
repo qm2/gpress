@@ -41,6 +41,7 @@ To run the GPress, the general command is:
 ```
 
 4. To do queries on compressed GTF file, 
+
 id search:
 ```
 ./gpress -q -id <id>
@@ -62,7 +63,7 @@ range search:
 
 ## Input
 
-Here, we provide a small GTF file(test_gtf.gtf) and a small expression file(test_expression.tsv)in the folder data. More sample files can be download from the GENCODE database or other sources.
+Here, we provide a small GTF file (test_gtf.gtf) and a small expression file (test_expression.tsv)in the folder data. More sample files can be download from the GENCODE database or other sources.
 
 ## Example
 Here, we will use the test files to provide an example of how to use GPress.
@@ -78,7 +79,7 @@ The compressed file is stored in compressed foler as GTF_compressed_without.tar
 ```
 The decompressed GTF is stored in the current folder as decompressed_gtf.gtf
 
-3. To compress the GTF with random access(500 genes per block), run 
+3. To compress the GTF with random access (500 genes per block), run 
 ```
 ./gpress -c test_gtf.gtf 500
 ```
