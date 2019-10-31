@@ -25,8 +25,15 @@ To run the GPress, the general command is:
 ```
 
 #### Operating Mode:
-
--c:           Compress the GFF files without random access
+1. To compress the GTF file without random access, run
+```
+./gpress -cw [inputfile]
+```
+The compressed file is stored in compressed foler as compressed_without.tar
+2. To decompress the GTF without random access, run 
+```
+./gpress -dc 
+```
 
 -uc:          Uncompress the GFF files without random access
 
