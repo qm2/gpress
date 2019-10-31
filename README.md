@@ -1,21 +1,27 @@
-# GFF compression scheme
-This is the GFF compression scheme, a compression platform for GFF3, GTF and expression matrix files.
+# GPress
+This is the GPress, a framework for querying GFF/GTF and expression files in a compressed form.
 
 ## Requirement
-- GCC compiler
+- Linux
+- GCC and G++ 11 compiler
+- At least 2GB of RAM and 20GB of storage
 
 ## How to Use the Software:
 
 ### Install
-This program is used from the command line. After download the GFF compression from https://github.com/qm2/gtf_compressor, you can compile with
+This program is used from the command line. After download GPress from https://github.com/qm2/gtf_compressor, you can compile GPress with
 ```
 make
 ```
-
-### Run
-To run the GFF compression scheme, the general command is:
+You also need to compile the BSC compressor by runing 
 ```
-./compressor (options)  [inputfile]
+make
+```
+in the BSC folder.
+### Run
+To run the GPress, the general command is:
+```
+./gpress (options)  [inputfile]
 ```
 
 #### Operating Mode:
