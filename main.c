@@ -111,7 +111,7 @@ int main(int argc , char **argv){
         }
         fclose(fp2);
 
-        fp = fopen("decompressed_gtf", "w+");
+        fp = fopen("decompressed_gtf.gtf", "w+");
         gtf_decompressor(fp, count_lines);        
         printf("The compression of GTF file without random access succeeds!\n");
         printf("The decompressed GTF file is included in the decompressed_gtf.gtf!\n"); 
