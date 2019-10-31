@@ -81,7 +81,7 @@ The decompressed GTF is stored in the current folder as decompressed_gtf.gtf
 
 3. To compress the GTF with random access (500 genes per block), run 
 ```
-./gpress -c test_gtf.gtf 500
+./gpress -c data/test_gtf.gtf 500
 ```
 The compressed GTF file is stored in foler compressed as GTF_compressed.tar.
 The associated index tables are also stored in folder compressed.
@@ -100,7 +100,7 @@ The retrieved information is stored in current folder as range.gtf.
 
 5. To compress and link the expression file, 
 ```
-./gpress -e test_expression.tsv 500
+./gpress -e data/test_expression.tsv 500
 ```
 The compressed file is stored in folder compressed as expression_compressed.tar.
 
