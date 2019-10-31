@@ -29,37 +29,51 @@ To run the GPress, the general command is:
 ```
 ./gpress -cw [inputfile]
 ```
-The compressed file is stored in compressed foler as compressed_without.tar
+The compressed file is stored in compressed foler as GTF_compressed_without.tar
+
 2. To decompress the GTF without random access, run 
 ```
 ./gpress -dc 
 ```
+The decompressed GTF is stored in the current folder as decompressed_gtf.gtf
 
--uc:          Uncompress the GFF files without random access
+3. To compress the GTF with random access, run 
+```
+./gpress -c [inputfile] <block_size> (e.g. ./gpress -c test_gtf.gtf 500)
+```
+The compressed GTF file is stored in foler compressed as GTF_compressed.tar.
+The associated index tables are also stored in folder compressed.
 
--r:           Compress the GFF files with support of random access
+4. To do queries on compressed GTF file, 
+id search:
+```
+./gpress -q -id <id>
+```
+The retrieved information is printed in command window.
+range search:
+```
+./gpress -q -range <start> <end> <chromosome>
+```
+The retrieved information is stored in current folder as range.gtf.
 
--q:           Link the compressed GFF files and hashtables and then do searches
+5. To compress and link the expression file, 
+```
+./gpress -e [inutfile] <block_size>
+```
+The compressed file is stored in folder compressed as expression_compressed.tar.
 
--e            Compress the expression matrix files and link relavent information with compressed GFF files 
-
-#### Compression Parameters:
-
-block:        number of blocks used for random access (only available for -r and -e mode)
+6. To do queries on compressed expression file,
+```
+./gpress -qe <id>
+```
+The retrieved information is stored in current folder as expression_search.txt. GPress will also print the extra information in command window if it exists in GFF file.
 
 ## Input
 
- Here, we provide a small test file in the folder data. More sample files can be download from the GENCODE database: https://www.gencodegenes.org/
+Here, we provide a small GTF file(test_gtf.gtf) and a small expression file(test_expression.tsv)in the folder data. More sample files can be download from the GENCODE database or other sources.
 
-## Output
-The compressed GFF files are called results_*.txt in the results folder
+## Example
 
-The output decompression GFF files are called decompressed_*.txt in compressed folder
 
-The hastables are compressed and stored in the folder index_tables
-
-The compressed expression matrix files are called matrix_results_*.txt in matrix_results folder
-
-The output decompressed expression matrix files are called matrix_decompressed_*.txt in compressed folder
 
 
