@@ -87,11 +87,13 @@ The compressed GTF file is stored in foler compressed as GTF_compressed.tar.
 The associated index tables are also stored in folder compressed.
 
 4. To do queries on compressed GTF file, 
+
 id search for exon id "ENSE00003486434.1":
 ```
 ./gpress -q -id ENSE00003486434.1
 ```
 The retrieved information is printed in command window.
+
 range search on chromosome 1 with range from 10000 to 100000:
 ```
 ./gpress -q -range 10000 100000 1
