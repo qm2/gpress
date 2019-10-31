@@ -112,7 +112,8 @@ The compressed file is stored named **expression_compressed.tar** in folder **co
 ```
 ./gpress -qe ENST00000009530.11
 ```
-The retrieved information is stored named **expression_search.txt** in root folder .
+The retrieved information is stored named **expression_search.txt** in root folder.
+
 GPress will also print the extra information in command window if it exists in GFF file. For example, 
 ```
 ./gpress -qe ENST00000531822.1
