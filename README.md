@@ -1,5 +1,5 @@
 # GPress
-This is the GPress, a framework for querying GFF/GTF and expression files in a compressed form.
+This is GPress, a framework for querying GFF/GTF and expression files in a compressed form.
 
 ## Requirement
 - Linux
@@ -13,6 +13,8 @@ This program is used from the command line. After download GPress from https://g
 ```
 make
 ```
+in the parent folder.
+
 You also need to compile the BSC compressor by runing 
 ```
 make
