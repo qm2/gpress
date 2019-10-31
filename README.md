@@ -19,7 +19,7 @@ You also need to compile the BSC compressor by runing
 ```
 make
 ```
-in the BSC folder.
+in the **BSC** folder.
 ### Run
 To run the GPress, the general command is:
 ```
