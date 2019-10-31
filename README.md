@@ -39,7 +39,7 @@ in the root folder
 
 3. To compress the GTF with random access, run 
 ```
-./gpress -c [inputfile] <block_size> (e.g. ./gpress -c test_gtf.gtf 500)
+./gpress -c [inputfile] <block_size> 
 ```
 
 4. To do queries on compressed GTF file, 
