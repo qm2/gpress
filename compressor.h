@@ -9,9 +9,9 @@ int gtf_compressor(FILE* fp, int length,  int* chr_table, int block_size);
 int gtf_decompressor(FILE* fp, int length);
 
 //this function used to compress the expression matrix files
-int matrix_compressor(FILE* fp, int length, int block_size);
+int expression_compressor(FILE* fp, int length, int block_size);
 
-//this function used to compress the sparse expression matrix files
-int sparse_matrix_compressor(FILE* fp, int length, int block_size);
+//this function compress the GTF without random access
+int gtf_compressor2(FILE* fp, int length);
 
 #endif

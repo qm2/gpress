@@ -1,6 +1,6 @@
 
 output: main.o compressor.o hash.o randomaccess.o
-	gcc main.o compressor.o hash.o randomaccess.o -o compressor
+	gcc main.o compressor.o hash.o randomaccess.o -o gpress
 
 main.o: main.c
 	gcc -c main.c
@@ -15,5 +15,5 @@ randomaccess.o: randomaccess.c
 	gcc -c randomaccess.c
 
 clean:
-	rm *.o compressor
+	rm *.o gpress
 

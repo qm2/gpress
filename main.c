@@ -9,11 +9,6 @@
 
 int main(int argc , char **argv){
     int *chr_table= (int*)malloc(sizeof(int)*100);
-    // if(argc < 5){
-    //     //no arguments were passed
-    //     printf("not enough arguments are passed!\n");
-    //     return 0;
-    // } 
     if (strcmp("-c", argv[1]) == 0){
 
         //file pointer for gtf file
@@ -48,11 +43,81 @@ int main(int argc , char **argv){
         system("BSC/bsc e index_tables/data_key.txt compressed/data_key_compressed");
         system("BSC/bsc e index_tables/data_value.txt compressed/data_value_compressed");
         system("BSC/bsc e index_tables/data_chr.txt compressed/data_chr_compressed");             
-        // system("rm index_tables/*");    
-        
+   
+        printf("The compression of GTF file with random access succeeds!\n");
         fclose(fp);
     }
-    else if(strcmp("-uc", argv[1]) == 0){
+    else if (strcmp("-cw", argv[1]) == 0){
+
+        //file pointer for gtf file
+        FILE *fp;
+        int count_lines = 0;
+        char chr;
+        fp = fopen(argv[2], "r");
+        //count number of lines in the file
+        chr = getc(fp);
+        while (chr != EOF)
+        {
+            //Count whenever new line is encountered
+            if (chr == '\n')
+            {
+                count_lines = count_lines + 1;
+            }
+            //take next character from file.
+            chr = getc(fp);
+        }
+        fclose(fp);
+        count_lines -=5;
+        fp = fopen(argv[2], "r");
+        //run the compressor
+        gtf_compressor2(fp, count_lines);
+        system("rm GTF_parsed2/*");
+        system("rm GTF_compressed2/*");  
+        printf("The compression of GTF file without random access succeeds!\n");
+        fclose(fp);
+    }
+    else if (strcmp("-dc", argv[1]) == 0){
+
+        //file pointer for gtf file
+        int count_lines = 0;
+        char chr;
+        FILE *fp, *fp2;
+
+        //run the decompressor
+        system("tar -xvf compressed/GTF_compressed_without.tar GTF_compressed2");
+        system("BSC/bsc d GTF_compressed2/gtf_seqname_compressed GTF_parsed2/gtf_seqname.txt");
+        system("BSC/bsc d GTF_compressed2/gtf_source_compressed GTF_parsed2/gtf_source.txt");
+        system("BSC/bsc d GTF_compressed2/gtf_feature_compressed GTF_parsed2/gtf_feature.txt");
+        system("BSC/bsc d GTF_compressed2/gtf_start_compressed GTF_parsed2/gtf_start.txt");   
+        system("BSC/bsc d GTF_compressed2/gtf_delta_compressed GTF_parsed2/gtf_delta.txt");
+        system("BSC/bsc d GTF_compressed2/gtf_score_compressed GTF_parsed2/gtf_score.txt");
+        system("BSC/bsc d GTF_compressed2/gtf_strand_compressed GTF_parsed2/gtf_strand.txt");
+        system("BSC/bsc d GTF_compressed2/gtf_attribute_compressed GTF_parsed2/gtf_attribute.txt"); 
+        system("BSC/bsc d GTF_compressed2/gtf_gtf_frame_cds_compressed GTF_parsed2/gtf_frame_cds.txt");
+        system("BSC/bsc d GTF_compressed2/gtf_frame_start_compressed GTF_parsed2/gtf_frame_start.txt");
+        system("BSC/bsc d GTF_compressed2/gtf_frame_stop_compressed GTF_parsed2/gtf_frame_stop.txt"); 
+        fp2 = fopen("GTF_parsed2/gtf_seqname.txt", "r");
+        //count number of lines in the file
+        chr = getc(fp2);
+        while (chr != EOF)
+        {
+            //Count whenever new line is encountered
+            if (chr == '\n')
+            {
+                count_lines = count_lines + 1;
+            }
+            //take next character from file.
+            chr = getc(fp2);
+        }
+        fclose(fp2);
+
+        fp = fopen("decompressed_gtf", "w+");
+        gtf_decompressor(fp, count_lines);        
+        printf("The compression of GTF file without random access succeeds!\n");
+        printf("The decompressed GTF file is included in the decompressed_gtf.gtf!\n"); 
+        fclose(fp);
+    }
+    else if(strcmp("-q", argv[1]) == 0){
 
         char hash_key[500]; 
         char* hash_val;
@@ -134,12 +199,12 @@ int main(int argc , char **argv){
         fclose(fp_idx);
         // add_database_id("ENSE00003462276.1", "FLYBASW123434343");
     }
-    else if(strcmp("-emc", argv[1]) == 0){
+    else if(strcmp("-e", argv[1]) == 0){
          //file pointer for gtf file
         FILE *fp;
         int count_lines = 0;
         char chr;
-        fp = fopen(argv[3], "r");
+        fp = fopen(argv[2], "r");
         //count number of lines in the file
         chr = getc(fp);
         while (chr != EOF)
@@ -154,71 +219,85 @@ int main(int argc , char **argv){
         }
         fclose(fp);
         count_lines -=1;
-        fp = fopen(argv[3], "r");
+        fp = fopen(argv[2], "r");
         //run the compressor
-        matrix_compressor(fp, count_lines, atoi(argv[4]));      
+        expression_compressor(fp, count_lines, atoi(argv[3]));  
+        system("rm expression_parsed/*");
+        system("tar -cvf compressed/expression_compressed.tar expression_compressed");
+        system("rm expression_compressed/*"); 
+        printf("compression and linking of expression file succeeds!\n");
         fclose(fp);
     }
-    else if(strcmp("-emuc", argv[1]) == 0){
+    else if(strcmp("-qe", argv[1]) == 0){
         char hash_key[500]; 
-        char* hash_tmp;
         char* hash_val;
-        char* s;
         char temp[100];
-     //    int *chr_table= (int*)malloc(sizeof(int)*100);
+        char* retval;
 
-        FILE *fp_hash_key= fopen("index_tables/matrix_key.txt", "r");
-        FILE *fp_hash_val= fopen("index_tables/matrix_value.txt", "r");
-        hash_val= (char*)malloc(sizeof(char)*100);
-        fgets(hash_val, 100, fp_hash_val);
-        free(hash_val);
+        system("BSC/bsc d compressed/data_key_compressed index_tables/data_key.txt");
+        system("BSC/bsc d compressed/data_value_compressed index_tables/data_value.txt");
+        FILE *fp_hash_key= fopen("index_tables/expression_key.txt", "r");
+        FILE *fp_hash_val= fopen("index_tables/expression_value.txt", "r");
         hashtable_t *ht = ht_create(3000000);
-        s= (char*)malloc(sizeof(char)*50);
-        s= strcpy(s,"0");
+
         while(fscanf(fp_hash_key, "%s", hash_key)!=EOF){
-            hash_val= (char*)malloc(sizeof(char)*100);
-            hash_tmp= (char*)malloc(sizeof(char)*200);            
-            fgets(hash_val, 100, fp_hash_val);
-            hash_val[strlen(hash_val) - 1] = ' ';
-            strcpy(hash_tmp, hash_val);
-            strcat(hash_tmp, s);
-            // printf("%s  %s\n", hash_key, hash_tmp);
-            ht_put(ht, hash_key, hash_tmp);
-            s= (char*)malloc(sizeof(char)*50);
-            s= strtok(hash_val, " ");
-            s= strtok(NULL, " ");
+            hash_val= (char*)malloc(sizeof(char)*50);
+            fgets(hash_val, 50, fp_hash_val);
+            hash_val[strlen(hash_val) - 1] = '\0';
+            ht_put(ht, hash_key, hash_val); 
         }
+        //close the files
+        fclose(fp_hash_key);
+        fclose(fp_hash_val);
+        system("tar -xvf compressed/expression_compressed.tar expression_compressed");
         char* hashval;
+        char* s;
+        int block;
+        int block_id;
+        int block_start_id;
+        int block_end_id;
         hashval= (char*)malloc(sizeof(char)*100);
-        hashval= (char*)ht_get(ht, "ENSTR0000623253.3");
-        printf("%s\n", hashval);
-
-    }
-    else if(strcmp("-smc", argv[1]) == 0){
-        //file pointer for gtf file
-        FILE *fp;
-        int count_lines = 0;
-        char chr;
-        fp = fopen(argv[3], "r");
-        //count number of lines in the file
-        chr = getc(fp);
-        while (chr != EOF)
-        {
-            //Count whenever new line is encountered
-            if (chr == '\n')
-            {
-                count_lines = count_lines + 1;
+        hashval= (char*)ht_get(ht, argv[2]);
+        s= (char*)malloc(sizeof(char)*50);
+        s= strtok(hashval, " ");
+        block= atoi(s);
+        s= strtok(NULL, " ");
+        block_start_id= atoi(s);
+        s= strtok(NULL, " ");
+        block_end_id= atoi(s);
+        expressionSearch(block, block_start_id, block_end_id);
+        //check if GTF file contains extra information
+        fp_hash_key= fopen("index_tables/data_key.txt", "r");
+        fp_hash_val= fopen("index_tables/data_value.txt", "r");
+        int exist = 0;
+        while(fscanf(fp_hash_key, "%s", hash_key)!=EOF){
+            fgets(hash_val, 50, fp_hash_val);
+            if(!strcmp(hash_key, argv[2])){
+                exist = 1;
+                break;
             }
-            //take next character from file.
-            chr = getc(fp);
         }
-        fclose(fp);
-        count_lines -=3;
-        fp = fopen(argv[3], "r");
-        //run the compressor
-        sparse_matrix_compressor(fp, count_lines, atoi(argv[4]));       
-        fclose(fp);
-
+        if(exist == 1){
+            system("tar -xvf compressed/GTF_compressed.tar GTF_compressed");
+            s= strtok(hash_val, " ");
+            block= atoi(s);
+            s= strtok(NULL, " ");
+            block_id= atoi(s);
+            retval = item_search(block, block_id);
+            printf("All the information of item with id %s is outputed in expression_search.txt:\n",argv[2]);
+            printf("The item with id %s also exists in GFF file:\n",argv[2]);
+            printf("%s", retval);
+            system("rm GTF_compressed/*");
+            system("rm GTF_parsed/*");
+        }
+        else{
+            printf("All the information of item with id %s is outputed in expression_search.txt:\n",argv[2]);
+            printf("The item with this id does not exist in the compressed GFF file\n");
+        }
+        system("rm expression_compressed/*");
+        system("rm expression_parsed/*");
+        printf("expression search succeeds!\n");
     }
+
     return 0;
 }

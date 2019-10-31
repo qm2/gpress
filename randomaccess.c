@@ -572,3 +572,102 @@ int rangeSearch(int start_pos, int end_pos,int chr, int* chr_table){
     return 0;   
 
 }
+
+int expressionSearch(int block, int start_id, int end_id){
+    FILE* fp = fopen("expression_search.txt", "w+");
+    char cmd[500];
+    char sample[BUFFSIZE];
+    char ets[BUFFSIZE];
+    char tpm[BUFFSIZE];
+    char eff[BUFFSIZE];
+    char len[BUFFSIZE];
+
+    char *sample_name_cpy= "BSC/bsc d expression_compressed/expression_compressed_sample_";
+    char *ets_name_cpy="BSC/bsc d expression_compressed/expression_compressed_ets_counts_";    
+    char *tpm_name_cpy="BSC/bsc d expression_compressed/expression_compressed_tpm_";
+    char *eff_name_cpy="BSC/bsc d expression_compressed/expression_compressed_eff_len_";
+    char *len_name_cpy="BSC/bsc d expression_compressed/expression_compressed_len_";
+
+    char sample_name[100];
+    char ets_name[100]; 
+    char tpm_name[100];
+    char eff_name[100];
+    char len_name[100];
+
+    char block_number[50];
+    char* cmd_prefix= "BSC/bsc d ";
+    char* cmd_suffix_sample= "expression_parsed/decompressed_sample.txt";
+    char* cmd_suffix_ets="expression_parsed/decompressed_ets.txt";    
+    char* cmd_suffix_tpm="expression_parsed/decompressed_tpm.txt";
+    char* cmd_suffix_eff="expression_parsed/decompressed_eff.txt";
+    char* cmd_suffix_len="expression_parsed/decompressed_len.txt";
+  
+
+    FILE *fp_sample, *fp_ets, *fp_tpm, *fp_eff, *fp_len;
+
+
+    sprintf(block_number,"%d", block);
+    strcpy(sample_name, sample_name_cpy);
+    strcat(strcat(sample_name, block_number), " ");
+    strcat(sample_name, cmd_suffix_sample);
+    system(sample_name);
+
+    sprintf(block_number,"%d", block);
+    strcpy(ets_name,ets_name_cpy);
+    strcat(strcat(ets_name, block_number), " ");
+    strcat(ets_name, cmd_suffix_ets);
+    system(ets_name);
+
+    sprintf(block_number,"%d", block);
+    strcpy(tpm_name, tpm_name_cpy);
+    strcat(strcat(tpm_name, block_number), " ");
+    strcat(tpm_name, cmd_suffix_tpm);
+    system(tpm_name);
+    sprintf(block_number,"%d", block);
+    strcpy(eff_name, eff_name_cpy);
+    strcat(strcat(eff_name, block_number), " ");
+    strcat(eff_name, cmd_suffix_eff);
+    system(eff_name);
+
+    sprintf(block_number,"%d", block);
+    strcpy(len_name, len_name_cpy);
+    strcat(strcat(len_name, block_number), " ");
+    strcat(len_name, cmd_suffix_len);
+    system(len_name);
+
+
+
+    //open all the files
+    fp_sample = fopen(cmd_suffix_sample, "r");
+    //open the source file
+    fp_ets = fopen(cmd_suffix_ets, "r");
+    //open the feature file
+    fp_tpm = fopen(cmd_suffix_tpm, "r");
+    //open the start file
+    fp_eff = fopen(cmd_suffix_eff, "r");
+    //open the difference of start and stop file
+    fp_len = fopen(cmd_suffix_len, "r");
+    int i=0;
+    while(fscanf(fp_sample, "%s", sample)!=EOF){
+        //read in all the rest 
+        fscanf(fp_ets, "%s", ets);
+        fscanf(fp_tpm, "%s", tpm);
+        fscanf(fp_eff, "%s", eff);
+        fscanf(fp_len, "%s", len);
+        if(i>= start_id && i<=end_id){
+            //output the seqname
+            fprintf(fp, "%s    ", sample);
+            //output the source
+            fprintf(fp, "%s    ", ets);
+            //output the feature
+            fprintf(fp, "%s    ", tpm);  
+            //output the start
+            fprintf(fp, "%s    ", eff);
+            //recover the end
+            fprintf(fp, "%s\n", len);            
+        }
+        i++;
+    }
+    fclose(fp);
+    return 0;
+}

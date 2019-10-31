@@ -15,6 +15,9 @@ int rangeSearch(int start_pos, int end_pos, int chr, int* chr_table);
 //this function tries to add more indentifiers in other database to a feature
 int add_database_id(char* old_id, char* new_id);
 
+//this function finds the item in expression file
+int expressionSearch(int block, int start_id, int end_id);
+
 
 
 #endif
