@@ -29,10 +29,22 @@ int main(int argc , char **argv){
             chr = getc(fp);
         }
         fclose(fp);
-        count_lines -=5;
         fp = fopen(argv[2], "r");
-        //run the compressor
-        gtf_compressor(fp, count_lines, chr_table, atoi(argv[3]));
+        char *dot = strrchr(argv[2], '.');
+        if(!strcmp(dot+1, "gtf")){
+            count_lines -=5;    
+            gtf_compressor(fp, count_lines, chr_table, atoi(argv[3]));
+        } 
+        else if(!strcmp(dot+1, "gff3")){
+            count_lines -=7;    
+            gff3_compressor(fp, count_lines, chr_table, atoi(argv[3]));
+        }
+        else{
+            printf("The input name is invalid!\n");
+            return 0;
+        }
+        count_lines -=5;
+        //store the index table for chromosome
         fp_chromosome= fopen("index_tables/data_chr.txt", "w+");
         fwrite(chr_table , sizeof(int) , sizeof(chr_table) , fp_chromosome);
         fclose(fp_chromosome);
@@ -44,7 +56,7 @@ int main(int argc , char **argv){
         system("BSC/bsc e index_tables/data_value.txt compressed/data_value_compressed");
         system("BSC/bsc e index_tables/data_chr.txt compressed/data_chr_compressed");             
    
-        printf("The compression of GTF file with random access succeeds!\n");
+        printf("The compression of GFF file with random access succeeds!\n");
         fclose(fp);
     }
     else if (strcmp("-cw", argv[1]) == 0){
@@ -67,10 +79,21 @@ int main(int argc , char **argv){
             chr = getc(fp);
         }
         fclose(fp);
-        count_lines -=5;
         fp = fopen(argv[2], "r");
-        //run the compressor
-        gtf_compressor2(fp, count_lines);
+        char *dot = strrchr(argv[2], '.');
+        if(!strcmp(dot+1, "gtf")){
+            count_lines -=5;
+            gtf_compressor2(fp, count_lines,0);
+        } 
+        else if(!strcmp(dot+1, "gff3")){
+            count_lines -=7;
+            gtf_compressor2(fp, count_lines, 1);
+        }
+        else{
+            printf("The input name is invalid!\n");
+            return 0;
+        }
+
         system("rm GTF_parsed2/*");
         system("rm GTF_compressed2/*");  
         printf("The compression of GTF file without random access succeeds!\n");
@@ -111,12 +134,23 @@ int main(int argc , char **argv){
         }
         fclose(fp2);
 
-        fp = fopen("decompressed_gtf.gtf", "w+");
-        gtf_decompressor(fp, count_lines);        
-        printf("The compression of GTF file without random access succeeds!\n");
-        printf("The decompressed GTF file is included in the decompressed_gtf.gtf!\n"); 
+
+        if(!strcmp(argv[2], "gtf")){
+            fp = fopen("decompressed_gtf.gtf", "w+");
+            gtf_decompressor(fp, count_lines, 0); 
+            printf("The decompressed GTF file is included in the decompressed_gtf.gtf!\n");           
+        }
+        else if(!strcmp(argv[2], "gff3")){
+            fp = fopen("decompressed_gff3.gff3", "w+");
+            gtf_decompressor(fp, count_lines, 1); 
+            printf("The decompressed GFF3 file is included in the decompressed_gff3.gff3!\n");          
+        } 
+        else{
+            printf("The file type is invalid!\n");
+            return 0;
+        }      
         system("rm GTF_parsed2/*");
-        system("rm GTF_compressed2/*");  
+        system("rm GTF_compressed2/*"); 
         fclose(fp);
     }
     else if(strcmp("-q", argv[1]) == 0){
