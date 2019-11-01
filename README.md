@@ -25,7 +25,8 @@ To run the GPress, the general command is:
 ```
 ./gpress (options)  [inputfile]
 ```
-in the root folder
+in the root folder.
+
 #### Operating Mode:
 1. To compress the GTF or GFF3 file without random access, run
 ```
