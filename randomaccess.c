@@ -288,7 +288,7 @@ char* item_search(int block, int block_id){
 }
 
 int rangeSearch(int start_pos, int end_pos,int chr, int* chr_table){
-    FILE* fp = fopen("range.gtf", "w+");
+    FILE* fp = fopen("output/range_search.gtf", "w+");
     char cmd[500];
     char seqname[BUFFSIZE];
     char source[BUFFSIZE];
@@ -574,7 +574,7 @@ int rangeSearch(int start_pos, int end_pos,int chr, int* chr_table){
 }
 
 int expressionSearch(int block, int start_id, int end_id){
-    FILE* fp = fopen("expression_search.txt", "w+");
+    FILE* fp = fopen("output/expression_search.txt", "w+");
     char cmd[500];
     char sample[BUFFSIZE];
     char ets[BUFFSIZE];

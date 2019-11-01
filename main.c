@@ -136,12 +136,12 @@ int main(int argc , char **argv){
 
 
         if(!strcmp(argv[2], "gtf")){
-            fp = fopen("decompressed_gtf.gtf", "w+");
+            fp = fopen("output/decompressed_gtf.gtf", "w+");
             gtf_decompressor(fp, count_lines, 0); 
             printf("The decompressed GTF file is included in the decompressed_gtf.gtf!\n");           
         }
         else if(!strcmp(argv[2], "gff3")){
-            fp = fopen("decompressed_gff3.gff3", "w+");
+            fp = fopen("output/decompressed_gff3.gff3", "w+");
             gtf_decompressor(fp, count_lines, 1); 
             printf("The decompressed GFF3 file is included in the decompressed_gff3.gff3!\n");          
         } 
