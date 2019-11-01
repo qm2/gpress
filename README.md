@@ -1,5 +1,5 @@
 # GPress
-This is GPress, a framework for querying GFF/GTF and expression files in a compressed form.
+This is GPress, a framework for querying GFF3, GTF and expression files in a compressed form.
 
 ## Requirement
 - Linux
