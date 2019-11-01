@@ -18,6 +18,7 @@ int main(int argc , char **argv){
         fp = fopen(argv[2], "r");
         if(fp == NULL){
             printf("the input file is invalid!\n");
+            return 0;
         }
         //count number of lines in the file
         chr = getc(fp);
@@ -71,6 +72,7 @@ int main(int argc , char **argv){
         fp = fopen(argv[2], "r");
         if(fp == NULL){
             printf("the input file is invalid!\n");
+            return 0;
         }
         //count number of lines in the file
         chr = getc(fp);
@@ -128,6 +130,7 @@ int main(int argc , char **argv){
         fp2 = fopen("GTF_parsed2/gtf_seqname.txt", "r");
         if(fp2 == NULL){
             printf("the compressed files are invalid!\n");
+            return 0;
         }
         //count number of lines in the file
         chr = getc(fp2);
@@ -256,6 +259,7 @@ int main(int argc , char **argv){
         fp = fopen(argv[2], "r");
         if(fp == NULL){
             printf("the input file is invalid!\n");
+            return 0;
         }
         //count number of lines in the file
         chr = getc(fp);
