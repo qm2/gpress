@@ -988,7 +988,7 @@ int gtf_compressor2(FILE* fp, int length, int filetype){
 
     //store the first five lines of comments
     int n;
-    if(filetype=0){
+    if(filetype==0){
         n=5;
     }
     else{

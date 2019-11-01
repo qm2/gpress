@@ -16,6 +16,9 @@ int main(int argc , char **argv){
         int count_lines = 0;
         char chr;
         fp = fopen(argv[2], "r");
+        if(fp == NULL){
+            printf("the input file is invalid!\n");
+        }
         //count number of lines in the file
         chr = getc(fp);
         while (chr != EOF)
@@ -66,6 +69,9 @@ int main(int argc , char **argv){
         int count_lines = 0;
         char chr;
         fp = fopen(argv[2], "r");
+        if(fp == NULL){
+            printf("the input file is invalid!\n");
+        }
         //count number of lines in the file
         chr = getc(fp);
         while (chr != EOF)
@@ -120,6 +126,9 @@ int main(int argc , char **argv){
         system("BSC/bsc d GTF_compressed2/gtf_frame_start_compressed GTF_parsed2/gtf_frame_start.txt");
         system("BSC/bsc d GTF_compressed2/gtf_frame_stop_compressed GTF_parsed2/gtf_frame_stop.txt"); 
         fp2 = fopen("GTF_parsed2/gtf_seqname.txt", "r");
+        if(fp2 == NULL){
+            printf("the compressed files are invalid!\n");
+        }
         //count number of lines in the file
         chr = getc(fp2);
         while (chr != EOF)
@@ -138,12 +147,12 @@ int main(int argc , char **argv){
         if(!strcmp(argv[2], "gtf")){
             fp = fopen("output/decompressed_gtf.gtf", "w+");
             gtf_decompressor(fp, count_lines, 0); 
-            printf("The decompressed GTF file is included in the decompressed_gtf.gtf!\n");           
+            printf("The decompressed GTF file is included in the output/decompressed_gtf.gtf!\n");           
         }
         else if(!strcmp(argv[2], "gff3")){
             fp = fopen("output/decompressed_gff3.gff3", "w+");
             gtf_decompressor(fp, count_lines, 1); 
-            printf("The decompressed GFF3 file is included in the decompressed_gff3.gff3!\n");          
+            printf("The decompressed GFF3 file is included in the output/decompressed_gff3.gff3!\n");          
         } 
         else{
             printf("The file type is invalid!\n");
@@ -210,7 +219,7 @@ int main(int argc , char **argv){
         }
         else if(strcmp("-range", argv[2]) == 0){
             rangeSearch(atoi(argv[3]), atoi(argv[4]), atoi(argv[5])-1,  chr_table);
-            printf("All items on chromosome %s from %s to %s are outputed in the range_search.gtf file\n",argv[5], argv[3], argv[4]);
+            printf("All items on chromosome %s from %s to %s are outputed in the output/range_search.gtf file\n",argv[5], argv[3], argv[4]);
             printf("range search succeeds!\n");
             system("rm GTF_compressed/*");
             system("rm GTF_parsed/*");
@@ -245,6 +254,9 @@ int main(int argc , char **argv){
         int count_lines = 0;
         char chr;
         fp = fopen(argv[2], "r");
+        if(fp == NULL){
+            printf("the input file is invalid!\n");
+        }
         //count number of lines in the file
         chr = getc(fp);
         while (chr != EOF)
@@ -328,14 +340,14 @@ int main(int argc , char **argv){
             s= strtok(NULL, " ");
             block_id= atoi(s);
             retval = item_search(block, block_id);
-            printf("All the information of item with id %s is outputed in expression_search.txt:\n",argv[2]);
+            printf("All the information of item with id %s is outputed in output/expression_search.txt:\n",argv[2]);
             printf("The item with id %s also exists in GFF file:\n",argv[2]);
             printf("%s", retval);
             system("rm GTF_compressed/*");
             system("rm GTF_parsed/*");
         }
         else{
-            printf("All the information of item with id %s is outputed in expression_search.txt:\n",argv[2]);
+            printf("All the information of item with id %s is outputed in output/expression_search.txt:\n",argv[2]);
             printf("The item with this id does not exist in the compressed GFF file\n");
         }
         system("rm expression_compressed/*");
