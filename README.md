@@ -27,22 +27,23 @@ To run the GPress, the general command is:
 ```
 in the root folder
 #### Operating Mode:
-1. To compress the GTF file without random access, run
+1. To compress the GTF or GFF3 file without random access, run
 ```
 ./gpress -cw [inputfile]
 ```
 
-2. To decompress the GTF without random access, run 
+2. To decompress the GTF or GFF3 file without random access, run 
 ```
-./gpress -dc 
+./gpress -dc [filetype]
 ```
+filetype should be either "gtf" or "gff3".
 
-3. To compress the GTF with random access, run 
+3. To compress the GTF or GFF3 with random access, run 
 ```
 ./gpress -c [inputfile] <block_size> 
 ```
 
-4. To do queries on compressed GTF file, 
+4. To do queries on compressed GTF or GFF3 file, 
 
 id search:
 ```
@@ -65,10 +66,10 @@ range search:
 
 ## Input
 
-Here, we provide a small GTF file (test_gtf.gtf) and a small expression file (test_expression.tsv)in the folder **data**. More sample files can be download from the GENCODE database or other sources.
+Here, we provide a small GTF file (**test_gtf.gtf**), a small GFF3 file (**test_gff3.gff3**) and a small expression file (**test_expression.tsv**)in the folder **data**. More sample files can be download from the GENCODE database or other databases.
 
 ## Example
-Here, we will use the test files to provide an example of how to use GPress.
+Here, we will use the test files to provide an example of how to use GPress. We will use GTF file for illustration since the GFF3 file is nearly the same except slight format variations.
 1. To compress the GTF file without random access, run
 ```
 ./gpress -cw data/test_gtf.gtf
@@ -77,9 +78,9 @@ The compressed file is stored named **GTF_compressed_without.tar** in folder **c
 
 2. To decompress the GTF without random access, run 
 ```
-./gpress -dc 
+./gpress -dc gtf
 ```
-The decompressed GTF is stored named **decompressed_gtf.gtf** in the root folder.
+The decompressed GTF is stored named **decompressed_gtf.gtf** in folder **output**.
 
 3. To compress the GTF with random access (500 genes per block), run 
 ```
@@ -100,7 +101,7 @@ range search on chromosome 1 with range from 10000 to 100000:
 ```
 ./gpress -q -range 10000 100000 1
 ```
-The retrieved information is stored named **range.gtf** in root folder.
+The retrieved information is stored named **range_search.gtf** in folder **output**.
 
 5. To compress and link the expression file, 
 ```
@@ -112,7 +113,7 @@ The compressed file is stored named **expression_compressed.tar** in folder **co
 ```
 ./gpress -qe ENST00000009530.11
 ```
-The retrieved information is stored named **expression_search.txt** in root folder.
+The retrieved information is stored named **expression_search.txt** in folder **output**.
 
 GPress will also print the extra information in command window if it exists in GFF file. For example, 
 ```
