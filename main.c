@@ -192,6 +192,10 @@ int main(int argc , char **argv){
                int block_id;
                hashval= (char*)malloc(sizeof(char)*100);
                hashval= (char*)ht_get(ht, argv[3]);
+               if(hashval == NULL){
+                   printf("This ID is not valid!\n");
+                   return 0;
+               }
                s= (char*)malloc(sizeof(char)*50);
                s= strtok(hashval, " ");
                block= atoi(s);
@@ -206,7 +210,7 @@ int main(int argc , char **argv){
         }
         else if(strcmp("-range", argv[2]) == 0){
             rangeSearch(atoi(argv[3]), atoi(argv[4]), atoi(argv[5])-1,  chr_table);
-            printf("All items on chromosome %s from %s to %s are outputed in the range.gtf file\n",argv[5], argv[3], argv[4]);
+            printf("All items on chromosome %s from %s to %s are outputed in the range_search.gtf file\n",argv[5], argv[3], argv[4]);
             printf("range search succeeds!\n");
             system("rm GTF_compressed/*");
             system("rm GTF_parsed/*");
@@ -294,6 +298,10 @@ int main(int argc , char **argv){
         int block_end_id;
         hashval= (char*)malloc(sizeof(char)*100);
         hashval= (char*)ht_get(ht, argv[2]);
+        if(hashval == NULL){
+            printf("This ID is not valid!\n");
+            return 0;
+        }
         s= (char*)malloc(sizeof(char)*50);
         s= strtok(hashval, " ");
         block= atoi(s);
