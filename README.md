@@ -9,7 +9,7 @@ This is GPress, a framework for querying GTF, GFF3 and expression files in a com
 ## How to Use the Software:
 
 ### Install
-This program is used from the command line. After download GPress from https://github.com/qm2/gtf_compressor, you can compile GPress with
+This program is used from the command line. After download GPress from https://github.com/qm2/gpress, you can compile GPress with
 ```
 make
 ```
