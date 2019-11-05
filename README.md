@@ -57,7 +57,7 @@ range search:
 
 5. To compress and link the expression file, 
 ```
-./gpress -e [inutfile] <block_size>
+./gpress -e [inputfile] <block_size>
 ```
 
 6. To do queries on compressed expression file,
