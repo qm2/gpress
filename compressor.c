@@ -1118,8 +1118,7 @@ int gtf_compressor2(FILE* fp, int length, int filetype){
     system("BSC/bsc e GTF_parsed2/gtf_attribute.txt GTF_compressed2/gtf_attribute_compressed"); 
     system("BSC/bsc e GTF_parsed2/gtf_frame_cds.txt GTF_compressed2/gtf_gtf_frame_cds_compressed");
     system("BSC/bsc e GTF_parsed2/gtf_frame_start.txt GTF_compressed2/gtf_frame_start_compressed");
-    system("BSC/bsc e GTF_parsed2/gtf_frame_stop.txt GTF_compressed2/gtf_frame_stop_compressed"); 
-    system("tar -cvf compressed/GTF_compressed_without.tar GTF_compressed2");   
+    system("BSC/bsc e GTF_parsed2/gtf_frame_stop.txt GTF_compressed2/gtf_frame_stop_compressed");  
 
     return 0;
 }

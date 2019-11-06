@@ -6,6 +6,9 @@
 #include "hash.h"
 #include "randomaccess.h"
 #include <time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 int main(int argc , char **argv){
     int *chr_table= (int*)malloc(sizeof(int)*100);
@@ -35,13 +38,20 @@ int main(int argc , char **argv){
         fclose(fp);
         fp = fopen(argv[2], "r");
         char *dot = strrchr(argv[2], '.');
+        int block;
+        if(argc == 4){
+        	block = 2000;
+        }
+        else{
+        	block = atoi(argv[3]);
+        }
         if(!strcmp(dot+1, "gtf")){
             count_lines -=5;    
-            gtf_compressor(fp, count_lines, chr_table, atoi(argv[3]));
+            gtf_compressor(fp, count_lines, chr_table, block);
         } 
         else if(!strcmp(dot+1, "gff3")){
             count_lines -=7;    
-            gff3_compressor(fp, count_lines, chr_table, atoi(argv[3]));
+            gff3_compressor(fp, count_lines, chr_table, block);
         }
         else{
             printf("The input name is invalid!\n");
@@ -52,15 +62,29 @@ int main(int argc , char **argv){
         fp_chromosome= fopen("index_tables/data_chr.txt", "w+");
         fwrite(chr_table , sizeof(int) , sizeof(chr_table) , fp_chromosome);
         fclose(fp_chromosome);
-
+        //create the folder specified by the user
+        char command5[200];
+        snprintf(command5, sizeof(command5), "mkdir %s", argv[argc-1]);
+        struct stat st = {0};
+        if (stat(argv[argc-1], &st) == -1) {
+            system(command5);           
+        }
+        char command1[200];
+        char command2[200];
+        char command3[200];
+        char command4[200];
         system("rm GTF_parsed/*");
-        system("tar -cvf compressed/GTF_compressed.tar GTF_compressed");
+        snprintf(command1, sizeof(command1), "tar -cvf %s/GTF_compressed.tar GTF_compressed", argv[argc-1]);
+        system(command1);
         system("rm GTF_compressed/*"); 
-        system("BSC/bsc e index_tables/data_key.txt compressed/data_key_compressed");
-        system("BSC/bsc e index_tables/data_value.txt compressed/data_value_compressed");
-        system("BSC/bsc e index_tables/data_chr.txt compressed/data_chr_compressed");             
-   
-        printf("The compression of GFF file with random access succeeds!\n");
+        snprintf(command2, sizeof(command2), "BSC/bsc e index_tables/data_key.txt %s/data_key_compressed", argv[argc-1]);
+        system(command2);
+        snprintf(command3, sizeof(command3), "BSC/bsc e index_tables/data_value.txt %s/data_value_compressed", argv[argc-1]);
+        system(command3);       
+        snprintf(command4, sizeof(command4), "BSC/bsc e index_tables/data_chr.txt %s/data_chr_compressed", argv[argc-1]);
+        system(command4);    
+        system("rm index_tables/*");                           
+        printf("The compression of GFF file with random access succeeds! The compressed files are in folder %s\n", argv[argc-1]);
         fclose(fp);
     }
     else if (strcmp("-cw", argv[1]) == 0){
@@ -101,7 +125,16 @@ int main(int argc , char **argv){
             printf("The input name is invalid!\n");
             return 0;
         }
-
+        //create the folder specified by the user
+        char command2[200];
+        snprintf(command2, sizeof(command2), "mkdir %s", argv[argc-1]);
+        struct stat st = {0};
+        if (stat(argv[argc-1], &st) == -1) {
+            system(command2);           
+        }
+        char command1[200];
+        snprintf(command1, sizeof(command1), "tar -cvf %s/GTF_compressed_without.tar GTF_compressed2", argv[argc-1]);
+        system(command1); 
         system("rm GTF_parsed2/*");
         system("rm GTF_compressed2/*");  
         printf("The compression of GTF file without random access succeeds!\n");
@@ -115,7 +148,9 @@ int main(int argc , char **argv){
         FILE *fp, *fp2;
 
         //run the decompressor
-        system("tar -xvf compressed/GTF_compressed_without.tar GTF_compressed2");
+        char command1[200];
+        snprintf(command1, sizeof(command1), "tar -xvf %s/GTF_compressed_without.tar GTF_compressed2", argv[argc-1]);
+        system(command1); 
         system("BSC/bsc d GTF_compressed2/gtf_seqname_compressed GTF_parsed2/gtf_seqname.txt");
         system("BSC/bsc d GTF_compressed2/gtf_source_compressed GTF_parsed2/gtf_source.txt");
         system("BSC/bsc d GTF_compressed2/gtf_feature_compressed GTF_parsed2/gtf_feature.txt");
@@ -172,9 +207,22 @@ int main(int argc , char **argv){
         char temp[100];
 
         //recover all the data structures 
-        system("BSC/bsc d compressed/data_key_compressed index_tables/data_key.txt");
-        system("BSC/bsc d compressed/data_value_compressed index_tables/data_value.txt");
-        system("BSC/bsc d compressed/data_chr_compressed index_tables/data_chr.txt");  
+        int idx;
+        if(strcmp("-id", argv[2]) == 0){
+            idx = 4;
+        }
+        else{
+            idx = 6;
+        }
+        char command1[200];
+        char command2[200];
+        char command3[200];
+        snprintf(command1, sizeof(command1), "BSC/bsc d %s/data_key_compressed index_tables/data_key.txt", argv[idx]);
+        system(command1);
+        snprintf(command2, sizeof(command2), "BSC/bsc d %s/data_value_compressed index_tables/data_value.txt", argv[idx]);
+        system(command2);
+        snprintf(command3, sizeof(command3), "BSC/bsc d %s/data_chr_compressed index_tables/data_chr.txt", argv[idx]);
+        system(command3);
         FILE *fp_hash_key= fopen("index_tables/data_key.txt", "r");
         FILE *fp_hash_val= fopen("index_tables/data_value.txt", "r");
         hashtable_t *ht = ht_create(3000000);
@@ -194,7 +242,9 @@ int main(int argc , char **argv){
         fclose(fp_hash_key);
         fclose(fp_hash_val);
         fclose(fp_chromosome);
-        system("tar -xvf compressed/GTF_compressed.tar GTF_compressed");
+        char command4[200];
+        snprintf(command4, sizeof(command4), "tar -xvf %s/GTF_compressed.tar GTF_compressed", argv[idx]);
+        system(command4);
 
         if(strcmp("-id", argv[2]) == 0){
                char* retval;
@@ -277,9 +327,25 @@ int main(int argc , char **argv){
         count_lines -=1;
         fp = fopen(argv[2], "r");
         //run the compressor
-        expression_compressor(fp, count_lines, atoi(argv[3]));  
+        int block;
+        if(argc == 4){
+        	block = 2000;
+        }
+        else{
+        	block = atoi(argv[3]);
+        }
+        expression_compressor(fp, count_lines, block);  
         system("rm expression_parsed/*");
-        system("tar -cvf compressed/expression_compressed.tar expression_compressed");
+       //create the folder specified by the user
+        char command2[200];
+        snprintf(command2, sizeof(command2), "mkdir %s", argv[argc-1]);
+        struct stat st = {0};
+        if (stat(argv[argc-1], &st) == -1) {
+            system(command2);           
+        }
+        char command1[200];
+        snprintf(command1, sizeof(command1), "tar -cvf %s/expression_compressed.tar expression_compressed", argv[argc-1]);
+        system(command1);
         system("rm expression_compressed/*"); 
         printf("compression and linking of expression file succeeds!\n");
         fclose(fp);
@@ -289,9 +355,13 @@ int main(int argc , char **argv){
         char* hash_val;
         char temp[100];
         char* retval;
+        char command1[200];
+        snprintf(command1, sizeof(command1), "BSC/bsc d %s/data_key_compressed index_tables/data_key.txt", argv[argc-1]);
+        system(command1);
+        char command2[200];
+        snprintf(command2, sizeof(command2), "BSC/bsc d %s/data_value_compressed index_tables/data_value.txt", argv[argc-1]);
+        system(command2);
 
-        system("BSC/bsc d compressed/data_key_compressed index_tables/data_key.txt");
-        system("BSC/bsc d compressed/data_value_compressed index_tables/data_value.txt");
         FILE *fp_hash_key= fopen("index_tables/expression_key.txt", "r");
         FILE *fp_hash_val= fopen("index_tables/expression_value.txt", "r");
         hashtable_t *ht = ht_create(3000000);
@@ -305,7 +375,9 @@ int main(int argc , char **argv){
         //close the files
         fclose(fp_hash_key);
         fclose(fp_hash_val);
-        system("tar -xvf compressed/expression_compressed.tar expression_compressed");
+        char command3[200];
+        snprintf(command3, sizeof(command3), "tar -xvf %s/expression_compressed.tar expression_compressed", argv[argc-1]);
+        system(command3);
         char* hashval;
         char* s;
         int block;
@@ -338,7 +410,9 @@ int main(int argc , char **argv){
             }
         }
         if(exist == 1){
-            system("tar -xvf compressed/GTF_compressed.tar GTF_compressed");
+            char command4[200];
+            snprintf(command4, sizeof(command4), "tar -xvf %s/GTF_compressed.tar GTF_compressed", argv[argc-1]);
+            system(command4);
             s= strtok(hash_val, " ");
             block= atoi(s);
             s= strtok(NULL, " ");
