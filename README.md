@@ -23,7 +23,7 @@ in the **BSC** folder.
 ### Run
 To run the GPress, the general command is:
 ```
-./gpress (options)  [inputfile] [parameters] [compressed file folder]
+./gpress (options)  [inputfile] [parameters] [folder]
 ```
 in the root folder.
 
