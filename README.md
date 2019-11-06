@@ -33,6 +33,7 @@ in the root folder.
 ./gpress -cw [inputfile] [folder]
 ```
 The compressed files are stored in the new specified folder
+
 2. To decompress the GTF or GFF3 file from the specified folder without random access, run 
 ```
 ./gpress -dc [filetype] [folder]
