@@ -109,7 +109,7 @@ range search on chromosome 1 with range from 10000 to 100000:
 ```
 The retrieved information is stored named **range_search.gtf** in folder **output**.
 
-5. To compress and link the expression file with GFF files in folder **gtf1**, 
+5. To compress and link the expression file with GFF files in folder **gtf1** (500 genes per block), 
 ```
 ./gpress -e data/test_expression.tsv 500 gtf1
 ```
@@ -125,7 +125,7 @@ GPress will also print the extra information in command window if it exists in G
 ```
 ./gpress -qe ENST00000531822.1 gtf1
 ```
-will give information from both GTF and expression files in folder **gtf1**
+will give information from both GTF and expression files
 
 
 
