@@ -23,46 +23,47 @@ in the **BSC** folder.
 ### Run
 To run the GPress, the general command is:
 ```
-./gpress (options)  [inputfile]
+./gpress (options)  [inputfile] [parameters] [compressed file folder]
 ```
 in the root folder.
 
 #### Operating Mode:
 1. To compress the GTF or GFF3 file without random access, run
 ```
-./gpress -cw [inputfile]
+./gpress -cw [inputfile] [folder]
 ```
-
-2. To decompress the GTF or GFF3 file without random access, run 
+The compressed files are stored in the new specified folder
+2. To decompress the GTF or GFF3 file from the specified folder without random access, run 
 ```
-./gpress -dc [filetype]
+./gpress -dc [filetype] [folder]
 ```
 filetype should be either "gtf" or "gff3".
 
 3. To compress the GTF or GFF3 with random access, run 
 ```
-./gpress -c [inputfile] <block_size> 
+./gpress -c [inputfile] <block_size> [folder]
 ```
-
-4. To do queries on compressed GTF or GFF3 file, 
+The compressed files are stored in the new specified folder
+block size is 2000 by default
+4. To do queries on compressed GTF or GFF3 file from the specified folder, 
 
 id search:
 ```
-./gpress -q -id <id>
+./gpress -q -id [id] [folder]
 ```
 range search:
 ```
-./gpress -q -range <start> <end> <chromosome>
+./gpress -q -range [start] [end] [chromosome] [folder]
 ```
 
 5. To compress and link the expression file, 
 ```
-./gpress -e [inputfile] <block_size>
+./gpress -e [inputfile] <block_size> [folder]
 ```
-
-6. To do queries on compressed expression file,
+The compressed expression files are linked to the GFF files in specified folder and are also store in that folder
+6. To do queries on compressed expression file from a specified folder,
 ```
-./gpress -qe <id>
+./gpress -qe [id] [folder]
 ```
 
 ## Input
@@ -70,57 +71,57 @@ range search:
 Here, we provide a small GTF file (**test_gtf.gtf**), a small GFF3 file (**test_gff3.gff3**) and a small expression file (**test_expression.tsv**)in the folder **data**. More sample files can be download from the GENCODE database or other databases.
 
 ## Example
-Here, we will use the test files to provide an example of how to use GPress. We will use GTF file for illustration since the GFF3 file is nearly the same except slight format variations.
+Here, we will use the test files to provide an example of how to use GPress. We will use GTF file for illustration since the GFF3 file is nearly the same except slight format variations. We will store the compressed GTF file and compressed expression file in a new folder **gtf1**
 1. To compress the GTF file without random access, run
 ```
-./gpress -cw data/test_gtf.gtf
+./gpress -cw data/test_gtf.gtf gtf1
 ```
-The compressed file is stored named **GTF_compressed_without.tar** in folder **compressed**.
+The compressed file is stored named **GTF_compressed_without.tar** in folder **gtf1**.
 
-2. To decompress the GTF without random access, run 
+2. To decompress the GTF file from folder **gtf1** without random access, run 
 ```
-./gpress -dc gtf
+./gpress -dc gtf gtf1
 ```
 The decompressed GTF is stored named **decompressed_gtf.gtf** in folder **output**.
 
 3. To compress the GTF with random access (500 genes per block), run 
 ```
-./gpress -c data/test_gtf.gtf 500
+./gpress -c data/test_gtf.gtf 500 gtf1
 ```
-The compressed GTF file is stored named **GTF_compressed.tar** in folder **compressed**.
-The associated index tables are also stored in folder **compressed**.
+The compressed GTF file is stored named **GTF_compressed.tar** in folder **gtf1**.
+The associated index tables are also stored in folder **gtf1**.
 
-4. To do queries on compressed GTF file, 
+4. To do queries on compressed GTF file from folder **gtf1**, 
 
 id search for exon id "ENSE00003486434.1":
 ```
-./gpress -q -id ENSE00003486434.1
+./gpress -q -id ENSE00003486434.1 gtf1
 ```
 The retrieved information is printed in command window.
 
 range search on chromosome 1 with range from 10000 to 100000:
 ```
-./gpress -q -range 10000 100000 1
+./gpress -q -range 10000 100000 1 gtf1
 ```
 The retrieved information is stored named **range_search.gtf** in folder **output**.
 
-5. To compress and link the expression file, 
+5. To compress and link the expression file with GFF files in folder **gtf1**, 
 ```
-./gpress -e data/test_expression.tsv 500
+./gpress -e data/test_expression.tsv 500 gtf1
 ```
-The compressed file is stored named **expression_compressed.tar** in folder **compressed**.
+The compressed file is stored named **expression_compressed.tar** in folder **gtf1**.
 
-6. To do queries on compressed expression file,
+6. To do queries on compressed expression file from folder **gtf1**,
 ```
-./gpress -qe ENST00000009530.11
+./gpress -qe ENST00000009530.11 gtf1
 ```
 The retrieved information is stored named **expression_search.txt** in folder **output**.
 
 GPress will also print the extra information in command window if it exists in GFF file. For example, 
 ```
-./gpress -qe ENST00000531822.1
+./gpress -qe ENST00000531822.1 gtf1
 ```
-will give information from both GTF and expression files.
+will give information from both GTF and expression files in folder **gtf1**
 
 
 
