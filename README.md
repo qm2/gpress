@@ -65,6 +65,8 @@ range search:
 ```
 The compressed expression files are linked to the GFF files in specified folder and are also store in that folder
 
+block size is 2000 by default
+
 6. To do queries on compressed expression file from a specified folder,
 ```
 ./gpress -qe [id] [folder]
