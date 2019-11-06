@@ -45,7 +45,9 @@ filetype should be either "gtf" or "gff3".
 ./gpress -c [inputfile] <block_size> [folder]
 ```
 The compressed files are stored in the new specified folder
+
 block size is 2000 by default
+
 4. To do queries on compressed GTF or GFF3 file from the specified folder, 
 
 id search:
@@ -62,6 +64,7 @@ range search:
 ./gpress -e [inputfile] <block_size> [folder]
 ```
 The compressed expression files are linked to the GFF files in specified folder and are also store in that folder
+
 6. To do queries on compressed expression file from a specified folder,
 ```
 ./gpress -qe [id] [folder]
