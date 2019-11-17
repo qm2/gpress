@@ -59,6 +59,19 @@ range search:
 ./gpress -q -range [start] [end] [chromosome] [folder]
 ```
 
+By default, the outputs are printed on the command window. 
+
+In order to write the output to a file, 
+
+id search:
+```
+./gpress -q -id [id] [folder] > [outputfile]
+```
+range search:
+```
+./gpress -q -range [start] [end] [chromosome] [folder] > [outputfile]
+```
+
 5. To compress and link the expression file, 
 ```
 ./gpress -e [inputfile] <block_size> [folder]
@@ -70,6 +83,13 @@ block size is 2000 by default
 6. To do queries on compressed expression file from a specified folder,
 ```
 ./gpress -qe [id] [folder]
+```
+By default, the outputs are printed on the command window. 
+
+In order to write the output to a file, 
+
+```
+./gpress -qe [id] [folder] > [outputfile]
 ```
 
 ## Input
@@ -107,7 +127,7 @@ The retrieved information is printed in command window.
 
 range search on chromosome 1 with range from 10000 to 100000:
 ```
-./gpress -q -range 10000 100000 1 gtf1
+./gpress -q -range 10000 100000 1 gtf1 > output/range_search.gtf
 ```
 The retrieved information is stored named **range_search.gtf** in folder **output**.
 
@@ -119,15 +139,15 @@ The compressed file is stored named **expression_compressed.tar** in folder **gt
 
 6. To do queries on compressed expression file from folder **gtf1**,
 ```
-./gpress -qe ENST00000009530.11 gtf1
+./gpress -qe ENST00000009530.11 gtf1 > output/expression_search.txt
 ```
 The retrieved information is stored named **expression_search.txt** in folder **output**.
 
-GPress will also print the extra information in command window if it exists in GFF file. For example, 
+GPress will also print the extra information if it exists in GFF file. For example, 
 ```
-./gpress -qe ENST00000531822.1 gtf1
+./gpress -qe ENST00000531822.1 gtf1 > output/expression_search2.txt
 ```
-will give information from both GTF and expression files
+will give information from both GTF and expression files stored as **expression_search2.txt** in folder **output**.
 
 
 
