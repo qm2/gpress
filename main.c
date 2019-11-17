@@ -12,6 +12,12 @@
 
 int main(int argc , char **argv){
     int *chr_table= (int*)malloc(sizeof(int)*100);
+    if ( (argc <= 1 ) || (strcmp("-h", argv[1])==0)){
+    	printf("Welcome to GPress: a framework for querying GTF, GFF3 and expression files in a compressed form.\n");
+    	printf("To run the GPress, the general command is:\n");
+        printf("./gpress (options)  [inputfile] [parameters] [folder] in the root folder.\n");
+        return 0;
+    }
     if (strcmp("-c", argv[1]) == 0){
 
         //file pointer for gtf file
