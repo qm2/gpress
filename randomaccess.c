@@ -288,7 +288,6 @@ char* item_search(int block, int block_id){
 }
 
 int rangeSearch(int start_pos, int end_pos,int chr, int* chr_table){
-    FILE* fp = fopen("output/range_search.gtf", "w+");
     char cmd[500];
     char seqname[BUFFSIZE];
     char source[BUFFSIZE];
@@ -534,23 +533,25 @@ int rangeSearch(int start_pos, int end_pos,int chr, int* chr_table){
                     continue;
                 }
                 //output the seqname
-                fprintf(fp, "%s    ", seqname);
+                printf("%s    ", seqname);
                 //output the source
-                fprintf(fp, "%s    ", source);
+                printf("%s    ", source);
                 //output the feature
-                fprintf(fp, "%s    ", feature);
+                printf("%s    ", feature);
                 //output the start
-                fprintf(fp, "%s    ", new_start);
+                printf("%s    ", new_start);
                 //output the end
-                fprintf(fp, "%s    ", end);
+                printf("%s    ", end);
                 //output the score
-                fprintf(fp, "%s    ", score);       
+                printf("%s    ", score);       
                 //output the strand
-                fprintf(fp, "%s    ", strand);
+                printf("%s    ", strand);
                 //output the frame
-                fprintf(fp, "%s    ", frame);
+                printf("%s    ", frame);
                 //output the attribute
-                fprintf(fp, "%s", attribute);  
+                printf("%s", attribute);                 
+
+
             }
 
       
@@ -568,13 +569,11 @@ int rangeSearch(int start_pos, int end_pos,int chr, int* chr_table){
         fclose(fp_frame_start);
         fclose(fp_frame_stop);
     }
-    fclose(fp);
     return 0;   
 
 }
 
 int expressionSearch(int block, int start_id, int end_id){
-    FILE* fp = fopen("output/expression_search.txt", "w+");
     char cmd[500];
     char sample[BUFFSIZE];
     char ets[BUFFSIZE];
@@ -656,18 +655,17 @@ int expressionSearch(int block, int start_id, int end_id){
         fscanf(fp_len, "%s", len);
         if(i>= start_id && i<=end_id){
             //output the seqname
-            fprintf(fp, "%s    ", sample);
+            printf("%s    ", sample);
             //output the source
-            fprintf(fp, "%s    ", ets);
+            printf("%s    ", ets);
             //output the feature
-            fprintf(fp, "%s    ", tpm);  
+            printf("%s    ", tpm);  
             //output the start
-            fprintf(fp, "%s    ", eff);
+            printf("%s    ", eff);
             //recover the end
-            fprintf(fp, "%s\n", len);            
+            printf("%s\n", len);            
         }
         i++;
     }
-    fclose(fp);
     return 0;
 }

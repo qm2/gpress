@@ -80,7 +80,7 @@ int main(int argc , char **argv){
         char command3[200];
         char command4[200];
         system("rm GTF_parsed/*");
-        snprintf(command1, sizeof(command1), "tar -cvf %s/GTF_compressed.tar GTF_compressed", argv[argc-1]);
+        snprintf(command1, sizeof(command1), "tar -cf %s/GTF_compressed.tar GTF_compressed", argv[argc-1]);
         system(command1);
         system("rm GTF_compressed/*"); 
         snprintf(command2, sizeof(command2), "BSC/bsc e index_tables/data_key.txt %s/data_key_compressed", argv[argc-1]);
@@ -139,7 +139,7 @@ int main(int argc , char **argv){
             system(command2);           
         }
         char command1[200];
-        snprintf(command1, sizeof(command1), "tar -cvf %s/GTF_compressed_without.tar GTF_compressed2", argv[argc-1]);
+        snprintf(command1, sizeof(command1), "tar -cf %s/GTF_compressed_without.tar GTF_compressed2", argv[argc-1]);
         system(command1); 
         system("rm GTF_parsed2/*");
         system("rm GTF_compressed2/*");  
@@ -155,7 +155,7 @@ int main(int argc , char **argv){
 
         //run the decompressor
         char command1[200];
-        snprintf(command1, sizeof(command1), "tar -xvf %s/GTF_compressed_without.tar GTF_compressed2", argv[argc-1]);
+        snprintf(command1, sizeof(command1), "tar -xf %s/GTF_compressed_without.tar GTF_compressed2", argv[argc-1]);
         system(command1); 
         system("BSC/bsc d GTF_compressed2/gtf_seqname_compressed GTF_parsed2/gtf_seqname.txt");
         system("BSC/bsc d GTF_compressed2/gtf_source_compressed GTF_parsed2/gtf_source.txt");
@@ -249,7 +249,7 @@ int main(int argc , char **argv){
         fclose(fp_hash_val);
         fclose(fp_chromosome);
         char command4[200];
-        snprintf(command4, sizeof(command4), "tar -xvf %s/GTF_compressed.tar GTF_compressed", argv[idx]);
+        snprintf(command4, sizeof(command4), "tar -xf %s/GTF_compressed.tar GTF_compressed", argv[idx]);
         system(command4);
 
         if(strcmp("-id", argv[2]) == 0){
@@ -271,14 +271,14 @@ int main(int argc , char **argv){
                block_id= atoi(s);
                retval = item_search(block, block_id);
                printf("The item with id %s is:\n",argv[3]);
-               printf("%s", retval);
+               printf("%s", retval);               	
                printf("id search succeeds!\n");
                system("rm GTF_compressed/*");
                system("rm GTF_parsed/*");
         }
         else if(strcmp("-range", argv[2]) == 0){
-            rangeSearch(atoi(argv[3]), atoi(argv[4]), atoi(argv[5])-1,  chr_table);
-            printf("All items on chromosome %s from %s to %s are outputed in the output/range_search.gtf file\n",argv[5], argv[3], argv[4]);
+        	printf("All items on chromosome %s from %s to %s are:\n",argv[5], argv[3], argv[4]);
+            rangeSearch(atoi(argv[3]), atoi(argv[4]), atoi(argv[5])-1,  chr_table);              	    	
             printf("range search succeeds!\n");
             system("rm GTF_compressed/*");
             system("rm GTF_parsed/*");
@@ -350,7 +350,7 @@ int main(int argc , char **argv){
             system(command2);           
         }
         char command1[200];
-        snprintf(command1, sizeof(command1), "tar -cvf %s/expression_compressed.tar expression_compressed", argv[argc-1]);
+        snprintf(command1, sizeof(command1), "tar -cf %s/expression_compressed.tar expression_compressed", argv[argc-1]);
         system(command1);
         system("rm expression_compressed/*"); 
         printf("compression and linking of expression file succeeds!\n");
@@ -382,7 +382,7 @@ int main(int argc , char **argv){
         fclose(fp_hash_key);
         fclose(fp_hash_val);
         char command3[200];
-        snprintf(command3, sizeof(command3), "tar -xvf %s/expression_compressed.tar expression_compressed", argv[argc-1]);
+        snprintf(command3, sizeof(command3), "tar -xf %s/expression_compressed.tar expression_compressed", argv[argc-1]);
         system(command3);
         char* hashval;
         char* s;
@@ -417,21 +417,21 @@ int main(int argc , char **argv){
         }
         if(exist == 1){
             char command4[200];
-            snprintf(command4, sizeof(command4), "tar -xvf %s/GTF_compressed.tar GTF_compressed", argv[argc-1]);
+            snprintf(command4, sizeof(command4), "tar -xf %s/GTF_compressed.tar GTF_compressed", argv[argc-1]);
             system(command4);
             s= strtok(hash_val, " ");
             block= atoi(s);
             s= strtok(NULL, " ");
             block_id= atoi(s);
             retval = item_search(block, block_id);
-            printf("All the information of item with id %s is outputed in output/expression_search.txt:\n",argv[2]);
+            printf("All the information of item with id %s is outputed:\n",argv[2]);
             printf("The item with id %s also exists in GFF file:\n",argv[2]);
             printf("%s", retval);
             system("rm GTF_compressed/*");
             system("rm GTF_parsed/*");
         }
         else{
-            printf("All the information of item with id %s is outputed in output/expression_search.txt:\n",argv[2]);
+            printf("All the information of item with id %s is outputed:\n",argv[2]);
             printf("The item with this id does not exist in the compressed GFF file\n");
         }
         system("rm expression_compressed/*");
