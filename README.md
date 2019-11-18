@@ -9,17 +9,37 @@ This is GPress, a framework for querying GTF, GFF3 and expression files in a com
 ## How to Use the Software:
 
 ### Install
-This program is used from the command line. After download GPress from https://github.com/qm2/gpress, you can compile GPress with
+This program is used from the command line. First, download GPress using git command:
+```
+git clone https://github.com/qm2/gpress gpress
+```
+Then, enter into the root folder:
+```
+cd gpress
+```
+you can then compile GPress with:
 ```
 make
 ```
 in the root folder.
 
-You also need to compile the BSC compressor by runing 
+You also need to compile the BSC compressor
+
+First, enter into the BSC folder:
+```
+cd BSC
+```
+Then, compile the BSC compressor:
 ```
 make
 ```
 in the **BSC** folder.
+
+Finally, go back to the root folder
+```
+cd ..
+```
+
 ### Run
 To run the GPress, the general command is:
 ```
@@ -48,31 +68,25 @@ The compressed files are stored in the new specified folder
 
 block size is 2000 by default
 
-4. To do queries on compressed GTF or GFF3 file from the specified folder, 
-
-id search:
+4. To do id search on compressed GTF or GFF3 file from the specified folder, run 
 ```
 ./gpress -q -id [id] [folder]
 ```
-range search:
+Then, the user can enter the ID to search the item and its related parents and children.
+
+5. To do range search on compressed GTF or GFF3 file from the specified folder, run 
 ```
 ./gpress -q -range [start] [end] [chromosome] [folder]
 ```
 
 By default, the outputs are printed on the command window. 
 
-In order to write the output to a file, 
-
-id search:
-```
-./gpress -q -id [id] [folder] > [outputfile]
-```
-range search:
+In order to write the output to a file, run
 ```
 ./gpress -q -range [start] [end] [chromosome] [folder] > [outputfile]
 ```
 
-5. To compress and link the expression file, 
+6. To compress and link the expression file, 
 ```
 ./gpress -e [inputfile] <block_size> [folder]
 ```
@@ -80,7 +94,7 @@ The compressed expression files are linked to the GFF files in specified folder 
 
 block size is 2000 by default
 
-6. To do queries on compressed expression file from a specified folder,
+7. To do queries on compressed expression file from a specified folder,
 ```
 ./gpress -qe [id] [folder]
 ```
@@ -117,27 +131,26 @@ The decompressed GTF is stored named **decompressed_gtf.gtf** in folder **output
 The compressed GTF file is stored named **GTF_compressed.tar** in folder **gtf1**.
 The associated index tables are also stored in folder **gtf1**.
 
-4. To do queries on compressed GTF file from folder **gtf1**, 
-
-id search for exon id "ENSE00003486434.1":
+4. To do id searches on compressed GTF file from folder **gtf1**, run
 ```
-./gpress -q -id ENSE00003486434.1 gtf1
+./gpress -q -id gtf1
 ```
-The retrieved information is printed in command window.
+Then enter the exon id "ENSE00003486434.1" in the command window, the retrieved information will be printed in command window.
+If the user also wants to know all this exon's parents and children contained in the gene, enter "yes" in the command window.
 
-range search on chromosome 1 with range from 10000 to 100000:
+5. To do range search on chromosome 1 with range from 10000 to 100000:
 ```
 ./gpress -q -range 10000 100000 1 gtf1 > output/range_search.gtf
 ```
 The retrieved information is stored named **range_search.gtf** in folder **output**.
 
-5. To compress and link the expression file with GFF files in folder **gtf1** (500 genes per block), 
+6. To compress and link the expression file with GFF files in folder **gtf1** (500 genes per block), 
 ```
 ./gpress -e data/test_expression.tsv 500 gtf1
 ```
 The compressed file is stored named **expression_compressed.tar** in folder **gtf1**.
 
-6. To do queries on compressed expression file from folder **gtf1**,
+7. To do queries on compressed expression file from folder **gtf1**,
 ```
 ./gpress -qe ENST00000009530.11 gtf1 > output/expression_search.txt
 ```
