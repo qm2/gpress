@@ -703,3 +703,59 @@ int expressionSearch(int block, int start_id, int end_id){
     }
     return 0;
 }
+
+int sparseSearch(int block, int start_id, int end_id){
+    FILE* fp = fopen("output/sparse_search.txt", "w+");
+    char cmd[500];
+    char column[BUFFSIZE];
+    char value[BUFFSIZE];
+
+    char *column_name_cpy= "BSC/bsc d sparse_compressed/sparse_compressed_column_";
+    char *value_name_cpy="BSC/bsc d sparse_compressed/sparse_compressed_value_";    
+
+    char column_name[100];
+    char value_name[100]; 
+
+    char block_number[50];
+    char* cmd_prefix= "BSC/bsc d ";
+    char* cmd_suffix_column= "sparse_parsed/decompressed_sample.txt";
+    char* cmd_suffix_value="sparse_parsed/decompressed_ets.txt";    
+  
+
+    FILE *fp_column, *fp_value;
+
+
+    sprintf(block_number,"%d", block);
+    strcpy(column_name, column_name_cpy);
+    strcat(strcat(column_name, block_number), " ");
+    strcat(column_name, cmd_suffix_column);
+    system(column_name);
+
+    sprintf(block_number,"%d", block);
+    strcpy(value_name,value_name_cpy);
+    strcat(strcat(value_name, block_number), " ");
+    strcat(value_name, cmd_suffix_value);
+    system(value_name);
+
+    //open all the files
+    fp_column = fopen(cmd_suffix_column, "r");
+    //open the source file
+    fp_value = fopen(cmd_suffix_value, "r");
+
+    int i=0;
+    while(fscanf(fp_column, "%s", column)!=EOF){
+        //read in all the rest 
+        fscanf(fp_value, "%s", value);
+        if(i>= start_id && i<=end_id){
+            //output the column
+            printf("%s ", column);
+            //output the matrix value
+            printf("%s\n", value);           
+        }
+        i++;
+    }
+    fclose(fp);
+    fclose(fp_column);
+    fclose(fp_value);
+    return 0;
+}

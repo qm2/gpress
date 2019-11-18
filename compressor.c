@@ -1626,3 +1626,176 @@ int expression_compressor(FILE* fp, int length, int block_size){
     return 0;
 }
 
+int sparse_compressor(FILE* fp, int length, int block_size){
+    int i, j, k, m;
+    char prev_chr[100];
+    int new_gene =0, new_block =1, prev_row;
+    int block, gene_numbers=0, item_id, prev_id;
+
+    //create file pointers for all the output files
+    FILE *fp_column, *fp_value, *fp_gene_id;
+    FILE *fp_hash_key, *fp_hash_val; 
+    //array to hold each column
+    char row[BUFFSIZE];
+    char column[BUFFSIZE];
+    char value[BUFFSIZE];
+    char refer[BUFFSIZE];
+    char gene_identifier[BUFFSIZE];
+    char gene_name[BUFFSIZE];
+    char* group_id=(char*)malloc(sizeof(char)*100);
+    char* new_group=(char*)malloc(sizeof(char)*100);    
+    char* group=(char*)malloc(sizeof(char)*100);
+    char* id;
+
+    int prev_gene =0, prev_trans =0, prev_exon =0;
+    int gene_index;
+    char temp[200];
+    char column_name[200]; 
+    char value_name[200];  
+    char compress_cmd[200];
+
+    char* column_name_prefix= "sparse_parsed/sparse_column_" ;
+    char* value_name_prefix= "sparse_parsed/sparse_value_";      
+
+    char* compress_cmd_prefix= "BSC/bsc e ";
+    char* cmd_suffix_column= " sparse_compressed/sparse_compressed_column_";
+    char* cmd_suffix_value=" sparse_compressed/sparse_compressed_value_";    
+
+    char block_number[200];
+
+
+    //extract each column and write them into the output files
+    block= 0;
+    sprintf(block_number,"%d", block);
+    //create the output files
+    strcpy(column_name, column_name_prefix);
+    strcpy(value_name, value_name_prefix);
+
+    strcat(strcat(column_name, block_number),".txt");
+    strcat(strcat(value_name, block_number),".txt");
+
+
+    fp_column = fopen(column_name, "w+");
+
+    fp_value = fopen(value_name, "w+");
+
+
+    fp_hash_key= fopen("index_tables/sparse_key.txt", "w+");
+    fp_hash_val= fopen("index_tables/sparse_value.txt", "w+");
+
+    fp_gene_id= fopen("data/genes.tsv", "r");
+    //store the first line of comments
+    // for(i=0; i<1; i++){
+    //     fgets(temp, BUFFSIZE, fp);          
+    // }
+    item_id = -1;
+    int item_id_flag = 0;
+    prev_id= 0;
+    gene_index= 0;
+    for(i=0; i< length; i++){
+        item_id++;
+        //read in the row
+        fscanf(fp, "%s", row);
+
+        //read in the column
+        fscanf(fp, "%s", column);
+        //read in the value
+        fscanf(fp, "%s", value);     
+
+        //check if we need to update the block 
+        if((i!=0) && (atoi(row)!= prev_row)){
+            gene_numbers++;
+            if(gene_numbers == block_size){
+                block++;
+                new_block= 1;
+                gene_numbers=0;
+                item_id_flag=1;
+                fclose(fp_column);
+                fclose(fp_value);
+
+                //compress the files using bsc algorithm
+                strcpy(compress_cmd, compress_cmd_prefix);
+                strcat(strcat(compress_cmd, column_name), cmd_suffix_column);
+                strcat(compress_cmd, block_number);
+                system(compress_cmd);
+                strcpy(compress_cmd, compress_cmd_prefix);
+                strcat(strcat(compress_cmd, value_name), cmd_suffix_value);
+                strcat(compress_cmd, block_number);
+                system(compress_cmd);
+           
+                sprintf(block_number,"%d", block);
+                //create the output files
+                strcpy(column_name, column_name_prefix);
+                strcpy(value_name, value_name_prefix);
+
+                strcat(strcat(column_name, block_number),".txt");
+                strcat(strcat(value_name, block_number),".txt");
+
+
+                fp_column = fopen(column_name, "w+");
+                fp_value = fopen(value_name, "w+");
+
+            }
+            //extract the id
+            while(gene_index != prev_row){
+                fscanf(fp_gene_id, "%s", gene_identifier);
+                fscanf(fp_gene_id, "%s", gene_name);
+                fgets(temp, BUFFSIZE, fp_gene_id);
+                gene_index++;
+            }
+            // hash the id
+            free(group);
+            group= (char*)malloc(sizeof(char)*1000);
+            group[0]= '\0';
+            free(group_id);
+            group_id= (char*)malloc(sizeof(char)*100);
+            group_id[0]= '\0';
+            sprintf(group,"%d", block);
+            group[strlen(group)]=' ';
+            sprintf(group_id, "%d", prev_id);
+            strcat(group, group_id); 
+            for(m=0; m<1000;m++){
+                if(group[m] == '\0'){
+                    group[m]=' ';
+                    group[m+1]='\0';
+                    break;
+                }
+            }
+            free(new_group);
+            new_group= (char*)malloc(sizeof(char)*1000);
+            new_group[0]= '\0'; 
+            sprintf(new_group, "%d", item_id-1);             
+            strcat(group, new_group);          
+
+            fprintf(fp_hash_key, "%s\n", gene_identifier); 
+            if(fprintf(fp_hash_val, "%s\n", group)<0){
+                printf("%s\n", group);
+            } 
+            if(item_id_flag == 1){
+                item_id= 0;
+                item_id_flag=0;
+            }
+            prev_id= item_id;
+        }
+
+        fprintf(fp_column, "%s\n", column);        
+        fprintf(fp_value, "%s\n", value);
+
+        //read in the last column
+        fgets(temp, BUFFSIZE, fp);
+        prev_row = atoi(row);
+    }
+    //compress the files using bsc algorithm
+    strcpy(compress_cmd, compress_cmd_prefix);
+    strcat(strcat(compress_cmd, column_name), cmd_suffix_column);
+    strcat(compress_cmd, block_number);
+    system(compress_cmd);
+    strcpy(compress_cmd, compress_cmd_prefix);
+    strcat(strcat(compress_cmd, value_name), cmd_suffix_value);
+    strcat(compress_cmd, block_number);
+    system(compress_cmd);
+    //close all the files
+    fclose(fp_column);
+    fclose(fp_value);
+    return 0;
+}

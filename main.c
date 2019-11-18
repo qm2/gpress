@@ -5,6 +5,7 @@
 #include "compressor.h"
 #include "hash.h"
 #include "randomaccess.h"
+#include "linked_list.h"
 #include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -511,6 +512,152 @@ int main(int argc , char **argv){
         system("rm expression_compressed/*");
         system("rm expression_parsed/*");
         printf("expression search succeeds!\n");
+    }
+    else if(strcmp("-sparse", argv[1]) == 0){
+        //sort the sparse matrix file
+        FILE *fp;
+        FILE *fp2;
+        char* s;
+        char comments[1000];
+        char line[1000];
+        fp = fopen(argv[2], "r");
+        int i;
+        int total_row = 0;
+        int row, col, value;
+        node** matrix;
+        for(i=0; i<3; i++){
+            fgets(comments, 1000, fp);           
+        }
+        s= strtok(comments, " ");
+        total_row=atoi(s);
+        matrix = (node**)malloc(sizeof(node*)*total_row);
+
+        while(fgets(line, 100, fp) != NULL){
+            s= strtok(line, " ");
+            row = atoi(s);
+            row= row - 1;
+            s= strtok(NULL, " ");
+            col = atoi(s);
+            col= col - 1;
+            s= strtok(NULL, " ");
+            value = atoi(s);
+            if(matrix[row] == NULL){
+                if (init(&matrix[row], col, value) != 0) {
+                    fprintf(stderr, "Failed to init a new linked list");
+                    return 0;
+                }   
+            }
+            else{
+                insert(&matrix[row], col, value);
+            }
+        }
+        fp2 = fopen("sorted.mtx", "w+");
+        for(i=0; i<total_row; i++){
+            if(matrix[i] != NULL){
+                reverse(&matrix[i]);
+                node *current = matrix[i];
+                while (current) {
+                    fprintf(fp2, "%d %d %d\n", i+1, (current->column)+1, current->value);
+                    current = current->next;
+                }
+            }
+        }
+        fclose(fp);
+        fclose(fp2);
+        //the sort ends and the compression starts here
+        int count_lines = 0;
+        char chr;
+        fp = fopen("sorted.mtx", "r");
+        if(fp == NULL){
+            printf("the input file is invalid!\n");
+            return 0;
+        }
+        //count number of lines in the file
+        chr = getc(fp);
+        while (chr != EOF)
+        {
+            //count whenever new line is encountered
+            if (chr == '\n')
+            {
+                count_lines = count_lines + 1;
+            }
+            //take next character from file.
+            chr = getc(fp);
+        }
+        fclose(fp);
+        count_lines -=1;
+        fp = fopen("sorted.mtx", "r");
+        //run the compressor
+        int block;
+        if(argc == 4){
+            block = 2000;
+        }
+        else{
+            block = atoi(argv[3]);
+        }
+        sparse_compressor(fp, count_lines, block);  
+        // system("rm sparse_parsed/*");
+       //create the folder specified by the user
+        char command2[200];
+        snprintf(command2, sizeof(command2), "mkdir %s", argv[argc-1]);
+        struct stat st = {0};
+        if (stat(argv[argc-1], &st) == -1) {
+            system(command2);           
+        }
+        char command1[200];
+        snprintf(command1, sizeof(command1), "tar -cf %s/sparse_compressed.tar sparse_compressed", argv[argc-1]);
+        system(command1);
+        system("rm sparse_compressed/*"); 
+        printf("compression and linking of sparse matrix file succeeds!\n");
+        fclose(fp);
+    }
+    else if(strcmp("-qs", argv[1]) == 0){
+        char hash_key[500]; 
+        char* hash_val;
+        char temp[100];
+        char* retval;
+
+        FILE *fp_hash_key= fopen("index_tables/sparse_key.txt", "r");
+        FILE *fp_hash_val= fopen("index_tables/sparse_value.txt", "r");
+        hashtable_t *ht = ht_create(3000000);
+
+        while(fscanf(fp_hash_key, "%s", hash_key)!=EOF){
+            hash_val= (char*)malloc(sizeof(char)*50);
+            fgets(hash_val, 50, fp_hash_val);
+            hash_val[strlen(hash_val) - 1] = '\0';
+            ht_put(ht, hash_key, hash_val); 
+        }
+        //close the files
+        fclose(fp_hash_key);
+        fclose(fp_hash_val);
+        char command3[200];
+        snprintf(command3, sizeof(command3), "tar -xf %s/sparse_compressed.tar sparse_compressed", argv[argc-1]);
+        system(command3);
+        char* hashval;
+        char* s;
+        int block;
+        int block_id;
+        int block_start_id;
+        int block_end_id;
+        hashval= (char*)malloc(sizeof(char)*100);
+        hashval= (char*)ht_get(ht, argv[2]);
+        if(hashval == NULL){
+            printf("This ID is not valid!\n");
+            return 0;
+        }
+        s= (char*)malloc(sizeof(char)*50);
+        s= strtok(hashval, " ");
+        block= atoi(s);
+        s= strtok(NULL, " ");
+        block_start_id= atoi(s);
+        s= strtok(NULL, " ");
+        block_end_id= atoi(s);
+        sparseSearch(block, block_start_id, block_end_id);
+        printf("All the information of item with id %s is outputed:\n",argv[2]);
+        system("rm sparse_compressed/*");
+        system("rm sparse_parsed/*");
+        printf("sparse search succeeds!\n");
+
     }
 
     return 0;
