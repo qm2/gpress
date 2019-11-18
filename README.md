@@ -106,9 +106,30 @@ In order to write the output to a file,
 ./gpress -qe [id] [folder] > [outputfile]
 ```
 
+8. To compress and link the sparse expression matrix file, 
+```
+./gpress -sparse [inputfile] <block_size> [folder]
+```
+The compressed expression files are store in the specified folder
+
+block size is 2000 by default
+
+9. To do queries on compressed sparse expression matrix file from a specified folder,
+```
+./gpress -qs [id] [folder]
+```
+By default, the outputs are printed on the command window. 
+
+In order to write the output to a file, 
+
+```
+./gpress -qs [id] [folder] > [outputfile]
+```
+
+
 ## Input
 
-Here, we provide a small GTF file (**test_gtf.gtf**), a small GFF3 file (**test_gff3.gff3**) and a small expression file (**test_expression.tsv**)in the folder **data**. More sample files can be download from the GENCODE database or other databases.
+Here, we provide a small GTF file (**test_gtf.gtf**), a small GFF3 file (**test_gff3.gff3**), a small feature expression file (**test_expression.tsv**) and sparse matrix files (**matrix.mtx, genes.tsv, barcodes.tsv**) in the folder **data**. More sample files can be download from the GENCODE database or other databases.
 
 ## Example
 Here, we will use the test files to provide an example of how to use GPress. We will use GTF file for illustration since the GFF3 file is nearly the same except slight format variations. We will store the compressed GTF file and compressed expression file in a new folder **gtf1**
@@ -161,6 +182,21 @@ GPress will also print the extra information if it exists in GFF file. For examp
 ./gpress -qe ENST00000531822.1 gtf1 > output/expression_search2.txt
 ```
 will give information from both GTF and expression files stored as **expression_search2.txt** in folder **output**.
+
+8. To compress and link the sparse expression matrix file in folder **sparse** (500 genes per block), 
+```
+./gpress -sparse data/matrix.mtx 500 sparse
+```
+The compressed sparse expression matrix files are store in folder **sparse**.
+
+
+9. To do queries on compressed sparse expression matrix file from folder **sparse**,
+```
+./gpress -qs ENSG00000242485 sparse
+```
+By default, the outputs are printed on the command window. 
+
+
 
 
 
