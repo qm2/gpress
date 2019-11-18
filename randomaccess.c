@@ -6,21 +6,32 @@
 #include "hash.h"
 #define BUFFSIZE 1000
 
-int readTaggedLine(char* filename, int line, char* result)
+int readTaggedLine(char* filename, int line, char* result, int gene_start, int gene_end)
 {
-    FILE *f;
+    char tmp[1500];
+    FILE *fp, *fp_gene;
     int i=0;
-    f = fopen(filename, "r");
-    if(f == NULL) return -1;
-    while(fgets(result, 1024, f))
+    fp = fopen(filename, "r");
+    fp_gene = fopen("gene_block.gtf", "w+");
+    if(fp == NULL || fp_gene==NULL) return -1;
+    while(fgets(tmp, 1024, fp))
     {
+        if(i>gene_end){
+            fclose(fp);
+            fclose(fp_gene);
+            return 0;
+        }
+        if(i>=gene_start){
+            fprintf(fp_gene, "%s", tmp);            
+        }
         if(i==line)
         {
-            return 0;
+            strcpy(result, tmp);
         }
         i++;
     }
-    fclose(f);
+    fclose(fp);
+    fclose(fp_gene);
     return -1;
 }
 
@@ -201,7 +212,12 @@ char* item_search(int block, int block_id){
     fp_frame_start = fopen(cmd_suffix_frame_start, "r");
     //open the frames of stop file
     fp_frame_stop = fopen(cmd_suffix_frame_stop, "r");
-   //start to combine all columns into the goal file
+    //start to combine all columns into the goal file
+    //the start and end lines for current gene
+    int gene_start;
+    int gene_end; 
+    int line_index = 0;  
+    int reach_goal = 0;  
     while(fscanf(fp_sq, "%s", seqname)!=EOF){
         //read in all the rest 
         fscanf(fp_src, "%s", source);
@@ -218,6 +234,11 @@ char* item_search(int block, int block_id){
         fprintf(fp, "%s    ", feature);
         //recover the strand
         if(strcmp(feature, gene)  == 0) {
+            if(reach_goal == 1){
+                gene_end=line_index - 1;
+                break;
+            }
+            gene_start=line_index;
             fscanf(fp_strand, "%s", strand);
         }   
         //recover the start
@@ -279,15 +300,20 @@ char* item_search(int block, int block_id){
         fprintf(fp, "%s    ", frame);
 
         //output the attribute
-        fprintf(fp, "%s", attribute);        
+        fprintf(fp, "%s", attribute);  
+        //check if it reaches the desired line
+        if(line_index == block_id){
+            reach_goal = 1;
+        }
+        line_index++;
     }
     fclose(fp);
-    readTaggedLine("info.gtf", block_id, item_info);
+    readTaggedLine("info.gtf", block_id, item_info, gene_start, gene_end);
     return item_info;
       
 }
 
-int rangeSearch(int start_pos, int end_pos,int chr, int* chr_table){
+int rangeSearch(int start_pos, int end_pos, int chr, int* chr_table, int* min_table, int* max_table){
     char cmd[500];
     char seqname[BUFFSIZE];
     char source[BUFFSIZE];
@@ -374,72 +400,79 @@ int rangeSearch(int start_pos, int end_pos,int chr, int* chr_table){
     // }
     // printf("%d\n", start_block);
     for(i= chr_table[chr]; i<= chr_table[chr+1]; i++){
-       //recover each file
-    sprintf(block_number,"%d", i);
-    strcpy(sq_name, sq_name_cpy);
-    strcat(strcat(sq_name, block_number), " ");
-    strcat(sq_name, cmd_suffix_sq);
-    system(sq_name);
+        //use the index tables to check if the min or max postion
+        //of the block fall outside of the searched range
+        if(max_table[i] < start_pos || end_pos < min_table[i]){
+            //skip the block
+            continue;
+        }
+        
+        //recover each file
+        sprintf(block_number,"%d", i);
+        strcpy(sq_name, sq_name_cpy);
+        strcat(strcat(sq_name, block_number), " ");
+        strcat(sq_name, cmd_suffix_sq);
+        system(sq_name);
 
-    sprintf(block_number,"%d", i);
-    strcpy(src_name,src_name_cpy);
-    strcat(strcat(src_name, block_number), " ");
-    strcat(src_name, cmd_suffix_src);
-    system(src_name);
+        sprintf(block_number,"%d", i);
+        strcpy(src_name,src_name_cpy);
+        strcat(strcat(src_name, block_number), " ");
+        strcat(src_name, cmd_suffix_src);
+        system(src_name);
 
-    sprintf(block_number,"%d", i);
-    strcpy(fea_name, fea_name_cpy);
-    strcat(strcat(fea_name, block_number), " ");
-    strcat(fea_name, cmd_suffix_fea);
-    system(fea_name);   
+        sprintf(block_number,"%d", i);
+        strcpy(fea_name, fea_name_cpy);
+        strcat(strcat(fea_name, block_number), " ");
+        strcat(fea_name, cmd_suffix_fea);
+        system(fea_name);   
 
-    sprintf(block_number,"%d", i);
-    strcpy(start_name, start_name_cpy);
-    strcat(strcat(start_name, block_number), " ");
-    strcat(start_name, cmd_suffix_start);
-    system(start_name);
+        sprintf(block_number,"%d", i);
+        strcpy(start_name, start_name_cpy);
+        strcat(strcat(start_name, block_number), " ");
+        strcat(start_name, cmd_suffix_start);
+        system(start_name);
 
-    sprintf(block_number,"%d", i);
-    strcpy(delta_name, delta_name_cpy);
-    strcat(strcat(delta_name, block_number), " ");
-    strcat(delta_name, cmd_suffix_delta);
-    system(delta_name);
+        sprintf(block_number,"%d", i);
+        strcpy(delta_name, delta_name_cpy);
+        strcat(strcat(delta_name, block_number), " ");
+        strcat(delta_name, cmd_suffix_delta);
+        system(delta_name);
 
-    sprintf(block_number,"%d", i);
-    strcpy(score_name, score_name_cpy);
-    strcat(strcat(score_name, block_number), " ");
-    strcat(score_name, cmd_suffix_score);
-    system(score_name);
+        sprintf(block_number,"%d", i);
+        strcpy(score_name, score_name_cpy);
+        strcat(strcat(score_name, block_number), " ");
+        strcat(score_name, cmd_suffix_score);
+        system(score_name);
 
-    sprintf(block_number,"%d", i);
-    strcpy(strand_name, strand_name_cpy);
-    strcat(strcat(strand_name, block_number), " ");
-    strcat(strand_name, cmd_suffix_strand);
-    system(strand_name);
+        sprintf(block_number,"%d", i);
+        strcpy(strand_name, strand_name_cpy);
+        strcat(strcat(strand_name, block_number), " ");
+        strcat(strand_name, cmd_suffix_strand);
+        system(strand_name);
 
-    sprintf(block_number,"%d", i);
-    strcpy(att_name, att_name_cpy);
-    strcat(strcat(att_name, block_number), " ");
-    strcat(att_name, cmd_suffix_att);
-    system(att_name);
+        sprintf(block_number,"%d", i);
+        strcpy(att_name, att_name_cpy);
+        strcat(strcat(att_name, block_number), " ");
+        strcat(att_name, cmd_suffix_att);
+        system(att_name);
 
-    sprintf(block_number,"%d", i);
-    strcpy(frame_cds_name, frame_cds_name_cpy);
-    strcat(strcat(frame_cds_name, block_number), " ");
-    strcat(frame_cds_name, cmd_suffix_frame_cds);
-    system(frame_cds_name);
+        sprintf(block_number,"%d", i);
+        strcpy(frame_cds_name, frame_cds_name_cpy);
+        strcat(strcat(frame_cds_name, block_number), " ");
+        strcat(frame_cds_name, cmd_suffix_frame_cds);
+        system(frame_cds_name);
 
-    sprintf(block_number,"%d", i);
-    strcpy(frame_start_name, frame_start_name_cpy);
-    strcat(strcat(frame_start_name, block_number), " ");
-    strcat(frame_start_name, cmd_suffix_frame_start);
-    system(frame_start_name);
+        sprintf(block_number,"%d", i);
+        strcpy(frame_start_name, frame_start_name_cpy);
+        strcat(strcat(frame_start_name, block_number), " ");
+        strcat(frame_start_name, cmd_suffix_frame_start);
+        system(frame_start_name);
 
-    sprintf(block_number,"%d", i);
-    strcpy(frame_stop_name, frame_stop_name_cpy);
-    strcat(strcat(frame_stop_name, block_number), " ");
-    strcat(frame_stop_name, cmd_suffix_frame_stop);
-    system(frame_stop_name);
+        sprintf(block_number,"%d", i);
+        strcpy(frame_stop_name, frame_stop_name_cpy);
+        strcat(strcat(frame_stop_name, block_number), " ");
+        strcat(frame_stop_name, cmd_suffix_frame_stop);
+        system(frame_stop_name);
 
 
         //open all the files
@@ -466,6 +499,7 @@ int rangeSearch(int start_pos, int end_pos,int chr, int* chr_table){
         fp_frame_stop = fopen(cmd_suffix_frame_stop, "r");
        //start to combine all columns into the goal file
         while(fscanf(fp_sq, "%s", seqname)!=EOF){
+            //check if the starting position of the block
             //read in all the rest 
             fscanf(fp_src, "%s", source);
             fscanf(fp_fea, "%s", feature);

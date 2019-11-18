@@ -7,13 +7,14 @@
 
 
 
-int gtf_compressor(FILE* fp, int length, int* chr_table, int block_size){
+int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, int* block_max_table, int block_size){
     int i, j, k, m;
     char empty = ' ';
     char prev_chr[100];
     int new_transcript =0, new_block =1;
     int len;
     int block, gene_numbers=0, item_id;
+    int position_min, position_max;
     //create file pointers for all the output files
     FILE *fp_sq, *fp_src, *fp_fea, *fp_start, *fp_delta, *fp_att, *fp_comments;
     FILE *fp_score, *fp_strand, *fp_frame_cds, *fp_frame_start, *fp_frame_stop, *fp_hash_key, *fp_hash_val; 
@@ -168,6 +169,10 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int block_size){
                 new_block= 1;
                 gene_numbers=0;
                 item_id=0;
+                //update the min and max table
+                block_min_table[block-1]= position_min;
+                block_max_table[block-1]= position_max;
+                //close the old files and open new files
                 fclose(fp_sq);
                 fclose(fp_src);
                 fclose(fp_fea);
@@ -289,6 +294,13 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int block_size){
 
         //read in the start
         fscanf(fp, "%s", start);
+        //check if we need to update the min or max
+        if(gene_numbers==0 || atoi(start) < position_min){
+            position_min= atoi(start);
+        }
+        if(gene_numbers==0 || atoi(start) > position_max){
+            position_max= atoi(start);
+        }       
         if(new_block == 1){
             //position[block]= atoi(start);
             new_block= 0;
@@ -555,13 +567,14 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int block_size){
     return 0;
 }
 
-int gff3_compressor(FILE* fp, int length, int* chr_table, int block_size){
+int gff3_compressor(FILE* fp, int length, int* chr_table, int* block_min_table,int* block_max_table, int block_size){
     int i, j, k, m;
     char empty = ' ';
     char prev_chr[100];
     int new_transcript =0, new_block =1;
     int len;
     int block, gene_numbers=0, item_id;
+    int position_min, position_max;
     //create file pointers for all the output files
     FILE *fp_sq, *fp_src, *fp_fea, *fp_start, *fp_delta, *fp_att, *fp_comments;
     FILE *fp_score, *fp_strand, *fp_frame_cds, *fp_frame_start, *fp_frame_stop, *fp_hash_key, *fp_hash_val; 
@@ -716,6 +729,9 @@ int gff3_compressor(FILE* fp, int length, int* chr_table, int block_size){
                 new_block= 1;
                 gene_numbers=0;
                 item_id=0;
+                //update the min and max table
+                block_min_table[block-1]= position_min;
+                block_max_table[block-1]= position_max;
                 fclose(fp_sq);
                 fclose(fp_src);
                 fclose(fp_fea);
@@ -837,6 +853,13 @@ int gff3_compressor(FILE* fp, int length, int* chr_table, int block_size){
 
         //read in the start
         fscanf(fp, "%s", start);
+        //check if we need to update the min or max
+        if(gene_numbers==0 || atoi(start) < position_min){
+            position_min= atoi(start);
+        }
+        if(gene_numbers==0 || atoi(start) > position_max){
+            position_max= atoi(start);
+        }  
         if(new_block == 1){
             //position[block]= atoi(start);
             new_block= 0;

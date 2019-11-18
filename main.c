@@ -21,7 +21,10 @@ int main(int argc , char **argv){
     if (strcmp("-c", argv[1]) == 0){
 
         //file pointer for gtf file
-        FILE *fp, *fp_chromosome;
+        FILE *fp, *fp_chromosome, *fp_min, *fp_max;
+        //create the position min and max tables
+        int *min_table= (int*)malloc(sizeof(int)*500);
+        int *max_table= (int*)malloc(sizeof(int)*500);
         int count_lines = 0;
         char chr;
         fp = fopen(argv[2], "r");
@@ -53,11 +56,11 @@ int main(int argc , char **argv){
         }
         if(!strcmp(dot+1, "gtf")){
             count_lines -=5;    
-            gtf_compressor(fp, count_lines, chr_table, block);
+            gtf_compressor(fp, count_lines, chr_table, min_table, max_table, block);
         } 
         else if(!strcmp(dot+1, "gff3")){
             count_lines -=7;    
-            gff3_compressor(fp, count_lines, chr_table, block);
+            gff3_compressor(fp, count_lines, chr_table, min_table, max_table, block);
         }
         else{
             printf("The input name is invalid!\n");
@@ -68,17 +71,27 @@ int main(int argc , char **argv){
         fp_chromosome= fopen("index_tables/data_chr.txt", "w+");
         fwrite(chr_table , sizeof(int) , sizeof(chr_table) , fp_chromosome);
         fclose(fp_chromosome);
+        //store the block min position table
+        fp_min= fopen("index_tables/data_min.txt", "w+");
+        fwrite(min_table , sizeof(int) , sizeof(min_table) , fp_min);
+        fclose(fp_min);
+        //store the block max position table
+        fp_max= fopen("index_tables/data_max.txt", "w+");
+        fwrite(max_table , sizeof(int) , sizeof(max_table) , fp_max);
+        fclose(fp_max);
         //create the folder specified by the user
-        char command5[200];
-        snprintf(command5, sizeof(command5), "mkdir %s", argv[argc-1]);
+        char command7[200];
+        snprintf(command7, sizeof(command7), "mkdir %s", argv[argc-1]);
         struct stat st = {0};
         if (stat(argv[argc-1], &st) == -1) {
-            system(command5);           
+            system(command7);           
         }
         char command1[200];
         char command2[200];
         char command3[200];
         char command4[200];
+        char command5[200];
+        char command6[200];
         system("rm GTF_parsed/*");
         snprintf(command1, sizeof(command1), "tar -cf %s/GTF_compressed.tar GTF_compressed", argv[argc-1]);
         system(command1);
@@ -88,7 +101,11 @@ int main(int argc , char **argv){
         snprintf(command3, sizeof(command3), "BSC/bsc e index_tables/data_value.txt %s/data_value_compressed", argv[argc-1]);
         system(command3);       
         snprintf(command4, sizeof(command4), "BSC/bsc e index_tables/data_chr.txt %s/data_chr_compressed", argv[argc-1]);
-        system(command4);    
+        system(command4);  
+        snprintf(command5, sizeof(command5), "BSC/bsc e index_tables/data_min.txt %s/data_min_compressed", argv[argc-1]);
+        system(command5);       
+        snprintf(command6, sizeof(command6), "BSC/bsc e index_tables/data_max.txt %s/data_max_compressed", argv[argc-1]);
+        system(command6);  
         system("rm index_tables/*");                           
         printf("The compression of GFF file with random access succeeds! The compressed files are in folder %s\n", argv[argc-1]);
         fclose(fp);
@@ -215,7 +232,7 @@ int main(int argc , char **argv){
         //recover all the data structures 
         int idx;
         if(strcmp("-id", argv[2]) == 0){
-            idx = 4;
+            idx = 3;
         }
         else{
             idx = 6;
@@ -229,56 +246,113 @@ int main(int argc , char **argv){
         system(command2);
         snprintf(command3, sizeof(command3), "BSC/bsc d %s/data_chr_compressed index_tables/data_chr.txt", argv[idx]);
         system(command3);
-        FILE *fp_hash_key= fopen("index_tables/data_key.txt", "r");
-        FILE *fp_hash_val= fopen("index_tables/data_value.txt", "r");
-        hashtable_t *ht = ht_create(3000000);
 
-        while(fscanf(fp_hash_key, "%s", hash_key)!=EOF){
-            hash_val= (char*)malloc(sizeof(char)*50);
-            fgets(hash_val, 50, fp_hash_val);
-            hash_val[strlen(hash_val) - 1] = '\0';
-            ht_put(ht, hash_key, hash_val); 
-        }
-
-        //recover the chromosome table
-        FILE *fp_chromosome = fopen("index_tables/data_chr.txt", "rb"); 
-        fread(chr_table, sizeof(int), sizeof(chr_table), fp_chromosome);
-
-        //close the files
-        fclose(fp_hash_key);
-        fclose(fp_hash_val);
-        fclose(fp_chromosome);
         char command4[200];
         snprintf(command4, sizeof(command4), "tar -xf %s/GTF_compressed.tar GTF_compressed", argv[idx]);
         system(command4);
 
         if(strcmp("-id", argv[2]) == 0){
-               char* retval;
-               char* hashval;
-               char* s;
-               int block;
-               int block_id;
-               hashval= (char*)malloc(sizeof(char)*100);
-               hashval= (char*)ht_get(ht, argv[3]);
-               if(hashval == NULL){
+	        FILE *fp_hash_key= fopen("index_tables/data_key.txt", "r");
+	        FILE *fp_hash_val= fopen("index_tables/data_value.txt", "r");
+	        hashtable_t *ht = ht_create(3000000);
+
+	        while(fscanf(fp_hash_key, "%s", hash_key)!=EOF){
+	            hash_val= (char*)malloc(sizeof(char)*50);
+	            fgets(hash_val, 50, fp_hash_val);
+	            hash_val[strlen(hash_val) - 1] = '\0';
+	            ht_put(ht, hash_key, hash_val); 
+	        }
+	        //close the files
+	        fclose(fp_hash_key);
+	        fclose(fp_hash_val);   	                
+            char* retval;
+            char* hashval;
+            char hash_split[200];
+            char* s;
+            int block;
+            int block_id;
+            int parsed =0;
+            printf("Welcome to the random access based on ID\n");
+            while(1){
+                printf("Please enter a valid ID for search or enter 'quit' to terminate the program!\n");
+                char input[500]; 
+                scanf("%[^\n]%*c", input); 
+                if(strcmp(input, "quit") == 0){
+                	break;
+                }
+                // hashval= (char*)malloc(sizeof(char)*100);
+                hashval= (char*)ht_get(ht, input);
+                if(hashval == NULL){
                    printf("This ID is not valid!\n");
-                   return 0;
-               }
-               s= (char*)malloc(sizeof(char)*50);
-               s= strtok(hashval, " ");
-               block= atoi(s);
-               s= strtok(NULL, " ");
-               block_id= atoi(s);
-               retval = item_search(block, block_id);
-               printf("The item with id %s is:\n",argv[3]);
-               printf("%s", retval);               	
-               printf("id search succeeds!\n");
-               system("rm GTF_compressed/*");
-               system("rm GTF_parsed/*");
+                   continue;
+                }
+                strcpy(hash_split, hashval);
+                s= strtok(hash_split, " ");
+                block= atoi(s);
+                s= strtok(NULL, " ");
+                block_id= atoi(s);
+                retval = item_search(block, block_id);
+                printf("The item with id %s is:\n",input);
+                printf("%s", retval);    
+                printf("Please enter 'yes' if you also want to print out all its parents and children within a gene\n");
+                printf("Otherwise, enter 'no' to skip it\n");
+                while(1){
+                    scanf("%[^\n]%*c", input);
+                    if(strcmp(input, "yes") == 0){
+                	    FILE* fp_gene = fopen("gene_block.gtf", "r");
+                	    char info[1500];
+                	    while(fgets(info, 1024, fp_gene)){
+                            printf("%s", info);   
+                	    }
+                	    system("rm info.gtf");
+                	    system("rm gene_block.gtf");
+                        break;
+                    }  
+                    else if(strcmp(input, "no") == 0){
+                        break;
+                    }         
+                    else{
+                    	printf("the input value is not valid, please enter again!\n");
+                    }     	
+                }         	
+                printf("id search succeeds!\n");
+                parsed = 1;
+            }
+            system("rm GTF_compressed/*");
+            if(parsed==1){
+                system("rm GTF_parsed/*");
+            }
         }
         else if(strcmp("-range", argv[2]) == 0){
+        	//decompress the index tables for min and max positions
+        	char command5[200];
+	        char command6[200];
+	        snprintf(command5, sizeof(command5), "BSC/bsc d %s/data_min_compressed index_tables/data_min.txt", argv[idx]);
+	        system(command5);
+	        snprintf(command6, sizeof(command6), "BSC/bsc d %s/data_max_compressed index_tables/data_max.txt", argv[idx]);
+	        system(command6);
+	        //create the position min and max tables
+	        int *min_table= (int*)malloc(sizeof(int)*500);
+	        int *max_table= (int*)malloc(sizeof(int)*500);
+        	//recover the chromosome table
+            FILE *fp_chromosome = fopen("index_tables/data_chr.txt", "rb"); 
+            fread(chr_table, sizeof(int), sizeof(chr_table), fp_chromosome);
+        	//recover the block min position table
+            FILE *fp_min = fopen("index_tables/data_min.txt", "rb"); 
+            fread(min_table, sizeof(int), sizeof(min_table), fp_min);
+        	//recover the block max position table
+            FILE *fp_max = fopen("index_tables/data_max.txt", "rb"); 
+            fread(max_table, sizeof(int), sizeof(max_table), fp_max);
+            //close the files
+            fclose(fp_chromosome);
+            fclose(fp_min);
+            fclose(fp_max);
         	printf("All items on chromosome %s from %s to %s are:\n",argv[5], argv[3], argv[4]);
-            rangeSearch(atoi(argv[3]), atoi(argv[4]), atoi(argv[5])-1,  chr_table);              	    	
+            rangeSearch(atoi(argv[3]), atoi(argv[4]), atoi(argv[5])-1, chr_table, min_table, max_table); 
+            //free the tables
+            free(chr_table);
+            free(min_table);
+            free(max_table);             	    	
             printf("range search succeeds!\n");
             system("rm GTF_compressed/*");
             system("rm GTF_parsed/*");
