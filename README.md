@@ -106,9 +106,9 @@ In order to write the output to a file,
 ./gpress -qe [id] [folder] > [outputfile]
 ```
 
-8. To compress and link the sparse expression matrix file, 
+8. To compress and link the sparse expression matrix files, 
 ```
-./gpress -sparse [inputfile] <block_size> [folder]
+./gpress -sparse [input matrix] [input genes] [input barcodes] <block_size> [folder]
 ```
 The compressed expression files are store in the specified folder
 
@@ -161,9 +161,9 @@ If the user also wants to know all this exon's parents and children contained in
 
 5. To do range search on chromosome 1 with range from 10000 to 100000:
 ```
-./gpress -q -range 10000 100000 1 gtf1 > output/range_search.gtf
+./gpress -q -range 10000 100000 1 gtf1 
 ```
-The retrieved information is stored named **range_search.gtf** in folder **output**.
+The retrieved information is printed in command window.
 
 6. To compress and link the expression file with GFF files in folder **gtf1** (500 genes per block), 
 ```
@@ -173,28 +173,36 @@ The compressed file is stored named **expression_compressed.tar** in folder **gt
 
 7. To do queries on compressed expression file from folder **gtf1**,
 ```
-./gpress -qe ENST00000009530.11 gtf1 > output/expression_search.txt
+./gpress -qe ENST00000009530.11 gtf1 
 ```
-The retrieved information is stored named **expression_search.txt** in folder **output**.
+The retrieved information is printed in command window.
 
 GPress will also print the extra information if it exists in GFF file. For example, 
 ```
-./gpress -qe ENST00000531822.1 gtf1 > output/expression_search2.txt
+./gpress -qe ENST00000531822.1 gtf1 
 ```
-will give information from both GTF and expression files stored as **expression_search2.txt** in folder **output**.
+will give information from both GTF and expression files in command window.
 
-8. To compress and link the sparse expression matrix file in folder **sparse** (500 genes per block), 
+While parsing the expression file, GPress can store the IDs of the same item from multiple databases. For example, 
 ```
-./gpress -sparse data/matrix.mtx 500 sparse
+./gpress -qe OTTHUMT00000400682.1 gtf1 
 ```
-The compressed sparse expression matrix files are store in folder **sparse**.
+will retrieve same item as that with ID ENST00000531822.1.
+
+8. To compress and link the sparse expression matrix file in folder **gtf1** (500 genes per block), 
+```
+./gpress -sparse data/matrix.mtx data/genes.tsv data/barcodes.tsv 500 gtf1
+```
+The compressed sparse expression matrix files are store in folder **gtf1**.
 
 
-9. To do queries on compressed sparse expression matrix file from folder **sparse**,
+9. To do queries on compressed sparse expression matrix file from folder **gtf1**,
 ```
-./gpress -qs ENSG00000242485 sparse
+./gpress -qs ENSG00000242485 gtf1
 ```
-By default, the outputs are printed on the command window. 
+GPress will also print the extra information if it exists in GFF file.
+
+By default, the outputs are printed in the command window. 
 
 
 
