@@ -194,7 +194,7 @@ will give information from both GTF and expression files in command window.
 ```
 ./gpress -sparse data/matrix.mtx data/genes.tsv data/barcodes.tsv 500 gtf1
 ```
-The compressed sparse expression matrix files are store in folder **gtf1**.
+The compressed sparse expression matrix files are stored named **sparse_compressed.tar** in folder **gtf1**.
 
 
 9. To do queries on compressed sparse expression matrix file from folder **gtf1**,
