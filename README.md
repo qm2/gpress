@@ -177,17 +177,18 @@ The compressed file is stored named **expression_compressed.tar** in folder **gt
 ```
 The retrieved information is printed in command window.
 
-GPress will also print the extra information if it exists in GFF file. For example, 
+While parsing the expression file, GPress store all the IDs of the same item from multiple databases. For example, 
+```
+./gpress -qe OTTHUMT00000374178.1 gtf1 
+```
+will retrieve same item as above.
+
+GPress will also print the extra information if the searched item exists in the compressed GFF file. For example, 
 ```
 ./gpress -qe ENST00000531822.1 gtf1 
 ```
 will give information from both GTF and expression files in command window.
 
-While parsing the expression file, GPress can store the IDs of the same item from multiple databases. For example, 
-```
-./gpress -qe OTTHUMT00000400682.1 gtf1 
-```
-will retrieve same item as that with ID ENST00000531822.1.
 
 8. To compress and link the sparse expression matrix file in folder **gtf1** (500 genes per block), 
 ```
