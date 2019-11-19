@@ -1293,12 +1293,13 @@ int gtf_decompressor(FILE* fp, int length, int filetype){
     else{
         n=7;
     }
-    for(int i=0; i< n; i++){
+    int i;
+    for(i=0; i< n; i++){
         fgets(comments, BUFFSIZE, fp_att);
         fprintf(fp, "%s", comments);
     }
     //start to combine all columns into the goal file
-    for(int i=0; i< length; i++){
+    for(i=0; i< length; i++){
         //read in all the rest 
         fscanf(fp_sq, "%s", seqname);
         fscanf(fp_src, "%s", source);

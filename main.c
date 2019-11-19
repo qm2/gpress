@@ -514,14 +514,14 @@ int main(int argc , char **argv){
             s= strtok(NULL, " ");
             block_id= atoi(s);
             retval = item_search(block, block_id);
-            printf("All the information of item with searched id is outputed:\n");
+            printf("All the information of item with searched id is outputed.\n");
             printf("The item with this id also exists in GFF file:\n");
             printf("%s", retval);
             system("rm GTF_compressed/*");
             system("rm GTF_parsed/*");
         }
         else{
-            printf("All the information of item with searched id is outputed:\n");
+            printf("All the information of item with searched id is outputed.\n");
             printf("The item with this id does not exist in the compressed GFF file\n");
         }
         system("rm expression_compressed/*");
@@ -704,14 +704,14 @@ int main(int argc , char **argv){
             s= strtok(NULL, " ");
             block_id= atoi(s);
             retval = item_search(block, block_id);
-            printf("All the information of item with searched id is outputed:\n");
+            printf("All the information of item with searched id is outputed.\n");
             printf("The item with this id also exists in GFF file:\n");
             printf("%s", retval);
             system("rm GTF_compressed/*");
             system("rm GTF_parsed/*");
         }
         else{
-            printf("All the information of item with searched id is outputed:\n");
+            printf("All the information of item with searched id is outputed.\n");
             printf("The item with this id does not exist in the compressed GFF file\n");
         }
         system("rm sparse_compressed/*");

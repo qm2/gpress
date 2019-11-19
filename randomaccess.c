@@ -759,7 +759,7 @@ int sparseSearch(int block, int start_id, int end_id){
                 col_num++;
             }
             //output the column
-            printf("column index: %s    ", column);
+            printf("column: %s    ", column);
             //output the cell id
             printf("cell id: %s    ", cell_id); 
             //output the matrix value
