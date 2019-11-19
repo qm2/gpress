@@ -373,7 +373,7 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
                 }               
             }
             j+=2;
-            for(k=0; attribute[j+k]!='"'; k++){
+            for(k=0; attribute[j+k]!='.'; k++){
                 id[k] = attribute[j+k];
             }
             id[k]='\0';
@@ -416,7 +416,7 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
                 }               
             }
             j+=2;
-            for(k=0; attribute[j+k]!='"'; k++){
+            for(k=0; attribute[j+k]!='.'; k++){
                 id[k] = attribute[j+k];
             }
             id[k]='\0';
@@ -452,7 +452,7 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
                 }               
             }
             j+=2;
-            for(k=0; attribute[j+k]!='"'; k++){
+            for(k=0; attribute[j+k]!='.'; k++){
                 id[k] = attribute[j+k];
             }
             id[k]='\0';
@@ -1393,6 +1393,13 @@ int expression_compressor(FILE* fp, int length, int block_size){
     FILE *fp_tpm, *fp_eff_len, *fp_len, *fp_hash_key, *fp_hash_val; 
     //array to hold each column
     char target[BUFFSIZE];
+    char ID_tmp[BUFFSIZE];
+    char ID1[BUFFSIZE];
+    char ID2[BUFFSIZE];
+    char ID3[BUFFSIZE];
+    char ID4[BUFFSIZE];
+    char ID5[BUFFSIZE];
+    char ID6[BUFFSIZE];
     char sample[BUFFSIZE];
     char ets_counts[BUFFSIZE];
     char tpm[BUFFSIZE];
@@ -1427,7 +1434,12 @@ int expression_compressor(FILE* fp, int length, int block_size){
     char* cmd_suffix_eff_len=" expression_compressed/expression_compressed_eff_len_";
     char* cmd_suffix_len=" expression_compressed/expression_compressed_len_";
 
-    char prev_target[BUFFSIZE];
+    char prev_ID1[BUFFSIZE];
+    char prev_ID2[BUFFSIZE];
+    char prev_ID3[BUFFSIZE];
+    char prev_ID4[BUFFSIZE];
+    char prev_ID5[BUFFSIZE];
+    char prev_ID6[BUFFSIZE];
 
     char block_number[200];
 
@@ -1483,16 +1495,33 @@ int expression_compressor(FILE* fp, int length, int block_size){
         fscanf(fp, "%s", eff_len);
         //read in the len
         fscanf(fp, "%s", len);     
-        //extract the transcript ID
-        int index;
-        for(index=0; index< BUFFSIZE; index++){
-            if(target[index] == '|'){
-                break;
-            }
-        }
-        target[index] = '\0';
+        //extract the ID or IDs in all specified databases
+        //get rid of the '|' first
+        char *s, *t;
+        s= strtok(target, "|");
+        strcpy(ID1, s);
+        s= strtok(NULL, "|");
+        strcpy(ID2, s);
+        s= strtok(NULL, "|");
+        strcpy(ID3, s); 
+        s= strtok(NULL, "|");
+        strcpy(ID4, s); 
+        s= strtok(NULL, "|");
+        strcpy(ID5, s);
+        s= strtok(NULL, "|");
+        strcpy(ID6, s);
+        //also get rid of the '.'
+        t= strtok(ID1, ".");
+        strcpy(ID1, t);
+        t= strtok(ID2, ".");
+        strcpy(ID2, t);
+        t= strtok(ID3, ".");
+        strcpy(ID3, t);
+        t= strtok(ID4, ".");
+        strcpy(ID4, t);
+        
         //check if we need to update the block 
-        if((i!=0) && (strcmp(target, prev_target))){
+        if((i!=0) && (strcmp(ID1, prev_ID1))){
             gene_numbers++;
             if(gene_numbers == block_size){
                 block++;
@@ -1578,10 +1607,20 @@ int expression_compressor(FILE* fp, int length, int block_size){
             sprintf(new_group, "%d", item_id-1);             
             strcat(group, new_group);          
 
-            fprintf(fp_hash_key, "%s\n", target); 
-            if(fprintf(fp_hash_val, "%s\n", group)<0){
-                printf("%s\n", group);
-            } 
+            //write IDs from all the databases in the index table files
+            fprintf(fp_hash_key, "%s\n", prev_ID1); 
+            fprintf(fp_hash_val, "%s\n", group);
+            fprintf(fp_hash_key, "%s\n", prev_ID2); 
+            fprintf(fp_hash_val, "%s\n", group);
+            fprintf(fp_hash_key, "%s\n", prev_ID3); 
+            fprintf(fp_hash_val, "%s\n", group);
+            fprintf(fp_hash_key, "%s\n", prev_ID4); 
+            fprintf(fp_hash_val, "%s\n", group);
+            fprintf(fp_hash_key, "%s\n", prev_ID5); 
+            fprintf(fp_hash_val, "%s\n", group);
+            fprintf(fp_hash_key, "%s\n", prev_ID6); 
+            fprintf(fp_hash_val, "%s\n", group);
+
             prev_id= item_id;
         }
 
@@ -1593,7 +1632,12 @@ int expression_compressor(FILE* fp, int length, int block_size){
 
         //read in the last column
         fgets(temp, BUFFSIZE, fp);
-        strcpy(prev_target, target);
+        strcpy(prev_ID1, ID1);
+        strcpy(prev_ID2, ID2);
+        strcpy(prev_ID3, ID3);
+        strcpy(prev_ID4, ID4);
+        strcpy(prev_ID5, ID5);
+        strcpy(prev_ID6, ID6);
 
     }
     //compress the files using bsc algorithm
@@ -1626,14 +1670,14 @@ int expression_compressor(FILE* fp, int length, int block_size){
     return 0;
 }
 
-int sparse_compressor(FILE* fp, int length, int block_size){
+int sparse_compressor(FILE* fp, FILE* fp_gene_id, int length, int block_size){
     int i, j, k, m;
     char prev_chr[100];
     int new_gene =0, new_block =1, prev_row;
     int block, gene_numbers=0, item_id, prev_id;
 
     //create file pointers for all the output files
-    FILE *fp_column, *fp_value, *fp_gene_id;
+    FILE *fp_column, *fp_value;
     FILE *fp_hash_key, *fp_hash_val; 
     //array to hold each column
     char row[BUFFSIZE];
@@ -1683,7 +1727,6 @@ int sparse_compressor(FILE* fp, int length, int block_size){
     fp_hash_key= fopen("index_tables/sparse_key.txt", "w+");
     fp_hash_val= fopen("index_tables/sparse_value.txt", "w+");
 
-    fp_gene_id= fopen("data/genes.tsv", "r");
     //store the first line of comments
     // for(i=0; i<1; i++){
     //     fgets(temp, BUFFSIZE, fp);          
@@ -1743,6 +1786,7 @@ int sparse_compressor(FILE* fp, int length, int block_size){
                 fgets(temp, BUFFSIZE, fp_gene_id);
                 gene_index++;
             }
+
             // hash the id
             free(group);
             group= (char*)malloc(sizeof(char)*1000);
@@ -1768,9 +1812,10 @@ int sparse_compressor(FILE* fp, int length, int block_size){
             strcat(group, new_group);          
 
             fprintf(fp_hash_key, "%s\n", gene_identifier); 
-            if(fprintf(fp_hash_val, "%s\n", group)<0){
-                printf("%s\n", group);
-            } 
+            fprintf(fp_hash_val, "%s\n", group);
+            fprintf(fp_hash_key, "%s\n", gene_name); 
+            fprintf(fp_hash_val, "%s\n", group);
+
             if(item_id_flag == 1){
                 item_id= 0;
                 item_id_flag=0;

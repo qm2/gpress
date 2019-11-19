@@ -281,7 +281,14 @@ int main(int argc , char **argv){
                 if(strcmp(input, "quit") == 0){
                 	break;
                 }
-                // hashval= (char*)malloc(sizeof(char)*100);
+                //get rid of the version after '.'
+                int count;
+                for(count=0; count<strlen(input); count++){
+                    if(input[count] == '.'){
+                        input[count]='\0';
+                        break;
+                    }
+                }
                 hashval= (char*)ht_get(ht, input);
                 if(hashval == NULL){
                    printf("This ID is not valid!\n");
@@ -293,7 +300,7 @@ int main(int argc , char **argv){
                 s= strtok(NULL, " ");
                 block_id= atoi(s);
                 retval = item_search(block, block_id);
-                printf("The item with id %s is:\n",input);
+                printf("The searched item is:\n");
                 printf("%s", retval);    
                 printf("Please enter 'yes' if you also want to print out all its parents and children within a gene\n");
                 printf("Otherwise, enter 'no' to skip it\n");
@@ -465,6 +472,14 @@ int main(int argc , char **argv){
         int block_id;
         int block_start_id;
         int block_end_id;
+        //get rid of the version after '.'
+        int count;
+        for(count=0; count<strlen(argv[2]); count++){
+            if(argv[2][count] == '.'){
+                argv[2][count]='\0';
+                break;
+            }
+        }
         hashval= (char*)malloc(sizeof(char)*100);
         hashval= (char*)ht_get(ht, argv[2]);
         if(hashval == NULL){
@@ -499,14 +514,14 @@ int main(int argc , char **argv){
             s= strtok(NULL, " ");
             block_id= atoi(s);
             retval = item_search(block, block_id);
-            printf("All the information of item with id %s is outputed:\n",argv[2]);
-            printf("The item with id %s also exists in GFF file:\n",argv[2]);
+            printf("All the information of item with searched id is outputed:\n");
+            printf("The item with this id also exists in GFF file:\n");
             printf("%s", retval);
             system("rm GTF_compressed/*");
             system("rm GTF_parsed/*");
         }
         else{
-            printf("All the information of item with id %s is outputed:\n",argv[2]);
+            printf("All the information of item with searched id is outputed:\n");
             printf("The item with this id does not exist in the compressed GFF file\n");
         }
         system("rm expression_compressed/*");
@@ -515,12 +530,16 @@ int main(int argc , char **argv){
     }
     else if(strcmp("-sparse", argv[1]) == 0){
         //sort the sparse matrix file
-        FILE *fp;
+        FILE *fp, *fp_gene;
         FILE *fp2;
         char* s;
         char comments[1000];
         char line[1000];
         fp = fopen(argv[2], "r");
+        if(fp == NULL){
+            printf("the input .mtx file is not valid\n");
+            return 0;
+        }
         int i;
         int total_row = 0;
         int row, col, value;
@@ -589,13 +608,15 @@ int main(int argc , char **argv){
         fp = fopen("sorted.mtx", "r");
         //run the compressor
         int block;
-        if(argc == 4){
+        if(argc == 6){
             block = 2000;
         }
         else{
-            block = atoi(argv[3]);
+            block = atoi(argv[5]);
         }
-        sparse_compressor(fp, count_lines, block);  
+        //open the gene labels file
+        fp_gene= fopen(argv[3], "r");
+        sparse_compressor(fp, fp_gene, count_lines, block);  
         // system("rm sparse_parsed/*");
        //create the folder specified by the user
         char command2[200];
@@ -607,9 +628,14 @@ int main(int argc , char **argv){
         char command1[200];
         snprintf(command1, sizeof(command1), "tar -cf %s/sparse_compressed.tar sparse_compressed", argv[argc-1]);
         system(command1);
+        //compress the barcode file with BSC compressor
+        char command0[200];
+        snprintf(command0, sizeof(command0), "BSC/bsc e %s %s/compressed_barcodes", argv[4], argv[argc-1]);
+        system(command0);
         system("rm sparse_compressed/*"); 
         printf("compression and linking of sparse matrix file succeeds!\n");
         fclose(fp);
+        fclose(fp_gene);
     }
     else if(strcmp("-qs", argv[1]) == 0){
         char hash_key[500]; 
@@ -652,8 +678,42 @@ int main(int argc , char **argv){
         block_start_id= atoi(s);
         s= strtok(NULL, " ");
         block_end_id= atoi(s);
+        //decompress the barcodes file
+        char command0[200];
+        snprintf(command0, sizeof(command0), "BSC/bsc d %s/compressed_barcodes search_barcodes.tsv", argv[argc-1]);
+        system(command0);        
         sparseSearch(block, block_start_id, block_end_id);
-        printf("All the information of item with id %s is outputed:\n",argv[2]);
+        system("rm search_barcodes.tsv");
+        //check if GTF file contains extra information
+        fp_hash_key= fopen("index_tables/data_key.txt", "r");
+        fp_hash_val= fopen("index_tables/data_value.txt", "r");
+        int exist = 0;
+        while(fscanf(fp_hash_key, "%s", hash_key)!=EOF){
+            fgets(hash_val, 50, fp_hash_val);
+            if(!strcmp(hash_key, argv[2])){
+                exist = 1;
+                break;
+            }
+        }
+        if(exist == 1){
+            char command4[200];
+            snprintf(command4, sizeof(command4), "tar -xf %s/GTF_compressed.tar GTF_compressed", argv[argc-1]);
+            system(command4);
+            s= strtok(hash_val, " ");
+            block= atoi(s);
+            s= strtok(NULL, " ");
+            block_id= atoi(s);
+            retval = item_search(block, block_id);
+            printf("All the information of item with searched id is outputed:\n");
+            printf("The item with this id also exists in GFF file:\n");
+            printf("%s", retval);
+            system("rm GTF_compressed/*");
+            system("rm GTF_parsed/*");
+        }
+        else{
+            printf("All the information of item with searched id is outputed:\n");
+            printf("The item with this id does not exist in the compressed GFF file\n");
+        }
         system("rm sparse_compressed/*");
         system("rm sparse_parsed/*");
         printf("sparse search succeeds!\n");

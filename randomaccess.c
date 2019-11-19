@@ -709,9 +709,11 @@ int sparseSearch(int block, int start_id, int end_id){
     char cmd[500];
     char column[BUFFSIZE];
     char value[BUFFSIZE];
+    char cell_id[BUFFSIZE];
+    char temp[200];
 
     char *column_name_cpy= "BSC/bsc d sparse_compressed/sparse_compressed_column_";
-    char *value_name_cpy="BSC/bsc d sparse_compressed/sparse_compressed_value_";    
+    char *value_name_cpy= "BSC/bsc d sparse_compressed/sparse_compressed_value_";    
 
     char column_name[100];
     char value_name[100]; 
@@ -722,7 +724,7 @@ int sparseSearch(int block, int start_id, int end_id){
     char* cmd_suffix_value="sparse_parsed/decompressed_ets.txt";    
   
 
-    FILE *fp_column, *fp_value;
+    FILE *fp_column, *fp_value, *fp_cell;
 
 
     sprintf(block_number,"%d", block);
@@ -741,16 +743,27 @@ int sparseSearch(int block, int start_id, int end_id){
     fp_column = fopen(cmd_suffix_column, "r");
     //open the source file
     fp_value = fopen(cmd_suffix_value, "r");
+    //open the cell id file
+    fp_cell = fopen("search_barcodes.tsv", "r");
 
-    int i=0;
+    int i= 0;
+    int col_num= 0;
     while(fscanf(fp_column, "%s", column)!=EOF){
         //read in all the rest 
         fscanf(fp_value, "%s", value);
         if(i>= start_id && i<=end_id){
+            //extract the cell id
+            while(col_num != atoi(column)){
+                fscanf(fp_cell, "%s", cell_id);
+                fgets(temp, BUFFSIZE, fp_cell);
+                col_num++;
+            }
             //output the column
-            printf("%s ", column);
+            printf("column index: %s    ", column);
+            //output the cell id
+            printf("cell id: %s    ", cell_id); 
             //output the matrix value
-            printf("%s\n", value);           
+            printf("value: %s\n", value);           
         }
         i++;
     }
