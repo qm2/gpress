@@ -1123,6 +1123,7 @@ int rangeSearch_sparse(int start_pos, int end_pos, int chr, int* chr_table, int*
                 }
 
                 //print out the information in the sparse matrix
+
                 char* hashval;
                 char* s;
                 int block;
@@ -1134,11 +1135,15 @@ int rangeSearch_sparse(int start_pos, int end_pos, int chr, int* chr_table, int*
                 if(hashval == NULL){
                     continue;
                 }
-                s= (char*)malloc(sizeof(char)*50);
+
+                s= (char*)malloc(sizeof(char)*200);
+
                 s= strtok(hashval, " ");
                 block= atoi(s);
+
                 s= strtok(NULL, " ");
                 block_start_id= atoi(s);
+
                 s= strtok(NULL, " ");
                 block_end_id= atoi(s);
                 //output the information in sparse matrix
@@ -1269,8 +1274,8 @@ int rangeSearch_expression(int start_pos, int end_pos, int chr, int* chr_table, 
     char temp[100];
     char* retval;
 
-    FILE *fp_hash_key= fopen("index_tables/sparse_key.txt", "r");
-    FILE *fp_hash_val= fopen("index_tables/sparse_value.txt", "r");
+    FILE *fp_hash_key= fopen("index_tables/expression_key.txt", "r");
+    FILE *fp_hash_val= fopen("index_tables/expression_value.txt", "r");
     hashtable_t *ht = ht_create(3000000);
 
     while(fscanf(fp_hash_key, "%s", hash_key)!=EOF){

@@ -717,7 +717,6 @@ int main(int argc , char **argv){
         }
         system("rm sparse_compressed/*");
         system("rm sparse_parsed/*");
-        system("rm search_barcodes.tsv");
         printf("sparse search succeeds!\n");
 
     }
@@ -748,10 +747,6 @@ int main(int argc , char **argv){
         system(command5);
         snprintf(command6, sizeof(command6), "BSC/bsc d %s/data_max_compressed index_tables/data_max.txt", argv[idx]);
         system(command6);
-        //decompress the barcodes file
-		char command7[200];
-		snprintf(command7, sizeof(command7), "BSC/bsc d %s/compressed_barcodes search_barcodes.tsv", argv[argc-1]);
-		system(command7);
 		//decompress the sparse matrix files
 		char command8[200];
 	    snprintf(command8, sizeof(command8), "tar -xf %s/expression_compressed.tar expression_compressed", argv[argc-1]);
@@ -773,6 +768,7 @@ int main(int argc , char **argv){
         fclose(fp_min);
         fclose(fp_max);
     	printf("All items on chromosome contained in both expression and GFF files %s from %s to %s are:\n",argv[4], argv[2], argv[3]);
+    	printf("hello\n");
         rangeSearch_expression(atoi(argv[2]), atoi(argv[3]), atoi(argv[4])-1, chr_table, min_table, max_table); 
         //free the tables
         free(chr_table);
@@ -836,6 +832,7 @@ int main(int argc , char **argv){
         fclose(fp_max);
     	printf("All items on contained in both sparse matrix files and GFF files in chromosome %s from %s to %s are:\n",argv[4], argv[2], argv[3]);
         rangeSearch_sparse(atoi(argv[2]), atoi(argv[3]), atoi(argv[4])-1, chr_table, min_table, max_table); 
+
         //free the tables
         free(chr_table);
         free(min_table);

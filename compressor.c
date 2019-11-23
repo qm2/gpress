@@ -1793,7 +1793,7 @@ int sparse_compressor(FILE* fp, FILE* fp_gene_id, int length, int block_size){
             group= (char*)malloc(sizeof(char)*1000);
             group[0]= '\0';
             free(group_id);
-            group_id= (char*)malloc(sizeof(char)*100);
+            group_id= (char*)malloc(sizeof(char)*1000);
             group_id[0]= '\0';
             sprintf(group,"%d", block);
             group[strlen(group)]=' ';
