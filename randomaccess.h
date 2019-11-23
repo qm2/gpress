@@ -20,7 +20,10 @@ int expressionSearch(int block, int start_id, int end_id);
 
 //this function finds the item in sparse matrix file
 int sparseSearch(int block, int start_id, int end_id);
-
+//this function finds all items in sparse matrix given a range
+int rangeSearch_sparse(int start_pos, int end_pos, int chr, int* chr_table, int* min_table, int* max_table);
+//this function finds all items in expression file given a range
+int rangeSearch_expression(int start_pos, int end_pos, int chr, int* chr_table, int* min_table, int* max_table);
 
 
 #endif

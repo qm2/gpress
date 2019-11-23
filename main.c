@@ -635,6 +635,7 @@ int main(int argc , char **argv){
         system("rm sparse_compressed/*"); 
         printf("compression and linking of sparse matrix file succeeds!\n");
         fclose(fp);
+        system("rm sorted.mtx");
         fclose(fp_gene);
     }
     else if(strcmp("-qs", argv[1]) == 0){
@@ -716,8 +717,134 @@ int main(int argc , char **argv){
         }
         system("rm sparse_compressed/*");
         system("rm sparse_parsed/*");
+        system("rm search_barcodes.tsv");
         printf("sparse search succeeds!\n");
 
+    }
+    else if(strcmp("-qer", argv[1]) == 0){
+    	char hash_key[500]; 
+        char* hash_val;
+        char temp[100];
+
+        //recover all the data structures 
+        int idx = 5;
+        char command1[200];
+        char command2[200];
+        char command3[200];
+        snprintf(command1, sizeof(command1), "BSC/bsc d %s/data_key_compressed index_tables/data_key.txt", argv[idx]);
+        system(command1);
+        snprintf(command2, sizeof(command2), "BSC/bsc d %s/data_value_compressed index_tables/data_value.txt", argv[idx]);
+        system(command2);
+        snprintf(command3, sizeof(command3), "BSC/bsc d %s/data_chr_compressed index_tables/data_chr.txt", argv[idx]);
+        system(command3);
+
+        char command4[200];
+        snprintf(command4, sizeof(command4), "tar -xf %s/GTF_compressed.tar GTF_compressed", argv[idx]);
+        system(command4);
+    	//decompress the index tables for min and max positions
+    	char command5[200];
+        char command6[200];
+        snprintf(command5, sizeof(command5), "BSC/bsc d %s/data_min_compressed index_tables/data_min.txt", argv[idx]);
+        system(command5);
+        snprintf(command6, sizeof(command6), "BSC/bsc d %s/data_max_compressed index_tables/data_max.txt", argv[idx]);
+        system(command6);
+        //decompress the barcodes file
+		char command7[200];
+		snprintf(command7, sizeof(command7), "BSC/bsc d %s/compressed_barcodes search_barcodes.tsv", argv[argc-1]);
+		system(command7);
+		//decompress the sparse matrix files
+		char command8[200];
+	    snprintf(command8, sizeof(command8), "tar -xf %s/expression_compressed.tar expression_compressed", argv[argc-1]);
+	    system(command8);
+        //create the position min and max tables
+        int *min_table= (int*)malloc(sizeof(int)*500);
+        int *max_table= (int*)malloc(sizeof(int)*500);
+    	//recover the chromosome table
+        FILE *fp_chromosome = fopen("index_tables/data_chr.txt", "rb"); 
+        fread(chr_table, sizeof(int), sizeof(chr_table), fp_chromosome);
+    	//recover the block min position table
+        FILE *fp_min = fopen("index_tables/data_min.txt", "rb"); 
+        fread(min_table, sizeof(int), sizeof(min_table), fp_min);
+    	//recover the block max position table
+        FILE *fp_max = fopen("index_tables/data_max.txt", "rb"); 
+        fread(max_table, sizeof(int), sizeof(max_table), fp_max);
+        //close the files
+        fclose(fp_chromosome);
+        fclose(fp_min);
+        fclose(fp_max);
+    	printf("All items on chromosome contained in both expression and GFF files %s from %s to %s are:\n",argv[4], argv[2], argv[3]);
+        rangeSearch_expression(atoi(argv[2]), atoi(argv[3]), atoi(argv[4])-1, chr_table, min_table, max_table); 
+        //free the tables
+        free(chr_table);
+        free(min_table);
+        free(max_table);             	    	
+        printf("range search for expression file succeeds!\n");
+        system("rm GTF_compressed/*");
+        system("rm GTF_parsed/*");
+        
+    }
+    else if(strcmp("-qsr", argv[1]) == 0){
+    	char hash_key[500]; 
+        char* hash_val;
+        char temp[100];
+
+        //recover all the data structures 
+        int idx = 5;
+        char command1[200];
+        char command2[200];
+        char command3[200];
+        snprintf(command1, sizeof(command1), "BSC/bsc d %s/data_key_compressed index_tables/data_key.txt", argv[idx]);
+        system(command1);
+        snprintf(command2, sizeof(command2), "BSC/bsc d %s/data_value_compressed index_tables/data_value.txt", argv[idx]);
+        system(command2);
+        snprintf(command3, sizeof(command3), "BSC/bsc d %s/data_chr_compressed index_tables/data_chr.txt", argv[idx]);
+        system(command3);
+
+        char command4[200];
+        snprintf(command4, sizeof(command4), "tar -xf %s/GTF_compressed.tar GTF_compressed", argv[idx]);
+        system(command4);
+    	//decompress the index tables for min and max positions
+    	char command5[200];
+        char command6[200];
+        snprintf(command5, sizeof(command5), "BSC/bsc d %s/data_min_compressed index_tables/data_min.txt", argv[idx]);
+        system(command5);
+        snprintf(command6, sizeof(command6), "BSC/bsc d %s/data_max_compressed index_tables/data_max.txt", argv[idx]);
+        system(command6);
+        //decompress the barcodes file
+		char command7[200];
+		snprintf(command7, sizeof(command7), "BSC/bsc d %s/compressed_barcodes search_barcodes.tsv", argv[argc-1]);
+		system(command7);
+		//decompress the sparse matrix files
+		char command8[200];
+	    snprintf(command8, sizeof(command8), "tar -xf %s/sparse_compressed.tar sparse_compressed", argv[argc-1]);
+	    system(command8);
+        //create the position min and max tables
+        int *min_table= (int*)malloc(sizeof(int)*500);
+        int *max_table= (int*)malloc(sizeof(int)*500);
+    	//recover the chromosome table
+        FILE *fp_chromosome = fopen("index_tables/data_chr.txt", "rb"); 
+        fread(chr_table, sizeof(int), sizeof(chr_table), fp_chromosome);
+    	//recover the block min position table
+        FILE *fp_min = fopen("index_tables/data_min.txt", "rb"); 
+        fread(min_table, sizeof(int), sizeof(min_table), fp_min);
+    	//recover the block max position table
+        FILE *fp_max = fopen("index_tables/data_max.txt", "rb"); 
+        fread(max_table, sizeof(int), sizeof(max_table), fp_max);
+        //close the files
+        fclose(fp_chromosome);
+        fclose(fp_min);
+        fclose(fp_max);
+    	printf("All items on contained in both sparse matrix files and GFF files in chromosome %s from %s to %s are:\n",argv[4], argv[2], argv[3]);
+        rangeSearch_sparse(atoi(argv[2]), atoi(argv[3]), atoi(argv[4])-1, chr_table, min_table, max_table); 
+        //free the tables
+        free(chr_table);
+        free(min_table);
+        free(max_table);             	    	
+        printf("range search for sparse matrix succeeds!\n");
+        system("rm GTF_compressed/*");
+        system("rm GTF_parsed/*");
+        system("rm search_barcodes.tsv");
+        
     }
 
     return 0;
