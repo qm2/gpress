@@ -214,11 +214,11 @@ GPress will also print the extra information if the searched item exists in the 
 ```
 will give information from both GTF and expression files in command window.
 
-8. To do range search on chromosome 1 with range from 1000 to 1000000 on compressed expression files based on compressed GFF file from folder **gtf1**,
+8. To do range search on chromosome 1 with range from 100000 to 100000000 on compressed expression files based on compressed GFF file from folder **gtf1**,
 ```
-./gpress -qer 1000 1000000 1 gtf1
+./gpress -qer 100000 100000000 1 gtf1
 ```
-The items on chromosome 1 with range from 1000 to 1000000 that exist in both GFF files and sparse matrix files are retrieved.
+The items on chromosome 1 with range from 100000 to 100000000 that exist in both GFF files and sparse matrix files are retrieved.
 
 By default, the outputs are printed on the command window.
 
