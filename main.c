@@ -768,7 +768,6 @@ int main(int argc , char **argv){
         fclose(fp_min);
         fclose(fp_max);
     	printf("All items on chromosome contained in both expression and GFF files %s from %s to %s are:\n",argv[4], argv[2], argv[3]);
-    	printf("hello\n");
         rangeSearch_expression(atoi(argv[2]), atoi(argv[3]), atoi(argv[4])-1, chr_table, min_table, max_table); 
         //free the tables
         free(chr_table);
