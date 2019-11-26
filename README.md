@@ -68,13 +68,25 @@ The compressed files are stored in the new specified folder
 
 block size is 2000 by default
 
-4. To do id search on compressed GTF or GFF3 file from the specified folder, run 
+4. To do single id search on compressed GTF or GFF3 file from the specified folder, run 
 ```
 ./gpress -q -id [id] [folder]
 ```
+By default, the outputs are printed on the command window. 
+
+In order to write the output to a file, run
+
+```
+./gpress -q -id [id] [folder] > [outputfile]
+```
+
+5. To do multiple id searches on compressed GTF or GFF3 file from the specified folder, run 
+```
+./gpress -q -id [folder]
+```
 Then, the user can enter the ID to search the item and its related parents and children.
 
-5. To do range search on compressed GTF or GFF3 file from the specified folder, run 
+6. To do range search on compressed GTF or GFF3 file from the specified folder, run 
 ```
 ./gpress -q -range [start] [end] [chromosome] [folder]
 ```
@@ -86,15 +98,15 @@ In order to write the output to a file, run
 ./gpress -q -range [start] [end] [chromosome] [folder] > [outputfile]
 ```
 
-6. To compress and link the expression file, 
+7. To compress and link the expression file, 
 ```
 ./gpress -e [inputfile] <block_size> [folder]
 ```
-The compressed expression files are linked to the GFF files in specified folder and are also store in that folder
+The compressed expression file is linked to the GFF files in specified folder and are also store in that folder
 
 block size is 2000 by default
 
-7. To do id search on compressed expression file from a specified folder,
+8. To do id search on compressed expression file from a specified folder,
 ```
 ./gpress -qe [id] [folder]
 ```
@@ -106,7 +118,7 @@ In order to write the output to a file,
 ./gpress -qe [id] [folder] > [outputfile]
 ```
 
-8. To do range search on compressed expression files based on compressed GFF file from a specified folder ,
+9. To do range search on compressed expression file based on compressed GFF file from a specified folder ,
 ```
 ./gpress -qer [start] [end] [chromosome] [folder]
 ```
@@ -119,7 +131,7 @@ In order to write the output to a file,
 ```
 
 
-9. To compress and link the sparse expression matrix files, 
+10. To compress and link the sparse matrix file, 
 ```
 ./gpress -sparse [input matrix] [input genes] [input barcodes] <block_size> [folder]
 ```
@@ -127,7 +139,7 @@ The compressed expression files are store in the specified folder
 
 block size is 2000 by default
 
-10. To do id search on compressed sparse expression matrix file from a specified folder,
+11. To do id search on compressed sparse expression matrix file from a specified folder,
 ```
 ./gpress -qs [id] [folder]
 ```
@@ -139,7 +151,7 @@ In order to write the output to a file,
 ./gpress -qs [id] [folder] > [outputfile]
 ```
 
-11. To do range search on compressed sparse matrix files based on a compressed GFF file from a specified folder ,
+12. To do range search on compressed sparse matrix file based on a compressed GFF file from a specified folder ,
 ```
 ./gpress -qsr [start] [end] [chromosome] [folder]
 ```
@@ -148,7 +160,7 @@ By default, the outputs are printed on the command window.
 In order to write the output to a file, 
 
 ```
-./gpress -qsr [start] [end] [chromosome] [folder]
+./gpress -qsr [start] [end] [chromosome] [folder] > [outputfile]
 ```
 
 
@@ -177,26 +189,32 @@ The decompressed GTF is stored named **decompressed_gtf.gtf** in folder **output
 The compressed GTF file is stored named **GTF_compressed.tar** in folder **gtf1**.
 The associated index tables are also stored in folder **gtf1**.
 
-4. To do id searches on compressed GTF file from folder **gtf1**, run
+4. To do single id search on compressed GTF file from folder **gtf1**, run
+```
+./gpress -q -id ENSE00003486434.1 gtf1
+```
+The retrieved information will be printed in command window by default.
+
+5. To do multiple id searches on compressed GTF file from folder **gtf1**, run
 ```
 ./gpress -q -id gtf1
 ```
 Then enter the exon id "ENSE00003486434.1" in the command window, the retrieved information will be printed in command window.
-If the user also wants to know all this exon's parents and children contained in the gene, enter "yes" in the command window.
+If the user also wants to know all this exon's parents and children contained in the gene, enter "yes" in the command window. Finally, hit "quit" to terminate the program.
 
-5. To do range search on chromosome 1 with range from 10000 to 100000:
+6. To do range search on chromosome 1 with range from 10000 to 100000:
 ```
 ./gpress -q -range 10000 100000 1 gtf1 
 ```
 The retrieved information is printed in command window.
 
-6. To compress and link the expression file with GFF files in folder **gtf1** (500 genes per block), 
+7. To compress and link the expression file with GFF files in folder **gtf1** (500 genes per block), 
 ```
 ./gpress -e data/test_expression.tsv 500 gtf1
 ```
 The compressed file is stored named **expression_compressed.tar** in folder **gtf1**.
 
-7. To do id search on compressed expression file from folder **gtf1**,
+8. To do id search on compressed expression file from folder **gtf1**,
 ```
 ./gpress -qe ENST00000009530.11 gtf1 
 ```
@@ -214,21 +232,21 @@ GPress will also print the extra information if the searched item exists in the 
 ```
 will give information from both GTF and expression files in command window.
 
-8. To do range search on chromosome 1 with range from 100000 to 100000000 on compressed expression files based on compressed GFF file from folder **gtf1**,
+9. To do range search on chromosome 1 with range from 100000 to 100000000 on compressed expression file based on compressed GFF file from folder **gtf1**,
 ```
 ./gpress -qer 100000 100000000 1 gtf1
 ```
-The items on chromosome 1 with range from 100000 to 100000000 that exist in both GFF files and sparse matrix files are retrieved.
+The items on chromosome 1 with range from 100000 to 100000000 that exist in both GFF files and expression file are retrieved.
 
 By default, the outputs are printed on the command window.
 
-9. To compress and link the sparse expression matrix file in folder **gtf1** (500 genes per block), 
+10. To compress and link the sparse expression matrix file in folder **gtf1** (500 genes per block), 
 ```
 ./gpress -sparse data/matrix.mtx data/genes.tsv data/barcodes.tsv 500 gtf1
 ```
-The compressed sparse expression matrix files are stored named **sparse_compressed.tar** in folder **gtf1**.
+The compressed sparse matrix files are stored named **sparse_compressed.tar** in folder **gtf1**.
 
-10. To do id search on compressed sparse sparse matrix file from folder **gtf1**,
+11. To do id search on compressed sparse sparse matrix file from folder **gtf1**,
 ```
 ./gpress -qs ENSG00000242485 gtf1
 ```
@@ -236,7 +254,7 @@ GPress will also print the extra information if it exists in GFF file.
 
 By default, the outputs are printed in the command window. 
 
-11. To do range search on chromosome 1 with range from 1000 to 1000000 on compressed sparse matrix files based on compressed GFF file from folder **gtf1**,
+12. To do range search on chromosome 1 with range from 1000 to 1000000 on compressed sparse matrix file based on compressed GFF file from folder **gtf1**,
 ```
 ./gpress -qsr 1000 1000000 1 gtf1
 ```
