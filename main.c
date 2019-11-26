@@ -56,11 +56,11 @@ int main(int argc , char **argv){
         	block = atoi(argv[3]);
         }
         if(!strcmp(dot+1, "gtf")){
-            count_lines -=5;    
+            count_lines -=5;
             gtf_compressor(fp, count_lines, chr_table, min_table, max_table, block);
-        } 
+        }
         else if(!strcmp(dot+1, "gff3")){
-            count_lines -=7;    
+            count_lines -=7;
             gff3_compressor(fp, count_lines, chr_table, min_table, max_table, block);
         }
         else{
@@ -85,7 +85,7 @@ int main(int argc , char **argv){
         snprintf(command7, sizeof(command7), "mkdir %s", argv[argc-1]);
         struct stat st = {0};
         if (stat(argv[argc-1], &st) == -1) {
-            system(command7);           
+            system(command7);
         }
         char command1[200];
         char command2[200];
@@ -96,18 +96,18 @@ int main(int argc , char **argv){
         system("rm GTF_parsed/*");
         snprintf(command1, sizeof(command1), "tar -cf %s/GTF_compressed.tar GTF_compressed", argv[argc-1]);
         system(command1);
-        system("rm GTF_compressed/*"); 
+        system("rm GTF_compressed/*");
         snprintf(command2, sizeof(command2), "BSC/bsc e index_tables/data_key.txt %s/data_key_compressed", argv[argc-1]);
         system(command2);
         snprintf(command3, sizeof(command3), "BSC/bsc e index_tables/data_value.txt %s/data_value_compressed", argv[argc-1]);
-        system(command3);       
+        system(command3);
         snprintf(command4, sizeof(command4), "BSC/bsc e index_tables/data_chr.txt %s/data_chr_compressed", argv[argc-1]);
-        system(command4);  
+        system(command4);
         snprintf(command5, sizeof(command5), "BSC/bsc e index_tables/data_min.txt %s/data_min_compressed", argv[argc-1]);
-        system(command5);       
+        system(command5);
         snprintf(command6, sizeof(command6), "BSC/bsc e index_tables/data_max.txt %s/data_max_compressed", argv[argc-1]);
-        system(command6);  
-        system("rm index_tables/*");                           
+        system(command6);
+        system("rm index_tables/*");
         printf("The compression of GFF file with random access succeeds! The compressed files are in folder %s\n", argv[argc-1]);
         fclose(fp);
     }
@@ -140,7 +140,7 @@ int main(int argc , char **argv){
         if(!strcmp(dot+1, "gtf")){
             count_lines -=5;
             gtf_compressor2(fp, count_lines,0);
-        } 
+        }
         else if(!strcmp(dot+1, "gff3")){
             count_lines -=7;
             gtf_compressor2(fp, count_lines, 1);
@@ -154,13 +154,13 @@ int main(int argc , char **argv){
         snprintf(command2, sizeof(command2), "mkdir %s", argv[argc-1]);
         struct stat st = {0};
         if (stat(argv[argc-1], &st) == -1) {
-            system(command2);           
+            system(command2);
         }
         char command1[200];
         snprintf(command1, sizeof(command1), "tar -cf %s/GTF_compressed_without.tar GTF_compressed2", argv[argc-1]);
-        system(command1); 
+        system(command1);
         system("rm GTF_parsed2/*");
-        system("rm GTF_compressed2/*");  
+        system("rm GTF_compressed2/*");
         printf("The compression of GTF file without random access succeeds!\n");
         fclose(fp);
     }
@@ -174,18 +174,18 @@ int main(int argc , char **argv){
         //run the decompressor
         char command1[200];
         snprintf(command1, sizeof(command1), "tar -xf %s/GTF_compressed_without.tar GTF_compressed2", argv[argc-1]);
-        system(command1); 
+        system(command1);
         system("BSC/bsc d GTF_compressed2/gtf_seqname_compressed GTF_parsed2/gtf_seqname.txt");
         system("BSC/bsc d GTF_compressed2/gtf_source_compressed GTF_parsed2/gtf_source.txt");
         system("BSC/bsc d GTF_compressed2/gtf_feature_compressed GTF_parsed2/gtf_feature.txt");
-        system("BSC/bsc d GTF_compressed2/gtf_start_compressed GTF_parsed2/gtf_start.txt");   
+        system("BSC/bsc d GTF_compressed2/gtf_start_compressed GTF_parsed2/gtf_start.txt");
         system("BSC/bsc d GTF_compressed2/gtf_delta_compressed GTF_parsed2/gtf_delta.txt");
         system("BSC/bsc d GTF_compressed2/gtf_score_compressed GTF_parsed2/gtf_score.txt");
         system("BSC/bsc d GTF_compressed2/gtf_strand_compressed GTF_parsed2/gtf_strand.txt");
-        system("BSC/bsc d GTF_compressed2/gtf_attribute_compressed GTF_parsed2/gtf_attribute.txt"); 
+        system("BSC/bsc d GTF_compressed2/gtf_attribute_compressed GTF_parsed2/gtf_attribute.txt");
         system("BSC/bsc d GTF_compressed2/gtf_gtf_frame_cds_compressed GTF_parsed2/gtf_frame_cds.txt");
         system("BSC/bsc d GTF_compressed2/gtf_frame_start_compressed GTF_parsed2/gtf_frame_start.txt");
-        system("BSC/bsc d GTF_compressed2/gtf_frame_stop_compressed GTF_parsed2/gtf_frame_stop.txt"); 
+        system("BSC/bsc d GTF_compressed2/gtf_frame_stop_compressed GTF_parsed2/gtf_frame_stop.txt");
         fp2 = fopen("GTF_parsed2/gtf_seqname.txt", "r");
         if(fp2 == NULL){
             printf("the compressed files are invalid!\n");
@@ -208,64 +208,58 @@ int main(int argc , char **argv){
 
         if(!strcmp(argv[2], "gtf")){
             fp = fopen("output/decompressed_gtf.gtf", "w+");
-            gtf_decompressor(fp, count_lines, 0); 
-            printf("The decompressed GTF file is included in the output/decompressed_gtf.gtf!\n");           
+            gtf_decompressor(fp, count_lines, 0);
+            printf("The decompressed GTF file is included in the output/decompressed_gtf.gtf!\n");
         }
         else if(!strcmp(argv[2], "gff3")){
             fp = fopen("output/decompressed_gff3.gff3", "w+");
-            gtf_decompressor(fp, count_lines, 1); 
-            printf("The decompressed GFF3 file is included in the output/decompressed_gff3.gff3!\n");          
-        } 
+            gtf_decompressor(fp, count_lines, 1);
+            printf("The decompressed GFF3 file is included in the output/decompressed_gff3.gff3!\n");
+        }
         else{
             printf("The file type is invalid!\n");
             return 0;
-        }      
+        }
         system("rm GTF_parsed2/*");
-        system("rm GTF_compressed2/*"); 
+        system("rm GTF_compressed2/*");
         fclose(fp);
     }
     else if(strcmp("-q", argv[1]) == 0){
 
-        char hash_key[500]; 
+        char hash_key[500];
         char* hash_val;
         char temp[100];
 
-        //recover all the data structures 
-        int idx;
-        if(strcmp("-id", argv[2]) == 0){
-            idx = 3;
-        }
-        else{
-            idx = 6;
-        }
+        //recover all the data structures
+
         char command1[200];
         char command2[200];
         char command3[200];
-        snprintf(command1, sizeof(command1), "BSC/bsc d %s/data_key_compressed index_tables/data_key.txt", argv[idx]);
+        snprintf(command1, sizeof(command1), "BSC/bsc d %s/data_key_compressed index_tables/data_key.txt", argv[argc-1]);
         system(command1);
-        snprintf(command2, sizeof(command2), "BSC/bsc d %s/data_value_compressed index_tables/data_value.txt", argv[idx]);
+        snprintf(command2, sizeof(command2), "BSC/bsc d %s/data_value_compressed index_tables/data_value.txt", argv[argc-1]);
         system(command2);
-        snprintf(command3, sizeof(command3), "BSC/bsc d %s/data_chr_compressed index_tables/data_chr.txt", argv[idx]);
+        snprintf(command3, sizeof(command3), "BSC/bsc d %s/data_chr_compressed index_tables/data_chr.txt", argv[argc-1]);
         system(command3);
 
         char command4[200];
-        snprintf(command4, sizeof(command4), "tar -xf %s/GTF_compressed.tar GTF_compressed", argv[idx]);
+        snprintf(command4, sizeof(command4), "tar -xf %s/GTF_compressed.tar GTF_compressed", argv[argc-1]);
         system(command4);
 
         if(strcmp("-id", argv[2]) == 0){
-	        FILE *fp_hash_key= fopen("index_tables/data_key.txt", "r");
-	        FILE *fp_hash_val= fopen("index_tables/data_value.txt", "r");
-	        hashtable_t *ht = ht_create(3000000);
-
-	        while(fscanf(fp_hash_key, "%s", hash_key)!=EOF){
-	            hash_val= (char*)malloc(sizeof(char)*50);
-	            fgets(hash_val, 50, fp_hash_val);
-	            hash_val[strlen(hash_val) - 1] = '\0';
-	            ht_put(ht, hash_key, hash_val); 
-	        }
-	        //close the files
-	        fclose(fp_hash_key);
-	        fclose(fp_hash_val);   	                
+  	        FILE *fp_hash_key= fopen("index_tables/data_key.txt", "r");
+  	        FILE *fp_hash_val= fopen("index_tables/data_value.txt", "r");
+            if(argc==4){
+      	        hashtable_t *ht = ht_create(3000000);
+      	        while(fscanf(fp_hash_key, "%s", hash_key)!=EOF){
+      	            hash_val= (char*)malloc(sizeof(char)*50);
+      	            fgets(hash_val, 50, fp_hash_val);
+      	            hash_val[strlen(hash_val) - 1] = '\0';
+      	            ht_put(ht, hash_key, hash_val);
+  	        }
+  	        //close the files
+  	        fclose(fp_hash_key);
+  	        fclose(fp_hash_val);
             char* retval;
             char* hashval;
             char hash_split[200];
@@ -276,8 +270,8 @@ int main(int argc , char **argv){
             printf("Welcome to the random access based on ID\n");
             while(1){
                 printf("Please enter a valid ID for search or enter 'quit' to terminate the program!\n");
-                char input[500]; 
-                scanf("%[^\n]%*c", input); 
+                char input[500];
+                scanf("%[^\n]%*c", input);
                 if(strcmp(input, "quit") == 0){
                 	break;
                 }
@@ -301,7 +295,7 @@ int main(int argc , char **argv){
                 block_id= atoi(s);
                 retval = item_search(block, block_id);
                 printf("The searched item is:\n");
-                printf("%s", retval);    
+                printf("%s", retval);
                 printf("Please enter 'yes' if you also want to print out all its parents and children within a gene\n");
                 printf("Otherwise, enter 'no' to skip it\n");
                 while(1){
@@ -310,19 +304,19 @@ int main(int argc , char **argv){
                 	    FILE* fp_gene = fopen("gene_block.gtf", "r");
                 	    char info[1500];
                 	    while(fgets(info, 1024, fp_gene)){
-                            printf("%s", info);   
+                            printf("%s", info);
                 	    }
                 	    system("rm info.gtf");
                 	    system("rm gene_block.gtf");
                         break;
-                    }  
+                    }
                     else if(strcmp(input, "no") == 0){
                         break;
-                    }         
+                    }
                     else{
                     	printf("the input value is not valid, please enter again!\n");
-                    }     	
-                }         	
+                    }
+                }
                 printf("id search succeeds!\n");
                 parsed = 1;
             }
@@ -331,36 +325,77 @@ int main(int argc , char **argv){
                 system("rm GTF_parsed/*");
             }
         }
+          else if(argc==5){
+              FILE *fp_hash_key= fopen("index_tables/data_key.txt", "r");
+    	        FILE *fp_hash_val= fopen("index_tables/data_value.txt", "r");
+              char* retval;
+              char* no_dot;
+              char hash_split[200];
+              char* s;
+              int block;
+              int block_id;
+              int exist = 0;
+              //get rid of the dot in id
+              no_dot= strtok(argv[3], ".");
+              while(fscanf(fp_hash_key, "%s", hash_key)!=EOF){
+      	          hash_val= (char*)malloc(sizeof(char)*50);
+                  fgets(hash_val, 50, fp_hash_val);
+                  if(!strcmp(hash_key, no_dot)){
+                      exist = 1;
+                      break;
+                  }
+              }
+              if(exist == 0){
+                 printf("This ID is not valid!\n");
+                 return 0;
+              }
+              strcpy(hash_split, hash_val);
+              s= strtok(hash_split, " ");
+              block= atoi(s);
+              s= strtok(NULL, " ");
+              block_id= atoi(s);
+              retval = item_search(block, block_id);
+              printf("The searched item is:\n");
+              printf("%s", retval);
+              printf("id search succeeds!\n");
+              fclose(fp_hash_key);
+              fclose(fp_hash_val);
+              system("rm GTF_compressed/*");
+              if(exist ==1){
+                  system("rm GTF_parsed/*");
+              }
+          }
+        }
         else if(strcmp("-range", argv[2]) == 0){
         	//decompress the index tables for min and max positions
         	char command5[200];
 	        char command6[200];
-	        snprintf(command5, sizeof(command5), "BSC/bsc d %s/data_min_compressed index_tables/data_min.txt", argv[idx]);
+	        snprintf(command5, sizeof(command5), "BSC/bsc d %s/data_min_compressed index_tables/data_min.txt", argv[argc-1]);
 	        system(command5);
-	        snprintf(command6, sizeof(command6), "BSC/bsc d %s/data_max_compressed index_tables/data_max.txt", argv[idx]);
+	        snprintf(command6, sizeof(command6), "BSC/bsc d %s/data_max_compressed index_tables/data_max.txt", argv[argc-1]);
 	        system(command6);
 	        //create the position min and max tables
 	        int *min_table= (int*)malloc(sizeof(int)*500);
 	        int *max_table= (int*)malloc(sizeof(int)*500);
         	//recover the chromosome table
-            FILE *fp_chromosome = fopen("index_tables/data_chr.txt", "rb"); 
+            FILE *fp_chromosome = fopen("index_tables/data_chr.txt", "rb");
             fread(chr_table, sizeof(int), sizeof(chr_table), fp_chromosome);
         	//recover the block min position table
-            FILE *fp_min = fopen("index_tables/data_min.txt", "rb"); 
+            FILE *fp_min = fopen("index_tables/data_min.txt", "rb");
             fread(min_table, sizeof(int), sizeof(min_table), fp_min);
         	//recover the block max position table
-            FILE *fp_max = fopen("index_tables/data_max.txt", "rb"); 
+            FILE *fp_max = fopen("index_tables/data_max.txt", "rb");
             fread(max_table, sizeof(int), sizeof(max_table), fp_max);
             //close the files
             fclose(fp_chromosome);
             fclose(fp_min);
             fclose(fp_max);
         	printf("All items on chromosome %s from %s to %s are:\n",argv[5], argv[3], argv[4]);
-            rangeSearch(atoi(argv[3]), atoi(argv[4]), atoi(argv[5])-1, chr_table, min_table, max_table); 
+            rangeSearch(atoi(argv[3]), atoi(argv[4]), atoi(argv[5])-1, chr_table, min_table, max_table);
             //free the tables
             free(chr_table);
             free(min_table);
-            free(max_table);             	    	
+            free(max_table);
             printf("range search succeeds!\n");
             system("rm GTF_compressed/*");
             system("rm GTF_parsed/*");
@@ -422,24 +457,24 @@ int main(int argc , char **argv){
         else{
         	block = atoi(argv[3]);
         }
-        expression_compressor(fp, count_lines, block);  
+        expression_compressor(fp, count_lines, block);
         system("rm expression_parsed/*");
        //create the folder specified by the user
         char command2[200];
         snprintf(command2, sizeof(command2), "mkdir %s", argv[argc-1]);
         struct stat st = {0};
         if (stat(argv[argc-1], &st) == -1) {
-            system(command2);           
+            system(command2);
         }
         char command1[200];
         snprintf(command1, sizeof(command1), "tar -cf %s/expression_compressed.tar expression_compressed", argv[argc-1]);
         system(command1);
-        system("rm expression_compressed/*"); 
+        system("rm expression_compressed/*");
         printf("compression and linking of expression file succeeds!\n");
         fclose(fp);
     }
     else if(strcmp("-qe", argv[1]) == 0){
-        char hash_key[500]; 
+        char hash_key[500];
         char* hash_val;
         char temp[100];
         char* retval;
@@ -458,7 +493,7 @@ int main(int argc , char **argv){
             hash_val= (char*)malloc(sizeof(char)*50);
             fgets(hash_val, 50, fp_hash_val);
             hash_val[strlen(hash_val) - 1] = '\0';
-            ht_put(ht, hash_key, hash_val); 
+            ht_put(ht, hash_key, hash_val);
         }
         //close the files
         fclose(fp_hash_key);
@@ -545,7 +580,7 @@ int main(int argc , char **argv){
         int row, col, value;
         node** matrix;
         for(i=0; i<3; i++){
-            fgets(comments, 1000, fp);           
+            fgets(comments, 1000, fp);
         }
         s= strtok(comments, " ");
         total_row=atoi(s);
@@ -564,7 +599,7 @@ int main(int argc , char **argv){
                 if (init(&matrix[row], col, value) != 0) {
                     fprintf(stderr, "Failed to init a new linked list");
                     return 0;
-                }   
+                }
             }
             else{
                 insert(&matrix[row], col, value);
@@ -616,14 +651,14 @@ int main(int argc , char **argv){
         }
         //open the gene labels file
         fp_gene= fopen(argv[3], "r");
-        sparse_compressor(fp, fp_gene, count_lines, block);  
+        sparse_compressor(fp, fp_gene, count_lines, block);
         // system("rm sparse_parsed/*");
        //create the folder specified by the user
         char command2[200];
         snprintf(command2, sizeof(command2), "mkdir %s", argv[argc-1]);
         struct stat st = {0};
         if (stat(argv[argc-1], &st) == -1) {
-            system(command2);           
+            system(command2);
         }
         char command1[200];
         snprintf(command1, sizeof(command1), "tar -cf %s/sparse_compressed.tar sparse_compressed", argv[argc-1]);
@@ -632,14 +667,14 @@ int main(int argc , char **argv){
         char command0[200];
         snprintf(command0, sizeof(command0), "BSC/bsc e %s %s/compressed_barcodes", argv[4], argv[argc-1]);
         system(command0);
-        system("rm sparse_compressed/*"); 
+        system("rm sparse_compressed/*");
         printf("compression and linking of sparse matrix file succeeds!\n");
         fclose(fp);
         system("rm sorted.mtx");
         fclose(fp_gene);
     }
     else if(strcmp("-qs", argv[1]) == 0){
-        char hash_key[500]; 
+        char hash_key[500];
         char* hash_val;
         char temp[100];
         char* retval;
@@ -652,7 +687,7 @@ int main(int argc , char **argv){
             hash_val= (char*)malloc(sizeof(char)*50);
             fgets(hash_val, 50, fp_hash_val);
             hash_val[strlen(hash_val) - 1] = '\0';
-            ht_put(ht, hash_key, hash_val); 
+            ht_put(ht, hash_key, hash_val);
         }
         //close the files
         fclose(fp_hash_key);
@@ -682,7 +717,7 @@ int main(int argc , char **argv){
         //decompress the barcodes file
         char command0[200];
         snprintf(command0, sizeof(command0), "BSC/bsc d %s/compressed_barcodes search_barcodes.tsv", argv[argc-1]);
-        system(command0);        
+        system(command0);
         sparseSearch(block, block_start_id, block_end_id);
         system("rm search_barcodes.tsv");
         //check if GTF file contains extra information
@@ -721,11 +756,11 @@ int main(int argc , char **argv){
 
     }
     else if(strcmp("-qer", argv[1]) == 0){
-    	char hash_key[500]; 
+    	char hash_key[500];
         char* hash_val;
         char temp[100];
 
-        //recover all the data structures 
+        //recover all the data structures
         int idx = 5;
         char command1[200];
         char command2[200];
@@ -755,35 +790,35 @@ int main(int argc , char **argv){
         int *min_table= (int*)malloc(sizeof(int)*500);
         int *max_table= (int*)malloc(sizeof(int)*500);
     	//recover the chromosome table
-        FILE *fp_chromosome = fopen("index_tables/data_chr.txt", "rb"); 
+        FILE *fp_chromosome = fopen("index_tables/data_chr.txt", "rb");
         fread(chr_table, sizeof(int), sizeof(chr_table), fp_chromosome);
     	//recover the block min position table
-        FILE *fp_min = fopen("index_tables/data_min.txt", "rb"); 
+        FILE *fp_min = fopen("index_tables/data_min.txt", "rb");
         fread(min_table, sizeof(int), sizeof(min_table), fp_min);
     	//recover the block max position table
-        FILE *fp_max = fopen("index_tables/data_max.txt", "rb"); 
+        FILE *fp_max = fopen("index_tables/data_max.txt", "rb");
         fread(max_table, sizeof(int), sizeof(max_table), fp_max);
         //close the files
         fclose(fp_chromosome);
         fclose(fp_min);
         fclose(fp_max);
     	printf("All items on chromosome contained in both expression and GFF files %s from %s to %s are:\n",argv[4], argv[2], argv[3]);
-        rangeSearch_expression(atoi(argv[2]), atoi(argv[3]), atoi(argv[4])-1, chr_table, min_table, max_table); 
+        rangeSearch_expression(atoi(argv[2]), atoi(argv[3]), atoi(argv[4])-1, chr_table, min_table, max_table);
         //free the tables
         free(chr_table);
         free(min_table);
-        free(max_table);             	    	
+        free(max_table);
         printf("range search for expression file succeeds!\n");
         system("rm GTF_compressed/*");
         system("rm GTF_parsed/*");
-        
+
     }
     else if(strcmp("-qsr", argv[1]) == 0){
-    	char hash_key[500]; 
+    	char hash_key[500];
         char* hash_val;
         char temp[100];
 
-        //recover all the data structures 
+        //recover all the data structures
         int idx = 5;
         char command1[200];
         char command2[200];
@@ -817,30 +852,30 @@ int main(int argc , char **argv){
         int *min_table= (int*)malloc(sizeof(int)*500);
         int *max_table= (int*)malloc(sizeof(int)*500);
     	//recover the chromosome table
-        FILE *fp_chromosome = fopen("index_tables/data_chr.txt", "rb"); 
+        FILE *fp_chromosome = fopen("index_tables/data_chr.txt", "rb");
         fread(chr_table, sizeof(int), sizeof(chr_table), fp_chromosome);
     	//recover the block min position table
-        FILE *fp_min = fopen("index_tables/data_min.txt", "rb"); 
+        FILE *fp_min = fopen("index_tables/data_min.txt", "rb");
         fread(min_table, sizeof(int), sizeof(min_table), fp_min);
     	//recover the block max position table
-        FILE *fp_max = fopen("index_tables/data_max.txt", "rb"); 
+        FILE *fp_max = fopen("index_tables/data_max.txt", "rb");
         fread(max_table, sizeof(int), sizeof(max_table), fp_max);
         //close the files
         fclose(fp_chromosome);
         fclose(fp_min);
         fclose(fp_max);
     	printf("All items on contained in both sparse matrix files and GFF files in chromosome %s from %s to %s are:\n",argv[4], argv[2], argv[3]);
-        rangeSearch_sparse(atoi(argv[2]), atoi(argv[3]), atoi(argv[4])-1, chr_table, min_table, max_table); 
+        rangeSearch_sparse(atoi(argv[2]), atoi(argv[3]), atoi(argv[4])-1, chr_table, min_table, max_table);
 
         //free the tables
         free(chr_table);
         free(min_table);
-        free(max_table);             	    	
+        free(max_table);
         printf("range search for sparse matrix succeeds!\n");
         system("rm GTF_compressed/*");
         system("rm GTF_parsed/*");
         system("rm search_barcodes.tsv");
-        
+
     }
 
     return 0;

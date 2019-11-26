@@ -17,7 +17,7 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
     int position_min, position_max;
     //create file pointers for all the output files
     FILE *fp_sq, *fp_src, *fp_fea, *fp_start, *fp_delta, *fp_att, *fp_comments;
-    FILE *fp_score, *fp_strand, *fp_frame_cds, *fp_frame_start, *fp_frame_stop, *fp_hash_key, *fp_hash_val; 
+    FILE *fp_score, *fp_strand, *fp_frame_cds, *fp_frame_start, *fp_frame_stop, *fp_hash_key, *fp_hash_val;
     //array to hold each column
     char comments[BUFFSIZE];
     char seqname[BUFFSIZE];
@@ -32,8 +32,7 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
     char frame[BUFFSIZE];
     char attribute[BUFFSIZE];
     char refer[BUFFSIZE];
-    char group_id[BUFFSIZE];
-    char* group;
+    char* group = NULL;
     char* id;
 
     int prev_gene =0, prev_trans =0, prev_exon =0;
@@ -47,22 +46,22 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
     char* transcript_id = "transcript_id";
     char* exon_id = "exon_id";
 
-    char sq_name[100]; 
-    char src_name[100]; 
-    char fea_name[100]; 
-    char start_name[100];       
-    char delta_name[100]; 
+    char sq_name[100];
+    char src_name[100];
+    char fea_name[100];
+    char start_name[100];
+    char delta_name[100];
     char score_name[100];
-    char strand_name[100]; 
+    char strand_name[100];
     char att_name[100];
-    char frame_cds_name[100]; 
-    char frame_start_name[100]; 
+    char frame_cds_name[100];
+    char frame_start_name[100];
     char frame_stop_name[100];
     char compress_cmd[100];
     char* sq_name_prefix= "GTF_parsed/gtf_seqname_" ;
     char* src_name_prefix= "GTF_parsed/gtf_source_";
     char* fea_name_prefix= "GTF_parsed/gtf_feature_";
-    char* start_name_prefix= "GTF_parsed/gtf_start_";       
+    char* start_name_prefix= "GTF_parsed/gtf_start_";
     char* delta_name_prefix= "GTF_parsed/gtf_delta_";
     char* score_name_prefix= "GTF_parsed/gtf_score_";
     char* strand_name_prefix= "GTF_parsed/gtf_strand_";
@@ -72,7 +71,7 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
     char* frame_stop_name_prefix= "GTF_parsed/gtf_frame_stop_";
     char* compress_cmd_prefix= "BSC/bsc e ";
     char* cmd_suffix_sq= " GTF_compressed/compressed_seqname_";
-    char* cmd_suffix_src=" GTF_compressed/compressed_source_";    
+    char* cmd_suffix_src=" GTF_compressed/compressed_source_";
     char* cmd_suffix_fea=" GTF_compressed/compressed_feature_";
     char* cmd_suffix_start=" GTF_compressed/compressed_start_";
     char* cmd_suffix_delta=" GTF_compressed/compressed_delta_";
@@ -144,7 +143,7 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
     //store the first five lines of comments
     for(i=0; i<5; i++){
         fgets(comments, BUFFSIZE, fp);
-        //fprintf(fp_att, "%s", comments);           
+        //fprintf(fp_att, "%s", comments);
     }
     item_id = -1;
     strcpy(prev_chr, "chr1");
@@ -161,7 +160,7 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
         //read in the feature
         fscanf(fp, "%s", feature);
 
-        //check if we need to update the block 
+        //check if we need to update the block
         if(!strcmp(feature, gene)){
             gene_numbers++;
             if(gene_numbers == block_size){
@@ -300,7 +299,7 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
         }
         if(gene_numbers==0 || atoi(start) > position_max){
             position_max= atoi(start);
-        }       
+        }
         if(new_block == 1){
             //position[block]= atoi(start);
             new_block= 0;
@@ -311,7 +310,7 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
         //calculate the difference between start and stop
         sprintf(delta,"%d", atoi(end) - atoi(start));
         //output the delta
-        fprintf(fp_delta, "%s\n", delta);  
+        fprintf(fp_delta, "%s\n", delta);
 
         //read in the score
         fscanf(fp, "%s", score);
@@ -329,33 +328,33 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
         fscanf(fp, "%s", frame);
         //check if the current item has frame or not
         //the current item is CDS
-        if(!strcmp(feature, cds)){ 
+        if(!strcmp(feature, cds)){
             fprintf(fp_frame_cds,"%s\n", frame);
         }
         //the current item is start codon
         else if(!strcmp(feature, start_codon)){
             fprintf(fp_frame_start,"%s\n", frame);
-        }       
+        }
         else if(!strcmp(feature, stop_codon)){
             fprintf(fp_frame_stop,"%s\n", frame);
-        } 
+        }
         //skip the empty spaces
         if((empty=fgetc(fp)) == ' ')
-        { 
+        {
             empty = fgetc(fp);
         }
         //read in the attribute
         fgets(attribute, BUFFSIZE, fp);
         //ouput the attribute
         fprintf(fp_att, "%s", attribute);
-        
+
 
         //extract the id from the attribute
         len= strlen(attribute);
         free(id);
         id =(char*) malloc(100*sizeof(char));
         id[0]='\0';
-        if(strcmp(feature, gene)  == 0){ 
+        if(strcmp(feature, gene)  == 0){
             //find the starting position of gene id
             memset(refer,0,sizeof(refer));
             m=0;
@@ -368,9 +367,9 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
                     memset(refer,0,sizeof(refer));
                 }
                 else{
-                    refer[m] = attribute[j];  
-                    m++;                
-                }               
+                    refer[m] = attribute[j];
+                    m++;
+                }
             }
             j+=2;
             for(k=0; attribute[j+k]!='.'; k++){
@@ -378,25 +377,13 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
             }
             id[k]='\0';
             // hash the id
-            free(group);
-            group= (char*)malloc(sizeof(char)*100);
-            group[0]= '\0';
-            memset(group_id,0,sizeof(group_id));
-            sprintf(group,"%d", block);
-            group[strlen(group)]=' ';
-            sprintf(group_id, "%d", item_id);
-            // if(item_id==0){
-            //     printf("group:%s group_id:%s block:%d\n", group, group_id, block);
-            // }  
-            strcat(group, group_id);    
-            fprintf(fp_hash_key, "%s\n", id); 
-            if(fprintf(fp_hash_val, "%s\n", group)<0){
-                printf("%s\n", group);
-            } 
-            //  if(item_id==0){
-            //     printf("total group:%s\n", group);
-            // }  
-
+            if(group != NULL){
+                free(group);
+            }
+            group= (char*)malloc(sizeof(char)*1000);
+  	        snprintf(group, 1000, "%d %d", block, item_id);
+            fprintf(fp_hash_key, "%s\n", id);
+            fprintf(fp_hash_val, "%s\n", group);
         }
         else if(strcmp(feature, transcript) == 0){
             //find the starting position of transcript id
@@ -411,9 +398,9 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
                     memset(refer,0,sizeof(refer));
                 }
                 else{
-                    refer[m] = attribute[j];  
-                    m++;                
-                }               
+                    refer[m] = attribute[j];
+                    m++;
+                }
             }
             j+=2;
             for(k=0; attribute[j+k]!='.'; k++){
@@ -421,18 +408,13 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
             }
             id[k]='\0';
             // hash the id
-            free(group);
-            group= (char*)malloc(sizeof(char)*100);
-            group[0]= '\0';
-            memset(group_id,0,sizeof(group_id));
-            sprintf(group,"%d", block);  
-            group[strlen(group)]=' ';
-            sprintf(group_id, "%d", item_id);
-            strcat(group, group_id);    
-            fprintf(fp_hash_key, "%s\n", id); 
-            if(fprintf(fp_hash_val, "%s\n", group)<0){
-                printf("%s\n", group);
-            } 
+            if(group != NULL){
+                free(group);
+            }
+            group= (char*)malloc(sizeof(char)*1000);
+  	        snprintf(group, 1000, "%d %d", block, item_id);
+            fprintf(fp_hash_key, "%s\n", id);
+            fprintf(fp_hash_val, "%s\n", group);
         }
         else if(strcmp(feature, exon) == 0){
             //find the starting position of exon id
@@ -447,9 +429,9 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
                     memset(refer,0,sizeof(refer));
                 }
                 else{
-                    refer[m] = attribute[j];  
-                    m++;                
-                }               
+                    refer[m] = attribute[j];
+                    m++;
+                }
             }
             j+=2;
             for(k=0; attribute[j+k]!='.'; k++){
@@ -457,48 +439,43 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
             }
             id[k]='\0';
             // hash the id
-            free(group);
-            group= (char*)malloc(sizeof(char)*100);
-            group[0]= '\0';
-            memset(group_id,0,sizeof(group_id));
-            sprintf(group,"%d", block);    
-            group[strlen(group)]=' ';
-            sprintf(group_id, "%d", item_id);
-            strcat(group, group_id);    
-            fprintf(fp_hash_key, "%s\n", id); 
-            if(fprintf(fp_hash_val, "%s\n", group)<0){
-                printf("%s\n", group);
-            } 
+            if(group != NULL){
+                free(group);
+            }
+            group= (char*)malloc(sizeof(char)*1000);
+  	        snprintf(group, 1000, "%d %d", block, item_id);
+            fprintf(fp_hash_key, "%s\n", id);
+            fprintf(fp_hash_val, "%s\n", group);
         }
 
 
         //modify the start for better compression
-        if(strcmp(feature, gene)  == 0){ 
+        if(strcmp(feature, gene)  == 0){
             //store the gene start for later uses
             prev_gene = atoi(start);
             prev_trans = prev_gene;
-            //write to the new start 
+            //write to the new start
             sprintf(new_start,"%d", atoi(start));
         }
         else if(strcmp(feature, transcript) == 0){
             //store the transcript start for later uses
-            //write to the new start 
+            //write to the new start
             sprintf(new_start,"%d", atoi(start) - prev_trans);
             prev_trans = atoi(start);
             prev_exon = prev_trans;
             new_transcript = 1;
         }
         else if(strcmp(feature, exon) == 0){
-            //write to the new start 
+            //write to the new start
             //check the strand
             if(strcmp(strand, "+") == 0 || new_transcript == 1){
-               sprintf(new_start,"%d", atoi(start) - prev_exon); 
+               sprintf(new_start,"%d", atoi(start) - prev_exon);
             }
             else{
-               sprintf(new_start,"%d", prev_exon - atoi(start)); 
-            }   
-            prev_exon = atoi(start);    
-            new_transcript = 0;    
+               sprintf(new_start,"%d", prev_exon - atoi(start));
+            }
+            prev_exon = atoi(start);
+            new_transcript = 0;
         }
         else{
             sprintf(new_start,"%d", atoi(start) - prev_trans);
@@ -577,7 +554,7 @@ int gff3_compressor(FILE* fp, int length, int* chr_table, int* block_min_table,i
     int position_min, position_max;
     //create file pointers for all the output files
     FILE *fp_sq, *fp_src, *fp_fea, *fp_start, *fp_delta, *fp_att, *fp_comments;
-    FILE *fp_score, *fp_strand, *fp_frame_cds, *fp_frame_start, *fp_frame_stop, *fp_hash_key, *fp_hash_val; 
+    FILE *fp_score, *fp_strand, *fp_frame_cds, *fp_frame_start, *fp_frame_stop, *fp_hash_key, *fp_hash_val;
     //array to hold each column
     char comments[BUFFSIZE];
     char seqname[BUFFSIZE];
@@ -592,8 +569,7 @@ int gff3_compressor(FILE* fp, int length, int* chr_table, int* block_min_table,i
     char frame[BUFFSIZE];
     char attribute[BUFFSIZE];
     char refer[BUFFSIZE];
-    char group_id[BUFFSIZE];
-    char* group;
+    char* group = NULL;
     char* id;
     id =(char*) malloc(100*sizeof(char));
 
@@ -608,22 +584,22 @@ int gff3_compressor(FILE* fp, int length, int* chr_table, int* block_min_table,i
     char* transcript_id = "transcript_id";
     char* exon_id = "exon_id";
 
-    char sq_name[100]; 
-    char src_name[100]; 
-    char fea_name[100]; 
-    char start_name[100];       
-    char delta_name[100]; 
+    char sq_name[100];
+    char src_name[100];
+    char fea_name[100];
+    char start_name[100];
+    char delta_name[100];
     char score_name[100];
-    char strand_name[100]; 
+    char strand_name[100];
     char att_name[100];
-    char frame_cds_name[100]; 
-    char frame_start_name[100]; 
+    char frame_cds_name[100];
+    char frame_start_name[100];
     char frame_stop_name[100];
     char compress_cmd[100];
     char* sq_name_prefix= "GTF_parsed/gtf_seqname_" ;
     char* src_name_prefix= "GTF_parsed/gtf_source_";
     char* fea_name_prefix= "GTF_parsed/gtf_feature_";
-    char* start_name_prefix= "GTF_parsed/gtf_start_";       
+    char* start_name_prefix= "GTF_parsed/gtf_start_";
     char* delta_name_prefix= "GTF_parsed/gtf_delta_";
     char* score_name_prefix= "GTF_parsed/gtf_score_";
     char* strand_name_prefix= "GTF_parsed/gtf_strand_";
@@ -633,7 +609,7 @@ int gff3_compressor(FILE* fp, int length, int* chr_table, int* block_min_table,i
     char* frame_stop_name_prefix= "GTF_parsed/gtf_frame_stop_";
     char* compress_cmd_prefix= "BSC/bsc e ";
     char* cmd_suffix_sq= " GTF_compressed/compressed_seqname_";
-    char* cmd_suffix_src=" GTF_compressed/compressed_source_";    
+    char* cmd_suffix_src=" GTF_compressed/compressed_source_";
     char* cmd_suffix_fea=" GTF_compressed/compressed_feature_";
     char* cmd_suffix_start=" GTF_compressed/compressed_start_";
     char* cmd_suffix_delta=" GTF_compressed/compressed_delta_";
@@ -704,7 +680,7 @@ int gff3_compressor(FILE* fp, int length, int* chr_table, int* block_min_table,i
     fp_hash_val= fopen("index_tables/data_value.txt", "w+");
     //store the first five lines of comments
     for(i=0; i<7; i++){
-        fgets(comments, BUFFSIZE, fp);       
+        fgets(comments, BUFFSIZE, fp);
     }
     item_id = -1;
     strcpy(prev_chr, "chr1");
@@ -721,7 +697,7 @@ int gff3_compressor(FILE* fp, int length, int* chr_table, int* block_min_table,i
         //read in the feature
         fscanf(fp, "%s", feature);
 
-        //check if we need to update the block 
+        //check if we need to update the block
         if(!strcmp(feature, gene)){
             gene_numbers++;
             if(gene_numbers == block_size){
@@ -859,7 +835,7 @@ int gff3_compressor(FILE* fp, int length, int* chr_table, int* block_min_table,i
         }
         if(gene_numbers==0 || atoi(start) > position_max){
             position_max= atoi(start);
-        }  
+        }
         if(new_block == 1){
             //position[block]= atoi(start);
             new_block= 0;
@@ -870,7 +846,7 @@ int gff3_compressor(FILE* fp, int length, int* chr_table, int* block_min_table,i
         //calculate the difference between start and stop
         sprintf(delta,"%d", atoi(end) - atoi(start));
         //output the delta
-        fprintf(fp_delta, "%s\n", delta);  
+        fprintf(fp_delta, "%s\n", delta);
 
         //read in the score
         fscanf(fp, "%s", score);
@@ -888,96 +864,89 @@ int gff3_compressor(FILE* fp, int length, int* chr_table, int* block_min_table,i
         fscanf(fp, "%s", frame);
         //check if the current item has frame or not
         //the current item is CDS
-        if(!strcmp(feature, cds)){ 
+        if(!strcmp(feature, cds)){
             fprintf(fp_frame_cds,"%s\n", frame);
         }
         //the current item is start codon
         else if(!strcmp(feature, start_codon)){
             fprintf(fp_frame_start,"%s\n", frame);
-        }       
+        }
         else if(!strcmp(feature, stop_codon)){
             fprintf(fp_frame_stop,"%s\n", frame);
-        } 
+        }
         //skip the empty spaces
         if((empty=fgetc(fp)) == ' ')
-        { 
+        {
             empty = fgetc(fp);
         }
         //read in the attribute
         fgets(attribute, BUFFSIZE, fp);
         //ouput the attribute
         fprintf(fp_att, "%s", attribute);
-        
+
 
         //extract the id from the attribute
         len= strlen(attribute);
         free(id);
         id =(char*) malloc(100*sizeof(char));
         id[0]='\0';
-        if((strcmp(feature, gene)  == 0)||(strcmp(feature, transcript) == 0)||(strcmp(feature, exon) == 0)){ 
+        if((strcmp(feature, gene)  == 0)||(strcmp(feature, transcript) == 0)||(strcmp(feature, exon) == 0)){
             //find the starting position of gene id
             memset(refer,0,sizeof(refer));
             m=0;
             for(j= 0; j< len; j++){
                 if(attribute[j]=='E'){
                     break;
-                }           
+                }
             }
             for(k=0; attribute[j+k]!=';'; k++){
                 id[k] = attribute[j+k];
             }
             id[k]='\0';
             // hash the id
-            free(group);
-            group= (char*)malloc(sizeof(char)*100);
-            group[0]= '\0';
-            memset(group_id,0,sizeof(group_id));
-            sprintf(group,"%d", block);
-            group[strlen(group)]=' ';
-            sprintf(group_id, "%d", item_id);
-            // if(item_id==0){
-            //     printf("group:%s group_id:%s block:%d\n", group, group_id, block);
-            // }  
-            strcat(group, group_id);    
-            fprintf(fp_hash_key, "%s\n", id); 
-            if(fprintf(fp_hash_val, "%s\n", group)<0){
-                printf("%s\n", group);
-            } 
+            if(group != NULL){
+                free(group);
+            }
+
+            group= (char*)malloc(sizeof(char)*1000);
+            snprintf(group, 1000, "%d %d", block, item_id);
+            fprintf(fp_hash_key, "%s\n", id);
+            fprintf(fp_hash_val, "%s\n", group);
             //  if(item_id==0){
             //     printf("total group:%s\n", group);
-            // }  
+            // }
 
         }
-        
+
 
 
         //modify the start for better compression
-        if(strcmp(feature, gene)  == 0){ 
+        if(strcmp(feature, gene)  == 0){
             //store the gene start for later uses
             prev_gene = atoi(start);
             prev_trans = prev_gene;
-            //write to the new start 
+            //write to the new start
             sprintf(new_start,"%d", atoi(start));
         }
         else if(strcmp(feature, transcript) == 0){
             //store the transcript start for later uses
-            //write to the new start 
+            //write to the new start
             sprintf(new_start,"%d", atoi(start) - prev_trans);
             prev_trans = atoi(start);
             prev_exon = prev_trans;
             new_transcript = 1;
         }
         else if(strcmp(feature, exon) == 0){
-            //write to the new start 
+            //write to the new start
             //check the strand
             if(strcmp(strand, "+") == 0 || new_transcript == 1){
-               sprintf(new_start,"%d", atoi(start) - prev_exon); 
+               sprintf(new_start,"%d", atoi(start) - prev_exon);
             }
             else{
-               sprintf(new_start,"%d", prev_exon - atoi(start)); 
-            }   
-            prev_exon = atoi(start);    
-            new_transcript = 0;    
+               sprintf(new_start,"%d", prev_exon - atoi(start));
+            }
+            prev_exon = atoi(start);
+            new_transcript = 0;
         }
         else{
             sprintf(new_start,"%d", atoi(start) - prev_trans);
@@ -1052,7 +1021,7 @@ int gtf_compressor2(FILE* fp, int length, int filetype){
 	int new_transcript =0;
     //create file pointers for all the output files
 	FILE *fp_sq, *fp_src, *fp_fea, *fp_start, *fp_delta, *fp_att, *fp_comments;
-	FILE *fp_score, *fp_strand, *fp_frame_cds, *fp_frame_start, *fp_frame_stop;	
+	FILE *fp_score, *fp_strand, *fp_frame_cds, *fp_frame_start, *fp_frame_stop;
     //array to hold each column
     char comments[BUFFSIZE];
 	char seqname[BUFFSIZE];
@@ -1109,7 +1078,7 @@ int gtf_compressor2(FILE* fp, int length, int filetype){
     }
     for(i=0; i<n; i++){
         fgets(comments, BUFFSIZE, fp);
-        fprintf(fp_att, "%s", comments);           
+        fprintf(fp_att, "%s", comments);
     }
     //extract each column and write them into the output files
     for(i=0; i< length; i++){
@@ -1136,7 +1105,7 @@ int gtf_compressor2(FILE* fp, int length, int filetype){
         //calculate the difference between start and stop
         sprintf(delta,"%d", atoi(end) - atoi(start));
         //output the delta
-        fprintf(fp_delta, "%s\n", delta);  
+        fprintf(fp_delta, "%s\n", delta);
 
         //read in the score
         fscanf(fp, "%s", score);
@@ -1154,19 +1123,19 @@ int gtf_compressor2(FILE* fp, int length, int filetype){
         fscanf(fp, "%s", frame);
         //check if the current item has frame or not
         //the current item is CDS
-        if(!strcmp(feature, cds)){ 
+        if(!strcmp(feature, cds)){
         	fprintf(fp_frame_cds,"%s\n", frame);
         }
         //the current item is start codon
         else if(!strcmp(feature, start_codon)){
         	fprintf(fp_frame_start,"%s\n", frame);
-        }       
+        }
         else if(!strcmp(feature, stop_codon)){
         	fprintf(fp_frame_stop,"%s\n", frame);
-        } 
+        }
         //skip the empty spaces
         if((empty=fgetc(fp)) == ' ')
-        { 
+        {
             empty = fgetc(fp);
         }
         //read in the attribute
@@ -1176,32 +1145,32 @@ int gtf_compressor2(FILE* fp, int length, int filetype){
 
 
         //modify the start for better compression
-        if(strcmp(feature, gene)  == 0){ 
+        if(strcmp(feature, gene)  == 0){
     		//store the gene start for later uses
     		prev_gene = atoi(start);
     		prev_trans = prev_gene;
-    		//write to the new start 
+    		//write to the new start
             sprintf(new_start,"%d", atoi(start));
     	}
     	else if(strcmp(feature, transcript) == 0){
             //store the transcript start for later uses
-            //write to the new start 
+            //write to the new start
             sprintf(new_start,"%d", atoi(start) - prev_trans);
             prev_trans = atoi(start);
             prev_exon = prev_trans;
             new_transcript = 1;
     	}
     	else if(strcmp(feature, exon) == 0){
-            //write to the new start 
+            //write to the new start
             //check the strand
             if(strcmp(strand, "+") == 0 || new_transcript == 1){
-               sprintf(new_start,"%d", atoi(start) - prev_exon); 
+               sprintf(new_start,"%d", atoi(start) - prev_exon);
             }
             else{
-               sprintf(new_start,"%d", prev_exon - atoi(start)); 
-            }   
-            prev_exon = atoi(start);    
-            new_transcript = 0;    
+               sprintf(new_start,"%d", prev_exon - atoi(start));
+            }
+            prev_exon = atoi(start);
+            new_transcript = 0;
     	}
     	else{
     	    sprintf(new_start,"%d", atoi(start) - prev_trans);
@@ -1224,14 +1193,14 @@ int gtf_compressor2(FILE* fp, int length, int filetype){
     system("BSC/bsc e GTF_parsed2/gtf_seqname.txt GTF_compressed2/gtf_seqname_compressed");
     system("BSC/bsc e GTF_parsed2/gtf_source.txt GTF_compressed2/gtf_source_compressed");
     system("BSC/bsc e GTF_parsed2/gtf_feature.txt GTF_compressed2/gtf_feature_compressed");
-    system("BSC/bsc e GTF_parsed2/gtf_start.txt GTF_compressed2/gtf_start_compressed");   
+    system("BSC/bsc e GTF_parsed2/gtf_start.txt GTF_compressed2/gtf_start_compressed");
     system("BSC/bsc e GTF_parsed2/gtf_delta.txt GTF_compressed2/gtf_delta_compressed");
     system("BSC/bsc e GTF_parsed2/gtf_score.txt GTF_compressed2/gtf_score_compressed");
     system("BSC/bsc e GTF_parsed2/gtf_strand.txt GTF_compressed2/gtf_strand_compressed");
-    system("BSC/bsc e GTF_parsed2/gtf_attribute.txt GTF_compressed2/gtf_attribute_compressed"); 
+    system("BSC/bsc e GTF_parsed2/gtf_attribute.txt GTF_compressed2/gtf_attribute_compressed");
     system("BSC/bsc e GTF_parsed2/gtf_frame_cds.txt GTF_compressed2/gtf_gtf_frame_cds_compressed");
     system("BSC/bsc e GTF_parsed2/gtf_frame_start.txt GTF_compressed2/gtf_frame_start_compressed");
-    system("BSC/bsc e GTF_parsed2/gtf_frame_stop.txt GTF_compressed2/gtf_frame_stop_compressed");  
+    system("BSC/bsc e GTF_parsed2/gtf_frame_stop.txt GTF_compressed2/gtf_frame_stop_compressed");
 
     return 0;
 }
@@ -1261,7 +1230,7 @@ int gtf_decompressor(FILE* fp, int length, int filetype){
 
      //create file pointers for all the files
     FILE *fp_sq, *fp_src, *fp_fea, *fp_start, *fp_delta, *fp_att, *fp_comments;
-    FILE *fp_score, *fp_strand, *fp_frame_cds, *fp_frame_start, *fp_frame_stop; 
+    FILE *fp_score, *fp_strand, *fp_frame_cds, *fp_frame_start, *fp_frame_stop;
     //open all the files
     fp_sq = fopen("GTF_parsed2/gtf_seqname.txt", "r");
     //open the source file
@@ -1300,13 +1269,13 @@ int gtf_decompressor(FILE* fp, int length, int filetype){
     }
     //start to combine all columns into the goal file
     for(i=0; i< length; i++){
-        //read in all the rest 
+        //read in all the rest
         fscanf(fp_sq, "%s", seqname);
         fscanf(fp_src, "%s", source);
         fscanf(fp_fea, "%s", feature);
         fscanf(fp_start, "%s", start);
         fscanf(fp_delta, "%s", delta);
-        fscanf(fp_score, "%s", score);       
+        fscanf(fp_score, "%s", score);
         fgets(attribute, BUFFSIZE, fp_att);
         //output the seqname
         fprintf(fp, "%s    ", seqname);
@@ -1317,38 +1286,38 @@ int gtf_decompressor(FILE* fp, int length, int filetype){
         //recover the strand
         if(strcmp(feature, gene)  == 0) {
             fscanf(fp_strand, "%s", strand);
-        }   
+        }
         //recover the start
-        if(strcmp(feature, gene)  == 0){ 
+        if(strcmp(feature, gene)  == 0){
             //store the gene start for later uses
             prev_gene = atoi(start);
             prev_trans = prev_gene;
-            //write to the new start 
+            //write to the new start
             sprintf(new_start,"%d", atoi(start));
         }
         else if(strcmp(feature, transcript) == 0){
             //store the transcript start for later uses
-            //write to the new start 
+            //write to the new start
             sprintf(new_start,"%d", atoi(start) + prev_trans);
             prev_trans = atoi(new_start);
             prev_exon = prev_trans;
             new_transcript = 1;
         }
         else if(strcmp(feature, exon) == 0){
-            //write to the new start 
+            //write to the new start
             //check the strand
             if(strcmp(strand, "+") == 0 || new_transcript == 1){
-               sprintf(new_start,"%d", atoi(start) + prev_exon); 
+               sprintf(new_start,"%d", atoi(start) + prev_exon);
             }
             else{
-               sprintf(new_start,"%d", prev_exon - atoi(start)); 
-            }   
-            prev_exon = atoi(new_start);    
-            new_transcript = 0;    
+               sprintf(new_start,"%d", prev_exon - atoi(start));
+            }
+            prev_exon = atoi(new_start);
+            new_transcript = 0;
         }
         else{
             sprintf(new_start,"%d", atoi(start) + prev_trans);
-        }    
+        }
         //output the start
         fprintf(fp, "%s    ", new_start);
         //recover the end
@@ -1356,20 +1325,20 @@ int gtf_decompressor(FILE* fp, int length, int filetype){
         //output the end
         fprintf(fp, "%s    ", end);
         //output the score
-        fprintf(fp, "%s    ", score);       
+        fprintf(fp, "%s    ", score);
         //output the strand
         fprintf(fp, "%s    ", strand);
         //recover the frame
-        if(!strcmp(feature, cds)){ 
+        if(!strcmp(feature, cds)){
             fscanf(fp_frame_cds, "%s", frame);
         }
         //the current item is start codon
         else if(!strcmp(feature, start_codon)){
             fscanf(fp_frame_start, "%s", frame);
-        }       
+        }
         else if(!strcmp(feature, stop_codon)){
             fscanf(fp_frame_stop, "%s", frame);
-        } 
+        }
         else{
             strcpy(frame, ".");
         }
@@ -1377,9 +1346,9 @@ int gtf_decompressor(FILE* fp, int length, int filetype){
         fprintf(fp, "%s  ", frame);
 
         //output the attribute
-        fprintf(fp, "%s", attribute);        
+        fprintf(fp, "%s", attribute);
     }
-
+    return 0;
 
 }
 
@@ -1391,7 +1360,7 @@ int expression_compressor(FILE* fp, int length, int block_size){
 
     //create file pointers for all the output files
     FILE *fp_sample, *fp_ets_counts;
-    FILE *fp_tpm, *fp_eff_len, *fp_len, *fp_hash_key, *fp_hash_val; 
+    FILE *fp_tpm, *fp_eff_len, *fp_len, *fp_hash_key, *fp_hash_val;
     //array to hold each column
     char target[BUFFSIZE];
     char ID_tmp[BUFFSIZE];
@@ -1407,30 +1376,28 @@ int expression_compressor(FILE* fp, int length, int block_size){
     char eff_len[BUFFSIZE];
     char len[BUFFSIZE];
     char refer[BUFFSIZE];
-    char* group_id=(char*)malloc(sizeof(char)*100);
-    char* new_group=(char*)malloc(sizeof(char)*100);    
-    char* group=(char*)malloc(sizeof(char)*100);
+    char* group=NULL;
     char* id;
 
     int prev_gene =0, prev_trans =0, prev_exon =0;
 
     char temp[200];
-    char sample_name[200]; 
-    char ets_counts_name[200]; 
-    char tpm_name[200]; 
-    char eff_len_name[200];       
-    char len_name[200]; 
+    char sample_name[200];
+    char ets_counts_name[200];
+    char tpm_name[200];
+    char eff_len_name[200];
+    char len_name[200];
     char compress_cmd[200];
 
     char* sample_name_prefix= "expression_parsed/expression_sample_" ;
     char* ets_counts_name_prefix= "expression_parsed/expression_ets_counts_";
     char* tpm_name_prefix= "expression_parsed/expression_tpm_";
     char* eff_len_name_prefix= "expression_parsed/expression_eff_len_";
-    char* len_name_prefix= "expression_parsed/expression_len_";       
+    char* len_name_prefix= "expression_parsed/expression_len_";
 
     char* compress_cmd_prefix= "BSC/bsc e ";
     char* cmd_suffix_sample= " expression_compressed/expression_compressed_sample_";
-    char* cmd_suffix_ets_counts=" expression_compressed/expression_compressed_ets_counts_";    
+    char* cmd_suffix_ets_counts=" expression_compressed/expression_compressed_ets_counts_";
     char* cmd_suffix_tpm=" expression_compressed/expression_compressed_tpm_";
     char* cmd_suffix_eff_len=" expression_compressed/expression_compressed_eff_len_";
     char* cmd_suffix_len=" expression_compressed/expression_compressed_len_";
@@ -1477,7 +1444,7 @@ int expression_compressor(FILE* fp, int length, int block_size){
     fp_hash_val= fopen("index_tables/expression_value.txt", "w+");
     //store the first line of comments
     for(i=0; i<1; i++){
-        fgets(temp, BUFFSIZE, fp);          
+        fgets(temp, BUFFSIZE, fp);
     }
     item_id = -1;
     prev_id=0;
@@ -1490,12 +1457,12 @@ int expression_compressor(FILE* fp, int length, int block_size){
         fscanf(fp, "%s", sample);
         //read in the ets_counts
         fscanf(fp, "%s", ets_counts);
-        //read in the tpm   
+        //read in the tpm
         fscanf(fp, "%s", tpm);
         //read in the eff_len
         fscanf(fp, "%s", eff_len);
         //read in the len
-        fscanf(fp, "%s", len);     
+        fscanf(fp, "%s", len);
         //extract the ID or IDs in all specified databases
         //get rid of the '|' first
         char *s, *t;
@@ -1504,9 +1471,9 @@ int expression_compressor(FILE* fp, int length, int block_size){
         s= strtok(NULL, "|");
         strcpy(ID2, s);
         s= strtok(NULL, "|");
-        strcpy(ID3, s); 
+        strcpy(ID3, s);
         s= strtok(NULL, "|");
-        strcpy(ID4, s); 
+        strcpy(ID4, s);
         s= strtok(NULL, "|");
         strcpy(ID5, s);
         s= strtok(NULL, "|");
@@ -1520,8 +1487,8 @@ int expression_compressor(FILE* fp, int length, int block_size){
         strcpy(ID3, t);
         t= strtok(ID4, ".");
         strcpy(ID4, t);
-        
-        //check if we need to update the block 
+
+        //check if we need to update the block
         if((i!=0) && (strcmp(ID1, prev_ID1))){
             gene_numbers++;
             if(gene_numbers == block_size){
@@ -1556,7 +1523,7 @@ int expression_compressor(FILE* fp, int length, int block_size){
                 strcat(strcat(compress_cmd, len_name), cmd_suffix_len);
                 strcat(compress_cmd, block_number);
                 system(compress_cmd);
-           
+
                 sprintf(block_number,"%d", block);
                 //create the output files
                 strcpy(sample_name, sample_name_prefix);
@@ -1584,48 +1551,33 @@ int expression_compressor(FILE* fp, int length, int block_size){
 
             }
             // hash the id
-            free(group);
-            group= (char*)malloc(sizeof(char)*1000);
-            group[0]= '\0';
-            free(group_id);
-            group_id= (char*)malloc(sizeof(char)*100);
-            group_id[0]= '\0';
-            sprintf(group,"%d", block);
-            group[strlen(group)]=' ';
-            sprintf(group_id, "%d", prev_id);
-            strcat(group, group_id); 
-            for(m=0; m<1000;m++){
-            	if(group[m] == '\0'){
-            		group[m]=' ';
-            		group[m+1]='\0';
-            		break;
-            	}
+            if(group!=NULL){
+                free(group);
             }
 
-            free(new_group);
-            new_group= (char*)malloc(sizeof(char)*1000);
-            new_group[0]= '\0'; 
-            sprintf(new_group, "%d", item_id-1);             
-            strcat(group, new_group);          
+            group= (char*)malloc(sizeof(char)*1000);
+
+  	        snprintf(group, 1000, "%d %d %d", block, prev_id, item_id - 1);
+
 
             //write IDs from all the databases in the index table files
-            fprintf(fp_hash_key, "%s\n", prev_ID1); 
+            fprintf(fp_hash_key, "%s\n", prev_ID1);
             fprintf(fp_hash_val, "%s\n", group);
-            fprintf(fp_hash_key, "%s\n", prev_ID2); 
+            fprintf(fp_hash_key, "%s\n", prev_ID2);
             fprintf(fp_hash_val, "%s\n", group);
-            fprintf(fp_hash_key, "%s\n", prev_ID3); 
+            fprintf(fp_hash_key, "%s\n", prev_ID3);
             fprintf(fp_hash_val, "%s\n", group);
-            fprintf(fp_hash_key, "%s\n", prev_ID4); 
+            fprintf(fp_hash_key, "%s\n", prev_ID4);
             fprintf(fp_hash_val, "%s\n", group);
-            fprintf(fp_hash_key, "%s\n", prev_ID5); 
+            fprintf(fp_hash_key, "%s\n", prev_ID5);
             fprintf(fp_hash_val, "%s\n", group);
-            fprintf(fp_hash_key, "%s\n", prev_ID6); 
+            fprintf(fp_hash_key, "%s\n", prev_ID6);
             fprintf(fp_hash_val, "%s\n", group);
 
             prev_id= item_id;
         }
 
-        fprintf(fp_sample, "%s\n", sample);        
+        fprintf(fp_sample, "%s\n", sample);
         fprintf(fp_ets_counts, "%s\n", ets_counts);
         fprintf(fp_tpm, "%s\n",tpm);
         fprintf(fp_eff_len, "%s\n",eff_len);
@@ -1679,7 +1631,7 @@ int sparse_compressor(FILE* fp, FILE* fp_gene_id, int length, int block_size){
 
     //create file pointers for all the output files
     FILE *fp_column, *fp_value;
-    FILE *fp_hash_key, *fp_hash_val; 
+    FILE *fp_hash_key, *fp_hash_val;
     //array to hold each column
     char row[BUFFSIZE];
     char column[BUFFSIZE];
@@ -1687,24 +1639,22 @@ int sparse_compressor(FILE* fp, FILE* fp_gene_id, int length, int block_size){
     char refer[BUFFSIZE];
     char gene_identifier[BUFFSIZE];
     char gene_name[BUFFSIZE];
-    char* group_id=(char*)malloc(sizeof(char)*100);
-    char* new_group=(char*)malloc(sizeof(char)*100);    
-    char* group=(char*)malloc(sizeof(char)*100);
+    char* group= NULL;
     char* id;
 
     int prev_gene =0, prev_trans =0, prev_exon =0;
     int gene_index;
     char temp[200];
-    char column_name[200]; 
-    char value_name[200];  
+    char column_name[200];
+    char value_name[200];
     char compress_cmd[200];
 
     char* column_name_prefix= "sparse_parsed/sparse_column_" ;
-    char* value_name_prefix= "sparse_parsed/sparse_value_";      
+    char* value_name_prefix= "sparse_parsed/sparse_value_";
 
     char* compress_cmd_prefix= "BSC/bsc e ";
     char* cmd_suffix_column= " sparse_compressed/sparse_compressed_column_";
-    char* cmd_suffix_value=" sparse_compressed/sparse_compressed_value_";    
+    char* cmd_suffix_value=" sparse_compressed/sparse_compressed_value_";
 
     char block_number[200];
 
@@ -1730,7 +1680,7 @@ int sparse_compressor(FILE* fp, FILE* fp_gene_id, int length, int block_size){
 
     //store the first line of comments
     // for(i=0; i<1; i++){
-    //     fgets(temp, BUFFSIZE, fp);          
+    //     fgets(temp, BUFFSIZE, fp);
     // }
     item_id = -1;
     int item_id_flag = 0;
@@ -1744,9 +1694,9 @@ int sparse_compressor(FILE* fp, FILE* fp_gene_id, int length, int block_size){
         //read in the column
         fscanf(fp, "%s", column);
         //read in the value
-        fscanf(fp, "%s", value);     
+        fscanf(fp, "%s", value);
 
-        //check if we need to update the block 
+        //check if we need to update the block
         if((i!=0) && (atoi(row)!= prev_row)){
             gene_numbers++;
             if(gene_numbers == block_size){
@@ -1766,7 +1716,7 @@ int sparse_compressor(FILE* fp, FILE* fp_gene_id, int length, int block_size){
                 strcat(strcat(compress_cmd, value_name), cmd_suffix_value);
                 strcat(compress_cmd, block_number);
                 system(compress_cmd);
-           
+
                 sprintf(block_number,"%d", block);
                 //create the output files
                 strcpy(column_name, column_name_prefix);
@@ -1789,32 +1739,14 @@ int sparse_compressor(FILE* fp, FILE* fp_gene_id, int length, int block_size){
             }
 
             // hash the id
-            free(group);
-            group= (char*)malloc(sizeof(char)*1000);
-            group[0]= '\0';
-            free(group_id);
-            group_id= (char*)malloc(sizeof(char)*1000);
-            group_id[0]= '\0';
-            sprintf(group,"%d", block);
-            group[strlen(group)]=' ';
-            sprintf(group_id, "%d", prev_id);
-            strcat(group, group_id); 
-            for(m=0; m<1000;m++){
-                if(group[m] == '\0'){
-                    group[m]=' ';
-                    group[m+1]='\0';
-                    break;
-                }
+            if(group == NULL){
+                free(group);
             }
-            free(new_group);
-            new_group= (char*)malloc(sizeof(char)*1000);
-            new_group[0]= '\0'; 
-            sprintf(new_group, "%d", item_id-1);             
-            strcat(group, new_group);          
-
-            fprintf(fp_hash_key, "%s\n", gene_identifier); 
+            group= (char*)malloc(sizeof(char)*1000);
+  	        snprintf(group, 1000, "%d %d %d", block, prev_id, item_id - 1);
+            fprintf(fp_hash_key, "%s\n", gene_identifier);
             fprintf(fp_hash_val, "%s\n", group);
-            fprintf(fp_hash_key, "%s\n", gene_name); 
+            fprintf(fp_hash_key, "%s\n", gene_name);
             fprintf(fp_hash_val, "%s\n", group);
 
             if(item_id_flag == 1){
@@ -1824,7 +1756,7 @@ int sparse_compressor(FILE* fp, FILE* fp_gene_id, int length, int block_size){
             prev_id= item_id;
         }
 
-        fprintf(fp_column, "%s\n", column);        
+        fprintf(fp_column, "%s\n", column);
         fprintf(fp_value, "%s\n", value);
 
         //read in the last column
