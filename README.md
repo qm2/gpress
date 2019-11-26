@@ -115,7 +115,7 @@ By default, the outputs are printed on the command window.
 In order to write the output to a file, 
 
 ```
-./gpress -qer [start] [end] [chromosome] [folder]
+./gpress -qer [start] [end] [chromosome] [folder] > [outputfile]
 ```
 
 
@@ -152,9 +152,9 @@ In order to write the output to a file,
 ```
 
 
-## Input
+## Test files
 
-Here, we provide a small GTF file (**test_gtf.gtf**), a small GFF3 file (**test_gff3.gff3**), a small feature expression file (**test_expression.tsv**) and sparse matrix files (**matrix.mtx, genes.tsv, barcodes.tsv**) in the folder **data**. More sample files can be download from the GENCODE database or other databases.
+The folder “data” contains a small GTF file (**test_gtf.gtf**), a small GFF3 file (**test_gff3.gff3**), a small expression file resulting from bulk RNA-Seq (**test_expression.tsv**), and the files resulting from a single-cell RNA-Seq experiment (**matrix.mtx, genes.tsv, barcodes.tsv**). More sample files can be downloaded from the GENCODE or other databases.
 
 ## Example
 Here, we will use the test files to provide an example of how to use GPress. We will use GTF file for illustration since the GFF3 file is nearly the same except slight format variations. We will store the compressed GTF file and compressed expression file in a new folder **gtf1**
