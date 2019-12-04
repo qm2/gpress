@@ -256,78 +256,78 @@ int main(int argc , char **argv){
       	            fgets(hash_val, 50, fp_hash_val);
       	            hash_val[strlen(hash_val) - 1] = '\0';
       	            ht_put(ht, hash_key, hash_val);
-  	        }
-  	        //close the files
-  	        fclose(fp_hash_key);
-  	        fclose(fp_hash_val);
-            char* retval;
-            char* hashval;
-            char hash_split[200];
-            char* s;
-            int block;
-            int block_id;
-            int parsed =0;
-            printf("Welcome to the random access based on ID\n");
-            while(1){
-                printf("Please enter a valid ID for search or enter 'quit' to terminate the program!\n");
-                char input[500];
-                scanf("%[^\n]%*c", input);
-                if(strcmp(input, "quit") == 0){
-                	break;
-                }
-                //get rid of the version after '.'
-                int count;
-                for(count=0; count<strlen(input); count++){
-                    if(input[count] == '.'){
-                        input[count]='\0';
-                        break;
-                    }
-                }
-                hashval= (char*)ht_get(ht, input);
-                if(hashval == NULL){
-                   printf("This ID is not valid!\n");
-                   continue;
-                }
-                strcpy(hash_split, hashval);
-                s= strtok(hash_split, " ");
-                block= atoi(s);
-                s= strtok(NULL, " ");
-                block_id= atoi(s);
-                retval = item_search(block, block_id);
-                printf("The searched item is:\n");
-                printf("%s", retval);
-                printf("Please enter 'yes' if you also want to print out all its parents and children within a gene\n");
-                printf("Otherwise, enter 'no' to skip it\n");
-                while(1){
-                    scanf("%[^\n]%*c", input);
-                    if(strcmp(input, "yes") == 0){
-                	    FILE* fp_gene = fopen("gene_block.gtf", "r");
-                	    char info[1500];
-                	    while(fgets(info, 1024, fp_gene)){
-                            printf("%s", info);
-                	    }
-                	    system("rm info.gtf");
-                	    system("rm gene_block.gtf");
-                        break;
-                    }
-                    else if(strcmp(input, "no") == 0){
-                        break;
-                    }
-                    else{
-                    	printf("the input value is not valid, please enter again!\n");
-                    }
-                }
-                printf("id search succeeds!\n");
-                parsed = 1;
-            }
-            system("rm GTF_compressed/*");
-            if(parsed==1){
-                system("rm GTF_parsed/*");
-            }
-        }
-          else if(argc==5){
+  	            }
+	  	        //close the files
+	  	        fclose(fp_hash_key);
+	  	        fclose(fp_hash_val);
+	            char* retval;
+	            char* hashval;
+	            char hash_split[200];
+	            char* s;
+	            int block;
+	            int block_id;
+	            int parsed =0;
+	            printf("Welcome to the random access based on ID\n");
+	            while(1){
+	                printf("Please enter a valid ID for search or enter 'quit' to terminate the program!\n");
+	                char input[500];
+	                scanf("%[^\n]%*c", input);
+	                if(strcmp(input, "quit") == 0){
+	                	break;
+	                }
+	                //get rid of the version after '.'
+	                int count;
+	                for(count=0; count<strlen(input); count++){
+	                    if(input[count] == '.'){
+	                        input[count]='\0';
+	                        break;
+	                    }
+	                }
+	                hashval= (char*)ht_get(ht, input);
+	                if(hashval == NULL){
+	                   printf("This ID is not valid!\n");
+	                   continue;
+	                }
+	                strcpy(hash_split, hashval);
+	                s= strtok(hash_split, " ");
+	                block= atoi(s);
+	                s= strtok(NULL, " ");
+	                block_id= atoi(s);
+	                retval = item_search(block, block_id);
+	                printf("The searched item is:\n");
+	                printf("%s", retval);
+	                printf("Please enter 'yes' if you also want to print out all its parents and children within a gene\n");
+	                printf("Otherwise, enter 'no' to skip it\n");
+	                while(1){
+	                    scanf("%[^\n]%*c", input);
+	                    if(strcmp(input, "yes") == 0){
+	                	    FILE* fp_gene = fopen("gene_block.gtf", "r");
+	                	    char info[1500];
+	                	    while(fgets(info, 1024, fp_gene)){
+	                            printf("%s", info);
+	                	    }
+	                	    system("rm info.gtf");
+	                	    system("rm gene_block.gtf");
+	                        break;
+	                    }
+	                    else if(strcmp(input, "no") == 0){
+	                        break;
+	                    }
+	                    else{
+	                    	printf("the input value is not valid, please enter again!\n");
+	                    }
+	                }
+	                printf("id search succeeds!\n");
+	                parsed = 1;
+	            }
+	            system("rm GTF_compressed/*");
+	            if(parsed==1){
+	                system("rm GTF_parsed/*");
+	            }
+          }
+          else if(argc == 5 || argc == 6){
               FILE *fp_hash_key= fopen("index_tables/data_key.txt", "r");
-    	        FILE *fp_hash_val= fopen("index_tables/data_value.txt", "r");
+    	      FILE *fp_hash_val= fopen("index_tables/data_value.txt", "r");
               char* retval;
               char* no_dot;
               char hash_split[200];
@@ -335,8 +335,13 @@ int main(int argc , char **argv){
               int block;
               int block_id;
               int exist = 0;
+              int family = 0;
               //get rid of the dot in id
-              no_dot= strtok(argv[3], ".");
+              if(!strcmp(argv[3], "-f")){
+                  family = 1;
+              }
+              
+              no_dot= strtok(argv[3+family], ".");
               while(fscanf(fp_hash_key, "%s", hash_key)!=EOF){
       	          hash_val= (char*)malloc(sizeof(char)*50);
                   fgets(hash_val, 50, fp_hash_val);
@@ -346,7 +351,7 @@ int main(int argc , char **argv){
                   }
               }
               if(exist == 0){
-                 printf("This ID is not valid!\n");
+                 fprintf(stderr, "This ID is not valid!\n");
                  return 0;
               }
               strcpy(hash_split, hash_val);
@@ -355,11 +360,21 @@ int main(int argc , char **argv){
               s= strtok(NULL, " ");
               block_id= atoi(s);
               retval = item_search(block, block_id);
-              printf("The searched item is:\n");
               printf("%s", retval);
-              printf("id search succeeds!\n");
+              if(family == 1){
+              	    printf("The parents and children of this item are:\n");
+                    FILE* fp_gene = fopen("gene_block.gtf", "r");
+	                char info[1500];
+            	    while(fgets(info, 1024, fp_gene)){
+                        printf("%s", info);
+            	    }
+            	    fclose(fp_gene);            	
+              }
+              fprintf(stderr, "id search succeeds!\n");
               fclose(fp_hash_key);
               fclose(fp_hash_val);
+              system("rm info.gtf");
+              system("rm gene_block.gtf"); 
               system("rm GTF_compressed/*");
               if(exist ==1){
                   system("rm GTF_parsed/*");
@@ -390,40 +405,19 @@ int main(int argc , char **argv){
             fclose(fp_chromosome);
             fclose(fp_min);
             fclose(fp_max);
-        	printf("All items on chromosome %s from %s to %s are:\n",argv[5], argv[3], argv[4]);
             rangeSearch(atoi(argv[3]), atoi(argv[4]), atoi(argv[5])-1, chr_table, min_table, max_table);
             //free the tables
             free(chr_table);
             free(min_table);
             free(max_table);
-            printf("range search succeeds!\n");
+            fprintf(stderr, "range search succeeds!\n");
             system("rm GTF_compressed/*");
             system("rm GTF_parsed/*");
         }
 
 
     }
-    else if(strcmp("-a", argv[1]) == 0){
-        int total=0;
-        double num;
 
-        FILE* fp=fopen("test_c5.txt", "r");
-        FILE* fp_new=fopen("test_c5_new.txt", "w");
-        FILE* fp_idx=fopen("test_c5_idx.txt", "w");
-        while(fscanf(fp, "%lf", &num)!=EOF){
-            total++;
-            if(num == 0){
-                fprintf(fp_idx, "%d\n", total);
-            }
-            else{
-                fprintf(fp_new, "%lf\n", num);
-            }
-        }
-        fclose(fp);
-        fclose(fp_new);
-        fclose(fp_idx);
-        // add_database_id("ENSE00003462276.1", "FLYBASW123434343");
-    }
     else if(strcmp("-e", argv[1]) == 0){
          //file pointer for gtf file
         FILE *fp;
@@ -431,7 +425,7 @@ int main(int argc , char **argv){
         char chr;
         fp = fopen(argv[2], "r");
         if(fp == NULL){
-            printf("the input file is invalid!\n");
+            fprintf(stderr, "the input file is invalid!\n");
             return 0;
         }
         //count number of lines in the file
@@ -518,7 +512,7 @@ int main(int argc , char **argv){
         hashval= (char*)malloc(sizeof(char)*100);
         hashval= (char*)ht_get(ht, argv[2]);
         if(hashval == NULL){
-            printf("This ID is not valid!\n");
+            fprintf(stderr, "This ID is not valid!\n");
             return 0;
         }
         s= (char*)malloc(sizeof(char)*50);
@@ -549,19 +543,14 @@ int main(int argc , char **argv){
             s= strtok(NULL, " ");
             block_id= atoi(s);
             retval = item_search(block, block_id);
-            printf("All the information of item with searched id is outputed.\n");
             printf("The item with this id also exists in GFF file:\n");
             printf("%s", retval);
             system("rm GTF_compressed/*");
             system("rm GTF_parsed/*");
         }
-        else{
-            printf("All the information of item with searched id is outputed.\n");
-            printf("The item with this id does not exist in the compressed GFF file\n");
-        }
         system("rm expression_compressed/*");
         system("rm expression_parsed/*");
-        printf("expression search succeeds!\n");
+        fprintf(stderr, "expression search succeeds!\n");
     }
     else if(strcmp("-sparse", argv[1]) == 0){
         //sort the sparse matrix file
@@ -704,7 +693,7 @@ int main(int argc , char **argv){
         hashval= (char*)malloc(sizeof(char)*100);
         hashval= (char*)ht_get(ht, argv[2]);
         if(hashval == NULL){
-            printf("This ID is not valid!\n");
+            fprintf(stderr, "This ID is not valid!\n");
             return 0;
         }
         s= (char*)malloc(sizeof(char)*50);
@@ -740,19 +729,14 @@ int main(int argc , char **argv){
             s= strtok(NULL, " ");
             block_id= atoi(s);
             retval = item_search(block, block_id);
-            printf("All the information of item with searched id is outputed.\n");
             printf("The item with this id also exists in GFF file:\n");
             printf("%s", retval);
             system("rm GTF_compressed/*");
             system("rm GTF_parsed/*");
         }
-        else{
-            printf("All the information of item with searched id is outputed.\n");
-            printf("The item with this id does not exist in the compressed GFF file\n");
-        }
         system("rm sparse_compressed/*");
         system("rm sparse_parsed/*");
-        printf("sparse search succeeds!\n");
+        fprintf(stderr, "sparse search succeeds!\n");
 
     }
     else if(strcmp("-qer", argv[1]) == 0){
@@ -802,13 +786,12 @@ int main(int argc , char **argv){
         fclose(fp_chromosome);
         fclose(fp_min);
         fclose(fp_max);
-    	printf("All items on chromosome contained in both expression and GFF files %s from %s to %s are:\n",argv[4], argv[2], argv[3]);
         rangeSearch_expression(atoi(argv[2]), atoi(argv[3]), atoi(argv[4])-1, chr_table, min_table, max_table);
         //free the tables
         free(chr_table);
         free(min_table);
         free(max_table);
-        printf("range search for expression file succeeds!\n");
+        fprintf(stderr, "range search for expression file succeeds!\n");
         system("rm GTF_compressed/*");
         system("rm GTF_parsed/*");
 
@@ -864,14 +847,13 @@ int main(int argc , char **argv){
         fclose(fp_chromosome);
         fclose(fp_min);
         fclose(fp_max);
-    	printf("All items on contained in both sparse matrix files and GFF files in chromosome %s from %s to %s are:\n",argv[4], argv[2], argv[3]);
         rangeSearch_sparse(atoi(argv[2]), atoi(argv[3]), atoi(argv[4])-1, chr_table, min_table, max_table);
 
         //free the tables
         free(chr_table);
         free(min_table);
         free(max_table);
-        printf("range search for sparse matrix succeeds!\n");
+        fprintf(stderr, "range search for sparse matrix succeeds!\n");
         system("rm GTF_compressed/*");
         system("rm GTF_parsed/*");
         system("rm search_barcodes.tsv");
