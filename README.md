@@ -80,11 +80,18 @@ In order to write the output to a file, run
 ./gpress -q -id [id] [folder] > [outputfile]
 ```
 
+In order to also print out the parents and children of the searched item, run
+```
+./gpress -q -id -f [id] [folder]
+```
+
 5. To do multiple id searches on compressed GTF or GFF3 file from the specified folder, run 
 ```
 ./gpress -q -id [folder]
 ```
 Then, the user can enter the ID to search the item and its related parents and children.
+
+As more searches are executed, the search time for each ID will speed up since more blocks are decompressed.
 
 6. To do range search on compressed GTF or GFF3 file from the specified folder, run 
 ```
@@ -194,6 +201,12 @@ The associated index tables are also stored in folder **gtf1**.
 ./gpress -q -id ENSE00003486434.1 gtf1
 ```
 The retrieved information will be printed in command window by default.
+
+In order to also print out the parents and children of the searched item from folder **gtf1**, run
+```
+./gpress -q -id -f ENSE00003486434.1 gtf1
+```
+The searched item, its parents and its children will all be printed in command window by default. 
 
 5. To do multiple id searches on compressed GTF file from folder **gtf1**, run
 ```
