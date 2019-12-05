@@ -47,6 +47,15 @@ To run the GPress, the general command is:
 ```
 in the root folder.
 
+To print the help message:
+```
+./gpress -h
+```
+or
+```
+./gpress
+```
+
 #### Operating Mode:
 1. To compress the GTF or GFF3 file without random access, run
 ```
@@ -62,7 +71,7 @@ filetype should be either "gtf" or "gff3".
 
 3. To compress the GTF or GFF3 with random access, run 
 ```
-./gpress -c [inputfile] <block_size> [folder]
+./gpress -c <block_size> [inputfile] [folder]
 ```
 The compressed files are stored in the new specified folder
 
@@ -107,7 +116,7 @@ In order to write the output to a file, run
 
 7. To compress and link the expression file, 
 ```
-./gpress -e [inputfile] <block_size> [folder]
+./gpress -e <block_size> [inputfile] [folder]
 ```
 The compressed expression file is linked to the GFF files in specified folder and are also store in that folder
 
@@ -140,7 +149,7 @@ In order to write the output to a file,
 
 10. To compress and link the sparse matrix file, 
 ```
-./gpress -sparse [input matrix] [input genes] [input barcodes] <block_size> [folder]
+./gpress -sparse <block_size> [input matrix] [input genes] [input barcodes] [folder]
 ```
 The compressed expression files are store in the specified folder
 
@@ -191,7 +200,7 @@ The decompressed GTF is stored named **decompressed_gtf.gtf** in folder **output
 
 3. To compress the GTF with random access (500 genes per block), run 
 ```
-./gpress -c data/test_gtf.gtf 500 gtf1
+./gpress -c 500 data/test_gtf.gtf gtf1
 ```
 The compressed GTF file is stored named **GTF_compressed.tar** in folder **gtf1**.
 The associated index tables are also stored in folder **gtf1**.
@@ -223,7 +232,7 @@ The retrieved information is printed in command window.
 
 7. To compress and link the expression file with GFF files in folder **gtf1** (500 genes per block), 
 ```
-./gpress -e data/test_expression.tsv 500 gtf1
+./gpress -e 500 data/test_expression.tsv gtf1
 ```
 The compressed file is stored named **expression_compressed.tar** in folder **gtf1**.
 
@@ -255,7 +264,7 @@ By default, the outputs are printed on the command window.
 
 10. To compress and link the sparse expression matrix file in folder **gtf1** (500 genes per block), 
 ```
-./gpress -sparse data/matrix.mtx data/genes.tsv data/barcodes.tsv 500 gtf1
+./gpress -sparse 500 data/matrix.mtx data/genes.tsv data/barcodes.tsv gtf1
 ```
 The compressed sparse matrix files are stored named **sparse_compressed.tar** in folder **gtf1**.
 
