@@ -15,8 +15,18 @@ int main(int argc , char **argv){
     int *chr_table= (int*)malloc(sizeof(int)*100);
     if ( (argc <= 1 ) || (strcmp("-h", argv[1])==0)){
     	printf("Welcome to GPress: a framework for querying GTF, GFF3 and expression files in a compressed form.\n");
-    	printf("To run the GPress, the general command is:\n");
-        printf("./gpress (options)  [inputfile] [parameters] [folder] in the root folder.\n");
+    	// printf("To run the GPress, the general command is:\n");
+     //    printf("./gpress (options)  [inputfile] [parameters] [folder] in the root folder.\n");
+        int c;
+		FILE *file;
+		file = fopen("help_message.txt", "r");
+		if (file) {
+		    while ((c = getc(file)) != EOF){
+		        putchar(c);		    	
+		    }
+		    fclose(file);
+		}
+		printf("\n");
         return 0;
     }
     if (strcmp("-c", argv[1]) == 0){
@@ -28,7 +38,7 @@ int main(int argc , char **argv){
         int *max_table= (int*)malloc(sizeof(int)*500);
         int count_lines = 0;
         char chr;
-        fp = fopen(argv[2], "r");
+        fp = fopen(argv[3], "r");
         if(fp == NULL){
             printf("the input file is invalid!\n");
             return 0;
@@ -46,14 +56,14 @@ int main(int argc , char **argv){
             chr = getc(fp);
         }
         fclose(fp);
-        fp = fopen(argv[2], "r");
-        char *dot = strrchr(argv[2], '.');
+        fp = fopen(argv[3], "r");
+        char *dot = strrchr(argv[3], '.');
         int block;
         if(argc == 4){
         	block = 2000;
         }
         else{
-        	block = atoi(argv[3]);
+        	block = atoi(argv[2]);
         }
         if(!strcmp(dot+1, "gtf")){
             count_lines -=5;
@@ -423,7 +433,7 @@ int main(int argc , char **argv){
         FILE *fp;
         int count_lines = 0;
         char chr;
-        fp = fopen(argv[2], "r");
+        fp = fopen(argv[3], "r");
         if(fp == NULL){
             fprintf(stderr, "the input file is invalid!\n");
             return 0;
@@ -442,14 +452,14 @@ int main(int argc , char **argv){
         }
         fclose(fp);
         count_lines -=1;
-        fp = fopen(argv[2], "r");
+        fp = fopen(argv[3], "r");
         //run the compressor
         int block;
         if(argc == 4){
         	block = 2000;
         }
         else{
-        	block = atoi(argv[3]);
+        	block = atoi(argv[2]);
         }
         expression_compressor(fp, count_lines, block);
         system("rm expression_parsed/*");
@@ -559,7 +569,7 @@ int main(int argc , char **argv){
         char* s;
         char comments[1000];
         char line[1000];
-        fp = fopen(argv[2], "r");
+        fp = fopen(argv[3], "r");
         if(fp == NULL){
             printf("the input .mtx file is not valid\n");
             return 0;
@@ -636,10 +646,10 @@ int main(int argc , char **argv){
             block = 2000;
         }
         else{
-            block = atoi(argv[5]);
+            block = atoi(argv[2]);
         }
         //open the gene labels file
-        fp_gene= fopen(argv[3], "r");
+        fp_gene= fopen(argv[4], "r");
         sparse_compressor(fp, fp_gene, count_lines, block);
         // system("rm sparse_parsed/*");
        //create the folder specified by the user
@@ -654,7 +664,7 @@ int main(int argc , char **argv){
         system(command1);
         //compress the barcode file with BSC compressor
         char command0[200];
-        snprintf(command0, sizeof(command0), "BSC/bsc e %s %s/compressed_barcodes", argv[4], argv[argc-1]);
+        snprintf(command0, sizeof(command0), "BSC/bsc e %s %s/compressed_barcodes", argv[5], argv[argc-1]);
         system(command0);
         system("rm sparse_compressed/*");
         printf("compression and linking of sparse matrix file succeeds!\n");

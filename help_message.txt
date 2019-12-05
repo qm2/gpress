@@ -1,0 +1,34 @@
+
+
+-h:
+ Prints this help message
+
+
+Compression,
+ general command:
+./gpress (options) [inputfile] [folder]
+The “inputfile" is compressed and stored in the specified “folder”.
+For sparse expression files, "inputfile" are three files: [input matrix] [input genes] [input barcodes]
+
+
+Options:
+-cw: annotation file is compressed without random access. No parameters needed.
+-c <block_size>: annotation file is compressed with specified block_size (2000 by default).
+-e <block_size>: dense expression file is compressed with specified block_size (2000 by default).
+-sparse <block_size>: sparse expression file is compressed with specified block_size (2000 by default).
+
+Decompression/queries:
+./gpress (options/parameters) [folder]
+Will retrieve information from compressed files in “folder”.
+Output from queries is printed to terminal by default. Add “> [outputfile]” to print to a file instead.
+
+
+Options/Parameters:
+-dc [filetype]: Decompresses annotation file without random access, <filetype> must be either gff3 or gtf.
+-q -id [id]: Retrieve items with identifier “id” from the ANNOTATION file.
+-q -id: Allows for multiple ID searches on the ANNOTATION file, and also to retrieve parent/children items.
+-q -range [start] [end] [chromosome]: Retrieve items from the ANNOTATION file that fall within the provided range.
+-qe [id]: Retrieve items with identifier “id” from the ANNOTATION and DENSE EXPRESSION files.
+-qer [start] [end] [chromosome]: Retrieve items from the ANNOTATION and DENSE EXPRESSION files that fall within the provided range.
+-qs [id]: Retrieve items with identifier “id” from the ANNOTATION and SPARSE EXPRESSION files.
+-qsr [start] [end] [chromosome]: Retrieve items from the ANNOTATION and SPARSE EXPRESSION files that fall within the provided range.
