@@ -43,7 +43,7 @@ cd ..
 ### Run
 To run the GPress, the general command is:
 ```
-./gpress (options)  [inputfile] [parameters] [folder]
+./gpress (options) [inputfile] [folder]
 ```
 in the root folder.
 
