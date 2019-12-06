@@ -26,6 +26,7 @@ Output from queries is printed to terminal by default. Add “> [outputfile]” 
 Options/Parameters:
 -dc [filetype]: Decompresses annotation file without random access, <filetype> must be either gff3 or gtf.
 -q -id [id]: Retrieve items with identifier “id” from the ANNOTATION file.
+-q -id -f [id]: Retrieve item with identifier “id” and its parents/children from the ANNOTATION file.
 -q -id: Allows for multiple ID searches on the ANNOTATION file, and also to retrieve parent/children items.
 -q -range [start] [end] [chromosome]: Retrieve items from the ANNOTATION file that fall within the provided range.
 -qe [id]: Retrieve items with identifier “id” from the ANNOTATION and DENSE EXPRESSION files.
