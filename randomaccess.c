@@ -995,6 +995,7 @@ int rangeSearch_sparse(int start_pos, int end_pos, int chr, int* chr_table, int*
         fp_frame_start = fopen(cmd_suffix_frame_start, "r");
         //open the frames of stop file
         fp_frame_stop = fopen(cmd_suffix_frame_stop, "r");
+        prev_gene_end = -1;
        //start to combine all columns into the goal file
         while(fscanf(fp_sq, "%s", seqname)!=EOF){
             //read in all the rest
@@ -1295,7 +1296,7 @@ int rangeSearch_expression(int start_pos, int end_pos, int chr, int* chr_table, 
     FILE *fp_score, *fp_strand, *fp_frame_cds, *fp_frame_start, *fp_frame_stop;
 
     int prev_gene =0, prev_trans =0, prev_exon =0;
-    int new_transcript = 0;
+    int new_transcript = 0, prev_gene_end = -1;
     int i, j, k, m;
     int len;
 
@@ -1418,6 +1419,7 @@ int rangeSearch_expression(int start_pos, int end_pos, int chr, int* chr_table, 
         fp_frame_start = fopen(cmd_suffix_frame_start, "r");
         //open the frames of stop file
         fp_frame_stop = fopen(cmd_suffix_frame_stop, "r");
+        prev_gene_end = -1;
        //start to combine all columns into the goal file
         while(fscanf(fp_sq, "%s", seqname)!=EOF){
             //read in all the rest
@@ -1435,10 +1437,17 @@ int rangeSearch_expression(int start_pos, int end_pos, int chr, int* chr_table, 
             //recover the start
             if(strcmp(feature, gene)  == 0){
                 //store the gene start for later uses
-                prev_gene = atoi(start);
+                if(prev_gene_end == -1){
+                     prev_gene = atoi(start);               
+                }
+                else{
+                    prev_gene = atoi(start) + prev_gene_end;
+                }
+
                 prev_trans = prev_gene;
                 //write to the new start
-                sprintf(new_start,"%d", atoi(start));
+                sprintf(new_start,"%d", prev_gene);
+                prev_gene_end =  atoi(delta) + atoi(new_start);
             }
             else if(strcmp(feature, transcript) == 0){
                 //store the transcript start for later uses
@@ -1453,11 +1462,13 @@ int rangeSearch_expression(int start_pos, int end_pos, int chr, int* chr_table, 
                 //check the strand
                 if(strcmp(strand, "+") == 0 || new_transcript == 1){
                    sprintf(new_start,"%d", atoi(start) + prev_exon);
+                   prev_exon = atoi(new_start) +atoi(delta);
                 }
                 else{
-                   sprintf(new_start,"%d", prev_exon - atoi(start));
+                   sprintf(new_start,"%d", prev_exon - atoi(start) - atoi(delta));
+                   prev_exon = atoi(new_start);
                 }
-                prev_exon = atoi(new_start);
+
                 new_transcript = 0;
             }
             else{
