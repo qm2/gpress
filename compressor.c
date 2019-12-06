@@ -14,6 +14,7 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
     int new_transcript =0, new_block =1;
     int len;
     int block, gene_numbers=0, item_id;
+    int prev_gene_end = -1;
     int position_min, position_max;
     //create file pointers for all the output files
     FILE *fp_sq, *fp_src, *fp_fea, *fp_start, *fp_delta, *fp_att, *fp_comments;
@@ -167,6 +168,7 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
                 block++;
                 new_block= 1;
                 gene_numbers=0;
+                prev_gene_end = -1;
                 item_id=0;
                 //update the min and max table
                 block_min_table[block-1]= position_min;
@@ -455,7 +457,13 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
             prev_gene = atoi(start);
             prev_trans = prev_gene;
             //write to the new start
-            sprintf(new_start,"%d", atoi(start));
+            if(prev_gene_end == -1){
+                sprintf(new_start,"%d", atoi(start));               
+            }
+            else{
+                sprintf(new_start,"%d", atoi(start) - prev_gene_end);                 
+            }
+            prev_gene_end = atoi(end);
         }
         else if(strcmp(feature, transcript) == 0){
             //store the transcript start for later uses
@@ -469,12 +477,14 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
             //write to the new start
             //check the strand
             if(strcmp(strand, "+") == 0 || new_transcript == 1){
-               sprintf(new_start,"%d", atoi(start) - prev_exon);
+                sprintf(new_start,"%d", atoi(start) - prev_exon);
+                prev_exon = atoi(end);
             }
             else{
-               sprintf(new_start,"%d", prev_exon - atoi(start));
+                sprintf(new_start,"%d", prev_exon - atoi(end));
+                prev_exon = atoi(start);
             }
-            prev_exon = atoi(start);
+
             new_transcript = 0;
         }
         else{
@@ -551,6 +561,7 @@ int gff3_compressor(FILE* fp, int length, int* chr_table, int* block_min_table,i
     int new_transcript =0, new_block =1;
     int len;
     int block, gene_numbers=0, item_id;
+    int prev_gene_end = -1;
     int position_min, position_max;
     //create file pointers for all the output files
     FILE *fp_sq, *fp_src, *fp_fea, *fp_start, *fp_delta, *fp_att, *fp_comments;
@@ -703,6 +714,7 @@ int gff3_compressor(FILE* fp, int length, int* chr_table, int* block_min_table,i
             if(gene_numbers == block_size){
                 block++;
                 new_block= 1;
+                prev_gene_end = -1;
                 gene_numbers=0;
                 item_id=0;
                 //update the min and max table
@@ -926,7 +938,13 @@ int gff3_compressor(FILE* fp, int length, int* chr_table, int* block_min_table,i
             prev_gene = atoi(start);
             prev_trans = prev_gene;
             //write to the new start
-            sprintf(new_start,"%d", atoi(start));
+            if(prev_gene_end == -1){
+                sprintf(new_start,"%d", atoi(start));               
+            }
+            else{
+                sprintf(new_start,"%d", atoi(start) - prev_gene_end);                 
+            }
+            prev_gene_end = atoi(end);
         }
         else if(strcmp(feature, transcript) == 0){
             //store the transcript start for later uses
@@ -940,12 +958,14 @@ int gff3_compressor(FILE* fp, int length, int* chr_table, int* block_min_table,i
             //write to the new start
             //check the strand
             if(strcmp(strand, "+") == 0 || new_transcript == 1){
-               sprintf(new_start,"%d", atoi(start) - prev_exon);
+                sprintf(new_start,"%d", atoi(start) - prev_exon);
+                prev_exon = atoi(end);
             }
             else{
-               sprintf(new_start,"%d", prev_exon - atoi(start));
+                sprintf(new_start,"%d", prev_exon - atoi(end));
+                prev_exon = atoi(start);
             }
-            prev_exon = atoi(start);
+
             new_transcript = 0;
         }
         else{
@@ -1037,6 +1057,7 @@ int gtf_compressor2(FILE* fp, int length, int filetype){
 	char attribute[BUFFSIZE];
 
 	int prev_gene =0, prev_trans =0, prev_exon =0;
+    int prev_gene_end = -1;
 	char* gene ="gene";
 	char* transcript ="transcript";
 	char* exon = "exon";
@@ -1150,7 +1171,13 @@ int gtf_compressor2(FILE* fp, int length, int filetype){
     		prev_gene = atoi(start);
     		prev_trans = prev_gene;
     		//write to the new start
-            sprintf(new_start,"%d", atoi(start));
+            if(prev_gene_end == -1){
+                sprintf(new_start,"%d", atoi(start));               
+            }
+            else{
+                sprintf(new_start,"%d", atoi(start) - prev_gene_end);                 
+            }
+            prev_gene_end = atoi(end);
     	}
     	else if(strcmp(feature, transcript) == 0){
             //store the transcript start for later uses
@@ -1164,12 +1191,14 @@ int gtf_compressor2(FILE* fp, int length, int filetype){
             //write to the new start
             //check the strand
             if(strcmp(strand, "+") == 0 || new_transcript == 1){
-               sprintf(new_start,"%d", atoi(start) - prev_exon);
+                sprintf(new_start,"%d", atoi(start) - prev_exon);
+                prev_exon = atoi(end);
             }
             else{
-               sprintf(new_start,"%d", prev_exon - atoi(start));
+                sprintf(new_start,"%d", prev_exon - atoi(end));
+                prev_exon = atoi(start);
             }
-            prev_exon = atoi(start);
+
             new_transcript = 0;
     	}
     	else{
@@ -1227,6 +1256,7 @@ int gtf_decompressor(FILE* fp, int length, int filetype){
 
     int prev_gene =0, prev_trans =0, prev_exon =0;
     int new_transcript = 0;
+    int prev_gene_end = -1;
 
      //create file pointers for all the files
     FILE *fp_sq, *fp_src, *fp_fea, *fp_start, *fp_delta, *fp_att, *fp_comments;
@@ -1290,10 +1320,17 @@ int gtf_decompressor(FILE* fp, int length, int filetype){
         //recover the start
         if(strcmp(feature, gene)  == 0){
             //store the gene start for later uses
-            prev_gene = atoi(start);
+            if(prev_gene_end == -1){
+                 prev_gene = atoi(start);               
+            }
+            else{
+                prev_gene = atoi(start) + prev_gene_end;
+            }
+
             prev_trans = prev_gene;
             //write to the new start
-            sprintf(new_start,"%d", atoi(start));
+            sprintf(new_start,"%d", prev_gene);
+            prev_gene_end =  atoi(delta) + atoi(new_start);
         }
         else if(strcmp(feature, transcript) == 0){
             //store the transcript start for later uses
@@ -1308,11 +1345,13 @@ int gtf_decompressor(FILE* fp, int length, int filetype){
             //check the strand
             if(strcmp(strand, "+") == 0 || new_transcript == 1){
                sprintf(new_start,"%d", atoi(start) + prev_exon);
+               prev_exon = atoi(new_start) +atoi(delta);
             }
             else{
-               sprintf(new_start,"%d", prev_exon - atoi(start));
+               sprintf(new_start,"%d", prev_exon - atoi(start) - atoi(delta));
+               prev_exon = atoi(new_start);
             }
-            prev_exon = atoi(new_start);
+
             new_transcript = 0;
         }
         else{

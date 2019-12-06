@@ -119,7 +119,7 @@ char* item_search(int block, int block_id){
     FILE *fp_score, *fp_strand, *fp_frame_cds, *fp_frame_start, *fp_frame_stop;
 
     int prev_gene =0, prev_trans =0, prev_exon =0;
-    int new_transcript = 0;
+    int new_transcript = 0, prev_gene_end=-1;
     //decompress the block first
     // system("tar -xvf results.tar");
     //recover each file
@@ -245,10 +245,17 @@ char* item_search(int block, int block_id){
         //recover the start
         if(strcmp(feature, gene)  == 0){
             //store the gene start for later uses
-            prev_gene = atoi(start);
+            if(prev_gene_end == -1){
+                 prev_gene = atoi(start);               
+            }
+            else{
+                prev_gene = atoi(start) + prev_gene_end;
+            }
+
             prev_trans = prev_gene;
             //write to the new start
-            sprintf(new_start,"%d", atoi(start));
+            sprintf(new_start,"%d", prev_gene);
+            prev_gene_end =  atoi(delta) + atoi(new_start);
         }
         else if(strcmp(feature, transcript) == 0){
             //store the transcript start for later uses
@@ -263,11 +270,13 @@ char* item_search(int block, int block_id){
             //check the strand
             if(strcmp(strand, "+") == 0 || new_transcript == 1){
                sprintf(new_start,"%d", atoi(start) + prev_exon);
+               prev_exon = atoi(new_start) +atoi(delta);
             }
             else{
-               sprintf(new_start,"%d", prev_exon - atoi(start));
+               sprintf(new_start,"%d", prev_exon - atoi(start) - atoi(delta));
+               prev_exon = atoi(new_start);
             }
-            prev_exon = atoi(new_start);
+
             new_transcript = 0;
         }
         else{
@@ -381,7 +390,7 @@ int rangeSearch(int start_pos, int end_pos, int chr, int* chr_table, int* min_ta
     FILE *fp_sq, *fp_src, *fp_fea, *fp_start, *fp_delta, *fp_att, *fp_comments;
     FILE *fp_score, *fp_strand, *fp_frame_cds, *fp_frame_start, *fp_frame_stop;
 
-    int prev_gene =0, prev_trans =0, prev_exon =0;
+    int prev_gene =0, prev_trans =0, prev_exon =0, prev_gene_end = -1;
     int new_transcript = 0;
     int i;
     // int start_block = -1;
@@ -498,6 +507,7 @@ int rangeSearch(int start_pos, int end_pos, int chr, int* chr_table, int* min_ta
         fp_frame_start = fopen(cmd_suffix_frame_start, "r");
         //open the frames of stop file
         fp_frame_stop = fopen(cmd_suffix_frame_stop, "r");
+        prev_gene_end = -1;
        //start to combine all columns into the goal file
         while(fscanf(fp_sq, "%s", seqname)!=EOF){
             //check if the starting position of the block
@@ -516,10 +526,17 @@ int rangeSearch(int start_pos, int end_pos, int chr, int* chr_table, int* min_ta
             //recover the start
             if(strcmp(feature, gene)  == 0){
                 //store the gene start for later uses
-                prev_gene = atoi(start);
+                if(prev_gene_end == -1){
+                     prev_gene = atoi(start);               
+                }
+                else{
+                    prev_gene = atoi(start) + prev_gene_end;
+                }
+
                 prev_trans = prev_gene;
                 //write to the new start
-                sprintf(new_start,"%d", atoi(start));
+                sprintf(new_start,"%d", prev_gene);
+                prev_gene_end =  atoi(delta) + atoi(new_start);
             }
             else if(strcmp(feature, transcript) == 0){
                 //store the transcript start for later uses
@@ -534,16 +551,19 @@ int rangeSearch(int start_pos, int end_pos, int chr, int* chr_table, int* min_ta
                 //check the strand
                 if(strcmp(strand, "+") == 0 || new_transcript == 1){
                    sprintf(new_start,"%d", atoi(start) + prev_exon);
+                   prev_exon = atoi(new_start) +atoi(delta);
                 }
                 else{
-                   sprintf(new_start,"%d", prev_exon - atoi(start));
+                   sprintf(new_start,"%d", prev_exon - atoi(start) - atoi(delta));
+                   prev_exon = atoi(new_start);
                 }
-                prev_exon = atoi(new_start);
+
                 new_transcript = 0;
             }
             else{
                 sprintf(new_start,"%d", atoi(start) + prev_trans);
             }
+            
             //recover the end
             sprintf(end, "%d", atoi(delta) + atoi(new_start));
 
@@ -852,7 +872,7 @@ int rangeSearch_sparse(int start_pos, int end_pos, int chr, int* chr_table, int*
     FILE *fp_score, *fp_strand, *fp_frame_cds, *fp_frame_start, *fp_frame_stop;
 
     int prev_gene =0, prev_trans =0, prev_exon =0;
-    int new_transcript = 0;
+    int new_transcript = 0, prev_gene_end = -1;
     int i, j, k, m;
     int len;
 
@@ -992,10 +1012,17 @@ int rangeSearch_sparse(int start_pos, int end_pos, int chr, int* chr_table, int*
             //recover the start
             if(strcmp(feature, gene)  == 0){
                 //store the gene start for later uses
-                prev_gene = atoi(start);
+                if(prev_gene_end == -1){
+                     prev_gene = atoi(start);               
+                }
+                else{
+                    prev_gene = atoi(start) + prev_gene_end;
+                }
+
                 prev_trans = prev_gene;
                 //write to the new start
-                sprintf(new_start,"%d", atoi(start));
+                sprintf(new_start,"%d", prev_gene);
+                prev_gene_end =  atoi(delta) + atoi(new_start);
             }
             else if(strcmp(feature, transcript) == 0){
                 //store the transcript start for later uses
@@ -1010,11 +1037,13 @@ int rangeSearch_sparse(int start_pos, int end_pos, int chr, int* chr_table, int*
                 //check the strand
                 if(strcmp(strand, "+") == 0 || new_transcript == 1){
                    sprintf(new_start,"%d", atoi(start) + prev_exon);
+                   prev_exon = atoi(new_start) +atoi(delta);
                 }
                 else{
-                   sprintf(new_start,"%d", prev_exon - atoi(start));
+                   sprintf(new_start,"%d", prev_exon - atoi(start) - atoi(delta));
+                   prev_exon = atoi(new_start);
                 }
-                prev_exon = atoi(new_start);
+
                 new_transcript = 0;
             }
             else{
