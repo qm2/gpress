@@ -1,6 +1,6 @@
 
 output: main.o compressor.o hash.o randomaccess.o linked_list.o
-	gcc main.o compressor.o hash.o randomaccess.o linked_list.o -o gpress
+	gcc -O3 main.o compressor.o hash.o randomaccess.o linked_list.o -o gpress
 
 main.o: main.c
 	gcc -c main.c

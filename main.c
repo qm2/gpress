@@ -38,7 +38,11 @@ int main(int argc , char **argv){
         int *max_table= (int*)malloc(sizeof(int)*500);
         int count_lines = 0;
         char chr;
-        fp = fopen(argv[3], "r");
+        int file_index = 3;
+        if(argc == 4){
+            file_index= 2; 
+        }
+        fp = fopen(argv[file_index], "r");
         if(fp == NULL){
             printf("the input file is invalid!\n");
             return 0;
@@ -56,8 +60,8 @@ int main(int argc , char **argv){
             chr = getc(fp);
         }
         fclose(fp);
-        fp = fopen(argv[3], "r");
-        char *dot = strrchr(argv[3], '.');
+        fp = fopen(argv[file_index], "r");
+        char *dot = strrchr(argv[file_index], '.');
         int block;
         if(argc == 4){
         	block = 2000;
@@ -433,7 +437,11 @@ int main(int argc , char **argv){
         FILE *fp;
         int count_lines = 0;
         char chr;
-        fp = fopen(argv[3], "r");
+        int file_index = 3;
+        if(argc == 4){
+            file_index= 2; 
+        }
+        fp = fopen(argv[file_index], "r");
         if(fp == NULL){
             fprintf(stderr, "the input file is invalid!\n");
             return 0;
@@ -452,7 +460,7 @@ int main(int argc , char **argv){
         }
         fclose(fp);
         count_lines -=1;
-        fp = fopen(argv[3], "r");
+        fp = fopen(argv[file_index], "r");
         //run the compressor
         int block;
         if(argc == 4){
@@ -569,7 +577,11 @@ int main(int argc , char **argv){
         char* s;
         char comments[1000];
         char line[1000];
-        fp = fopen(argv[3], "r");
+        int file_index = 3;
+        if(argc == 6){
+            file_index= 2; 
+        }
+        fp = fopen(argv[file_index], "r");
         if(fp == NULL){
             printf("the input .mtx file is not valid\n");
             return 0;
@@ -649,7 +661,7 @@ int main(int argc , char **argv){
             block = atoi(argv[2]);
         }
         //open the gene labels file
-        fp_gene= fopen(argv[4], "r");
+        fp_gene= fopen(argv[file_index+1], "r");
         sparse_compressor(fp, fp_gene, count_lines, block);
         // system("rm sparse_parsed/*");
        //create the folder specified by the user
@@ -664,7 +676,7 @@ int main(int argc , char **argv){
         system(command1);
         //compress the barcode file with BSC compressor
         char command0[200];
-        snprintf(command0, sizeof(command0), "BSC/bsc e %s %s/compressed_barcodes", argv[5], argv[argc-1]);
+        snprintf(command0, sizeof(command0), "BSC/bsc e %s %s/compressed_barcodes", argv[file_index+2], argv[argc-1]);
         system(command0);
         system("rm sparse_compressed/*");
         printf("compression and linking of sparse matrix file succeeds!\n");
