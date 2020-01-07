@@ -147,13 +147,18 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
         //fprintf(fp_att, "%s", comments);
     }
     item_id = -1;
-    strcpy(prev_chr, "chr1");
+    // strcpy(prev_chr, "chr1");
+    int first_chr = 1;
     int c = 0;
     chr_table[c] = 0;
     for(i=0; i< length; i++){
         item_id++;
         //read in the seqname
         fscanf(fp, "%s", seqname);
+        if(first_chr == 1){
+            first_chr = 0;
+            strcpy(prev_chr, seqname);           
+        }
 
         //read in the source
         fscanf(fp, "%s", source);
@@ -374,7 +379,7 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
                 }
             }
             j+=2;
-            for(k=0; attribute[j+k]!='.'; k++){
+            for(k=0; attribute[j+k]!='.' && attribute[j+k]!='"'; k++){
                 id[k] = attribute[j+k];
             }
             id[k]='\0';
@@ -405,7 +410,7 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
                 }
             }
             j+=2;
-            for(k=0; attribute[j+k]!='.'; k++){
+            for(k=0; attribute[j+k]!='.' && attribute[j+k]!='"'; k++){
                 id[k] = attribute[j+k];
             }
             id[k]='\0';
@@ -436,7 +441,7 @@ int gtf_compressor(FILE* fp, int length, int* chr_table, int* block_min_table, i
                 }
             }
             j+=2;
-            for(k=0; attribute[j+k]!='.'; k++){
+            for(k=0; attribute[j+k]!='.' && attribute[j+k]!='"'; k++){
                 id[k] = attribute[j+k];
             }
             id[k]='\0';
@@ -694,13 +699,17 @@ int gff3_compressor(FILE* fp, int length, int* chr_table, int* block_min_table,i
         fgets(comments, BUFFSIZE, fp);
     }
     item_id = -1;
-    strcpy(prev_chr, "chr1");
+    int first_chr = 1;
     int c = 0;
     chr_table[c] = 0;
     for(i=0; i< length; i++){
         item_id++;
         //read in the seqname
         fscanf(fp, "%s", seqname);
+        if(first_chr == 1){
+            first_chr = 0;
+            strcpy(prev_chr, seqname);           
+        }
 
         //read in the source
         fscanf(fp, "%s", source);

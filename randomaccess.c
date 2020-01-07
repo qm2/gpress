@@ -378,11 +378,11 @@ int rangeSearch(int start_pos, int end_pos, int chr, int* chr_table, int* min_ta
     char* cds = "CDS";
     char* start_codon = "start_codon";
     char* stop_codon = "stop_codon";
-    char chr_prefix[20]="chr";
-    char chr_str[10];
+    char chr_prefix[100];
+    // char chr_str[10];
 
-    sprintf(chr_str,"%d", chr+1);
-    strcat(chr_prefix, chr_str);
+    // sprintf(chr_str,"%d", chr+1);
+    // strcat(chr_prefix, chr_str);
 
     // sprintf(chr_prefix,"%d", chr);
 
@@ -393,6 +393,7 @@ int rangeSearch(int start_pos, int end_pos, int chr, int* chr_table, int* min_ta
     int prev_gene =0, prev_trans =0, prev_exon =0, prev_gene_end = -1;
     int new_transcript = 0;
     int i;
+    int first_chr = 1;
     // int start_block = -1;
     //decompress the block first
     // system("tar -xvf results.tar");
@@ -409,7 +410,7 @@ int rangeSearch(int start_pos, int end_pos, int chr, int* chr_table, int* min_ta
     //     return -1;
     // }
     // printf("%d\n", start_block);
-    for(i= chr_table[chr]; i<= chr_table[chr+1]; i++){
+    for(i= chr_table[chr+1]; i<= chr_table[chr+2]; i++){
         //use the index tables to check if the min or max postion
         //of the block fall outside of the searched range
         if(max_table[i] < start_pos || end_pos < min_table[i]){
@@ -584,6 +585,10 @@ int rangeSearch(int start_pos, int end_pos, int chr, int* chr_table, int* min_ta
             }
             //check if this should be included or not
             if(atoi(new_start)>= start_pos && atoi(new_start)<= end_pos){
+                if(first_chr == 1){
+                    first_chr = 0;
+                    strcpy(chr_prefix, seqname);
+                }
                 if(strcmp(chr_prefix, seqname)){
                     continue;
                 }
