@@ -130,6 +130,8 @@ int main(int argc , char **argv){
         //file pointer for gtf file
         FILE *fp;
         int count_lines = 0;
+        int count_pounds = 1;
+        int pounds = 1;
         char chr;
         fp = fopen(argv[2], "r");
         if(fp == NULL){
@@ -144,20 +146,31 @@ int main(int argc , char **argv){
             if (chr == '\n')
             {
                 count_lines = count_lines + 1;
+                chr = getc(fp); 
+                if(pounds==1 && chr == '#'){
+                    count_pounds++;
+                }
+                else{
+                    pounds=0;
+                }
+
             }
-            //take next character from file.
-            chr = getc(fp);
+            else{
+                //take next character from file.
+                chr = getc(fp);                
+            }
+
         }
         fclose(fp);
         fp = fopen(argv[2], "r");
         char *dot = strrchr(argv[2], '.');
         if(!strcmp(dot+1, "gtf")){
-            count_lines -=5;
-            gtf_compressor2(fp, count_lines,0);
+            count_lines -=count_pounds;
+            gtf_compressor2(fp, count_lines,count_pounds);
         }
         else if(!strcmp(dot+1, "gff3")){
-            count_lines -=7;
-            gtf_compressor2(fp, count_lines, 1);
+            count_lines -=count_pounds;
+            gtf_compressor2(fp, count_lines, count_pounds);
         }
         else{
             printf("The input name is invalid!\n");
@@ -173,7 +186,7 @@ int main(int argc , char **argv){
         char command1[200];
         snprintf(command1, sizeof(command1), "tar -cf %s/GTF_compressed_without.tar GTF_compressed2", argv[argc-1]);
         system(command1);
-        system("rm GTF_parsed2/*");
+        // system("rm GTF_parsed2/*");
         system("rm GTF_compressed2/*");
         printf("The compression of GTF file without random access succeeds!\n");
         fclose(fp);
