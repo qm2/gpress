@@ -554,31 +554,31 @@ int main(int argc , char **argv){
         s= strtok(NULL, " ");
         block_end_id= atoi(s);
         expressionSearch(block, block_start_id, block_end_id);
-        //check if GTF file contains extra information
-        fp_hash_key= fopen("index_tables/data_key.txt", "r");
-        fp_hash_val= fopen("index_tables/data_value.txt", "r");
-        int exist = 0;
-        while(fscanf(fp_hash_key, "%s", hash_key)!=EOF){
-            fgets(hash_val, 50, fp_hash_val);
-            if(!strcmp(hash_key, argv[2])){
-                exist = 1;
-                break;
-            }
-        }
-        if(exist == 1){
-            char command4[200];
-            snprintf(command4, sizeof(command4), "tar -xf %s/GTF_compressed.tar GTF_compressed", argv[argc-1]);
-            system(command4);
-            s= strtok(hash_val, " ");
-            block= atoi(s);
-            s= strtok(NULL, " ");
-            block_id= atoi(s);
-            retval = item_search(block, block_id);
-            printf("The item with this id also exists in GFF file:\n");
-            printf("%s", retval);
-            system("rm GTF_compressed/*");
-            system("rm GTF_parsed/*");
-        }
+        // //check if GTF file contains extra information
+        // fp_hash_key= fopen("index_tables/data_key.txt", "r");
+        // fp_hash_val= fopen("index_tables/data_value.txt", "r");
+        // int exist = 0;
+        // while(fscanf(fp_hash_key, "%s", hash_key)!=EOF){
+        //     fgets(hash_val, 50, fp_hash_val);
+        //     if(!strcmp(hash_key, argv[2])){
+        //         exist = 1;
+        //         break;
+        //     }
+        // }
+        // if(exist == 1){
+        //     char command4[200];
+        //     snprintf(command4, sizeof(command4), "tar -xf %s/GTF_compressed.tar GTF_compressed", argv[argc-1]);
+        //     system(command4);
+        //     s= strtok(hash_val, " ");
+        //     block= atoi(s);
+        //     s= strtok(NULL, " ");
+        //     block_id= atoi(s);
+        //     retval = item_search(block, block_id);
+        //     printf("The item with this id also exists in GFF file:\n");
+        //     printf("%s", retval);
+        //     system("rm GTF_compressed/*");
+        //     system("rm GTF_parsed/*");
+        // }
         system("rm expression_compressed/*");
         system("rm expression_parsed/*");
         fprintf(stderr, "expression search succeeds!\n");
@@ -698,7 +698,7 @@ int main(int argc , char **argv){
         fclose(fp_gene);
     }
     else if(strcmp("-qs", argv[1]) == 0){
-        char hash_key[500];
+        char hash_key[1000];
         char* hash_val;
         char temp[100];
         char* retval;
@@ -708,8 +708,8 @@ int main(int argc , char **argv){
         hashtable_t *ht = ht_create(3000000);
 
         while(fscanf(fp_hash_key, "%s", hash_key)!=EOF){
-            hash_val= (char*)malloc(sizeof(char)*50);
-            fgets(hash_val, 50, fp_hash_val);
+            hash_val= (char*)malloc(sizeof(char)*500);
+            fgets(hash_val, 500, fp_hash_val);
             hash_val[strlen(hash_val) - 1] = '\0';
             ht_put(ht, hash_key, hash_val);
         }
@@ -725,7 +725,7 @@ int main(int argc , char **argv){
         int block_id;
         int block_start_id;
         int block_end_id;
-        hashval= (char*)malloc(sizeof(char)*100);
+        hashval= (char*)malloc(sizeof(char)*1000);
         hashval= (char*)ht_get(ht, argv[2]);
         if(hashval == NULL){
             fprintf(stderr, "This ID is not valid!\n");
@@ -744,31 +744,31 @@ int main(int argc , char **argv){
         system(command0);
         sparseSearch(block, block_start_id, block_end_id);
         system("rm search_barcodes.tsv");
-        //check if GTF file contains extra information
-        fp_hash_key= fopen("index_tables/data_key.txt", "r");
-        fp_hash_val= fopen("index_tables/data_value.txt", "r");
-        int exist = 0;
-        while(fscanf(fp_hash_key, "%s", hash_key)!=EOF){
-            fgets(hash_val, 50, fp_hash_val);
-            if(!strcmp(hash_key, argv[2])){
-                exist = 1;
-                break;
-            }
-        }
-        if(exist == 1){
-            char command4[200];
-            snprintf(command4, sizeof(command4), "tar -xf %s/GTF_compressed.tar GTF_compressed", argv[argc-1]);
-            system(command4);
-            s= strtok(hash_val, " ");
-            block= atoi(s);
-            s= strtok(NULL, " ");
-            block_id= atoi(s);
-            retval = item_search(block, block_id);
-            printf("The item with this id also exists in GFF file:\n");
-            printf("%s", retval);
-            system("rm GTF_compressed/*");
-            system("rm GTF_parsed/*");
-        }
+        // //check if GTF file contains extra information
+        // fp_hash_key= fopen("index_tables/data_key.txt", "r");
+        // fp_hash_val= fopen("index_tables/data_value.txt", "r");
+        // int exist = 0;
+        // while(fscanf(fp_hash_key, "%s", hash_key)!=EOF){
+        //     fgets(hash_val, 50, fp_hash_val);
+        //     if(!strcmp(hash_key, argv[2])){
+        //         exist = 1;
+        //         break;
+        //     }
+        // }
+        // if(exist == 1){
+        //     char command4[200];
+        //     snprintf(command4, sizeof(command4), "tar -xf %s/GTF_compressed.tar GTF_compressed", argv[argc-1]);
+        //     system(command4);
+        //     s= strtok(hash_val, " ");
+        //     block= atoi(s);
+        //     s= strtok(NULL, " ");
+        //     block_id= atoi(s);
+        //     retval = item_search(block, block_id);
+        //     printf("The item with this id also exists in GFF file:\n");
+        //     printf("%s", retval);
+        //     system("rm GTF_compressed/*");
+        //     system("rm GTF_parsed/*");
+        // }
         system("rm sparse_compressed/*");
         system("rm sparse_parsed/*");
         fprintf(stderr, "sparse search succeeds!\n");
