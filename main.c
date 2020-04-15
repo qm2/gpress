@@ -503,12 +503,12 @@ int main(int argc , char **argv){
         char* hash_val;
         char temp[100];
         char* retval;
-        char command1[200];
-        snprintf(command1, sizeof(command1), "BSC/bsc d %s/data_key_compressed index_tables/data_key.txt", argv[argc-1]);
-        system(command1);
-        char command2[200];
-        snprintf(command2, sizeof(command2), "BSC/bsc d %s/data_value_compressed index_tables/data_value.txt", argv[argc-1]);
-        system(command2);
+        // char command1[200];
+        // snprintf(command1, sizeof(command1), "BSC/bsc d %s/data_key_compressed index_tables/data_key.txt", argv[argc-1]);
+        // system(command1);
+        // char command2[200];
+        // snprintf(command2, sizeof(command2), "BSC/bsc d %s/data_value_compressed index_tables/data_value.txt", argv[argc-1]);
+        // system(command2);
 
         FILE *fp_hash_key= fopen("index_tables/expression_key.txt", "r");
         FILE *fp_hash_val= fopen("index_tables/expression_value.txt", "r");
