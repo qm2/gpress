@@ -707,9 +707,10 @@ int main(int argc , char **argv){
         FILE *fp_hash_val= fopen("index_tables/sparse_value.txt", "r");
         hashtable_t *ht = ht_create(3000000);
 
-        while(fscanf(fp_hash_key, "%s", hash_key)!=EOF){
-            hash_val= (char*)malloc(sizeof(char)*500);
-            fgets(hash_val, 500, fp_hash_val);
+        while(fgets(hash_key, 200, fp_hash_key)!=NULL){
+            hash_key[strlen(hash_key) - 1] = '\0';
+            hash_val= (char*)malloc(sizeof(char)*50);
+            fgets(hash_val, 200, fp_hash_val);
             hash_val[strlen(hash_val) - 1] = '\0';
             ht_put(ht, hash_key, hash_val);
         }
@@ -725,8 +726,10 @@ int main(int argc , char **argv){
         int block_id;
         int block_start_id;
         int block_end_id;
-        hashval= (char*)malloc(sizeof(char)*1000);
-        hashval= (char*)ht_get(ht, argv[2]);
+        char* group= (char*)malloc(sizeof(char)*1000);
+        snprintf(group, 1000, "%s %s %s", argv[2], argv[3], argv[4]);
+        hashval= (char*)malloc(sizeof(char)*100);
+        hashval= (char*)ht_get(ht, group);
         if(hashval == NULL){
             fprintf(stderr, "This ID is not valid!\n");
             return 0;
