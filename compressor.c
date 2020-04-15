@@ -1714,6 +1714,7 @@ int sparse_compressor(FILE* fp, FILE* fp_gene_id, int length, int block_size){
     char refer[BUFFSIZE];
     char gene_identifier[BUFFSIZE];
     char gene_name[BUFFSIZE];
+    char gene_suffix[BUFFSIZE];
     char* group= NULL;
     char* id;
 
@@ -1807,20 +1808,22 @@ int sparse_compressor(FILE* fp, FILE* fp_gene_id, int length, int block_size){
             }
             //extract the id
             while(gene_index != prev_row){
-                // fscanf(fp_gene_id, "%s", gene_identifier);
-                // fscanf(fp_gene_id, "%s", gene_name);
-                fgets(temp, BUFFSIZE, fp_gene_id);
+                fscanf(fp_gene_id, "%s", gene_identifier);
+                fscanf(fp_gene_id, "%s", gene_name);
+                fscanf(fp_gene_id, "%s", gene_suffix);
                 gene_index++;
             }
 
             // hash the id
-            if(group == NULL){
-                free(group);
-            }
+            // if(group == NULL){
+            //     free(group);
+            // }
             group= (char*)malloc(sizeof(char)*1000);
-  	        snprintf(group, 1000, "%d %d %d", block, prev_id, item_id - 1);
 
-            fprintf(fp_hash_key, "%s", temp);
+            snprintf(group, 1000, "%s %s %s", gene_identifier, gene_name, gene_suffix);
+            fprintf(fp_hash_key, "%s\n", group);
+            free(group);
+            snprintf(group, 1000, "%d %d %d", block, prev_id, item_id - 1);
             fprintf(fp_hash_val, "%s\n", group);
             // fprintf(fp_hash_key, "%s\n", gene_name);
             // fprintf(fp_hash_val, "%s\n", group);
