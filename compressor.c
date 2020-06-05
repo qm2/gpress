@@ -3,7 +3,7 @@
 #include <string.h>
 #include "compressor.h"
 #include "hash.h"
-#define BUFFSIZE 1500
+#define BUFFSIZE 1000
 
 
 
@@ -1099,39 +1099,26 @@ int gtf_compressor2(FILE* fp, int length, int filetype){
     fp_frame_stop = fopen("GTF_parsed2/gtf_frame_stop.txt", "w+");
 
     //store the first five lines of comments
-
-    for(i=0; i<filetype; i++){
+    int n;
+    if(filetype==0){
+        n=5;
+    }
+    else{
+        n=7;
+    }
+    for(i=0; i<n; i++){
         fgets(comments, BUFFSIZE, fp);
         fprintf(fp_att, "%s", comments);
     }
-    int j;
-    char ch;
     //extract each column and write them into the output files
     for(i=0; i< length; i++){
     	//read in the seqname
         fscanf(fp, "%s", seqname);
-        if(seqname[0]=='#'){
-            if(seqname[2] == '#'){
-                fprintf(fp_sq, "%s\n", seqname);                
-            }
-            else{
-                fgets(comments, BUFFSIZE, fp);
-                strcat(seqname, comments);
-                fprintf(fp_sq, "%s", seqname);                  
-            }
-
-            continue;            
-        }
         //output the seqname
         fprintf(fp_sq, "%s\n", seqname);
 
         //read in the source
-
         fscanf(fp, "%s", source);
-        if(!strcmp(source, "Curated")){
-            strcat(source, " Genomic");
-            fscanf(fp, "%s", comments);
-        }
         //output the source
         fprintf(fp_src, "%s\n", source);
 
@@ -1156,7 +1143,11 @@ int gtf_compressor2(FILE* fp, int length, int filetype){
 
         //read in the strand
         fscanf(fp, "%s", strand);
-        fprintf(fp_strand, "%s\n", strand);
+        //check if current item is gene or not
+        if(!strcmp(feature, gene)){
+        	//output the strands of gene
+            fprintf(fp_strand, "%s\n", strand);
+        }
 
         //read in the frame
         fscanf(fp, "%s", frame);
@@ -1265,7 +1256,6 @@ int gtf_decompressor(FILE* fp, int length, int filetype){
     char frame[BUFFSIZE];
     char attribute[BUFFSIZE];
     char comments[BUFFSIZE];
-    // char comments[BUFFSIZE];
     char* gene ="gene";
     char* transcript ="transcript";
     char* exon = "exon";
@@ -1304,54 +1294,38 @@ int gtf_decompressor(FILE* fp, int length, int filetype){
     fp_frame_stop = fopen("GTF_parsed2/gtf_frame_stop.txt", "r");
 
     //write the comments to the gtf file
+    int n;
+    if(filetype == 0){
+        n=5;
+    }
+    else{
+        n=7;
+    }
     int i;
-
-    fgets(attribute, BUFFSIZE, fp_att);
-    while(attribute[0] == '#'){
-        fprintf(fp, "%s", attribute);
-        fgets(attribute, BUFFSIZE, fp_att);
+    for(i=0; i< n; i++){
+        fgets(comments, BUFFSIZE, fp_att);
+        fprintf(fp, "%s", comments);
     }
     //start to combine all columns into the goal file
     for(i=0; i< length; i++){
         //read in all the rest
         fscanf(fp_sq, "%s", seqname);
-        if(seqname[0]=='#'){
-            if(seqname[2] == '#'){
-                fprintf(fp, "%s\n", seqname);                
-            }
-            else{
-                fgets(comments, BUFFSIZE, fp_sq);
-                strcat(seqname, comments);
-                fprintf(fp, "%s", seqname);                  
-            }
-            continue;  
-        }
-
         fscanf(fp_src, "%s", source);
-        if(!strcmp(source, "Curated")){
-            strcat(source, " Genomic");
-            fscanf(fp_src, "%s", comments);
-        }
         fscanf(fp_fea, "%s", feature);
         fscanf(fp_start, "%s", start);
         fscanf(fp_delta, "%s", delta);
         fscanf(fp_score, "%s", score);
-        if(i!=0){
-            fgets(attribute, BUFFSIZE, fp_att);
-        }
-
-
+        fgets(attribute, BUFFSIZE, fp_att);
         //output the seqname
-        fprintf(fp, "%s\t", seqname);              
-
-
+        fprintf(fp, "%s    ", seqname);
         //output the source
-        fprintf(fp, "%s\t", source);
+        fprintf(fp, "%s    ", source);
         //output the feature
-        fprintf(fp, "%s\t", feature);
+        fprintf(fp, "%s    ", feature);
         //recover the strand
-        fscanf(fp_strand, "%s", strand);
-
+        if(strcmp(feature, gene)  == 0) {
+            fscanf(fp_strand, "%s", strand);
+        }
         //recover the start
         if(strcmp(feature, gene)  == 0){
             //store the gene start for later uses
@@ -1393,15 +1367,15 @@ int gtf_decompressor(FILE* fp, int length, int filetype){
             sprintf(new_start,"%d", atoi(start) + prev_trans);
         }
         //output the start
-        fprintf(fp, "%s\t", new_start);
+        fprintf(fp, "%s    ", new_start);
         //recover the end
         sprintf(end, "%d", atoi(delta) + atoi(new_start));
         //output the end
-        fprintf(fp, "%s\t", end);
+        fprintf(fp, "%s    ", end);
         //output the score
-        fprintf(fp, "%s\t", score);
+        fprintf(fp, "%s    ", score);
         //output the strand
-        fprintf(fp, "%s\t", strand);
+        fprintf(fp, "%s    ", strand);
         //recover the frame
         if(!strcmp(feature, cds)){
             fscanf(fp_frame_cds, "%s", frame);
@@ -1417,7 +1391,7 @@ int gtf_decompressor(FILE* fp, int length, int filetype){
             strcpy(frame, ".");
         }
         //output the frame
-        fprintf(fp, "%s\t", frame);
+        fprintf(fp, "%s  ", frame);
 
         //output the attribute
         fprintf(fp, "%s", attribute);
@@ -1539,7 +1513,6 @@ int expression_compressor(FILE* fp, int length, int block_size){
         fscanf(fp, "%s", len);
         //extract the ID or IDs in all specified databases
         //get rid of the '|' first
-        //also get rid of the '.'
         char *s, *t;
         s= strtok(target, "|");
         strcpy(ID1, s);
@@ -1714,7 +1687,6 @@ int sparse_compressor(FILE* fp, FILE* fp_gene_id, int length, int block_size){
     char refer[BUFFSIZE];
     char gene_identifier[BUFFSIZE];
     char gene_name[BUFFSIZE];
-    char gene_suffix[BUFFSIZE];
     char* group= NULL;
     char* id;
 
@@ -1810,23 +1782,20 @@ int sparse_compressor(FILE* fp, FILE* fp_gene_id, int length, int block_size){
             while(gene_index != prev_row){
                 fscanf(fp_gene_id, "%s", gene_identifier);
                 fscanf(fp_gene_id, "%s", gene_name);
-                fscanf(fp_gene_id, "%s", gene_suffix);
+                fgets(temp, BUFFSIZE, fp_gene_id);
                 gene_index++;
             }
 
             // hash the id
-            // if(group == NULL){
-            //     free(group);
-            // }
+            if(group == NULL){
+                free(group);
+            }
             group= (char*)malloc(sizeof(char)*1000);
-
-            snprintf(group, 1000, "%s %s %s", gene_identifier, gene_name, gene_suffix);
-            fprintf(fp_hash_key, "%s\n", group);
-            free(group);
-            snprintf(group, 1000, "%d %d %d", block, prev_id, item_id - 1);
+  	        snprintf(group, 1000, "%d %d %d", block, prev_id, item_id - 1);
+            fprintf(fp_hash_key, "%s\n", gene_identifier);
             fprintf(fp_hash_val, "%s\n", group);
-            // fprintf(fp_hash_key, "%s\n", gene_name);
-            // fprintf(fp_hash_val, "%s\n", group);
+            fprintf(fp_hash_key, "%s\n", gene_name);
+            fprintf(fp_hash_val, "%s\n", group);
 
             if(item_id_flag == 1){
                 item_id= 0;
