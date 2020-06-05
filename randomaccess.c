@@ -796,7 +796,6 @@ int sparseSearch(int block, int start_id, int end_id){
         }
         i++;
     }
-    printf("************************************************\n");
     fclose(fp);
     fclose(fp_column);
     fclose(fp_value);
