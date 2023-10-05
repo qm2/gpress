@@ -1,6 +1,8 @@
 # GPress
 This is GPress, a framework for querying GTF, GFF3 and expression files in a compressed form.
 
+Bioinformatics publication: https://academic.oup.com/bioinformatics/article/36/18/4810/5865850
+
 ## Requirement
 - Linux
 - GCC and G++ 11 compiler
